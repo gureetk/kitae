@@ -52,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -147,7 +148,17 @@ private fun Profile(
             )
             if (state.totalLifts > 0) {
                 Spacer(modifier = Modifier.height(12.dp))
-                LiftsCard(state.totalLifts)
+                StatCard(
+                    label = stringResource(R.string.label_lifts),
+                    value = state.totalLifts,
+                    icon = KenkoIcons.Reveal,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                StatCard(
+                    label = stringResource(R.string.label_days),
+                    value = state.daysTrained,
+                    icon = KenkoIcons.Dawn,
+                )
             }
             Spacer(modifier = Modifier.weight(1F))
             HealthQuotes(Modifier.align(Alignment.CenterHorizontally))
@@ -286,7 +297,11 @@ private fun ExerciseCard(
 }
 
 @Composable
-private fun LiftsCard(setsPerformed: Int) {
+private fun StatCard(
+    label: String,
+    value: Int,
+    icon: ImageVector,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -300,17 +315,17 @@ private fun LiftsCard(setsPerformed: Int) {
         ) {
             Text(
                 modifier = Modifier.vertical(false),
-                text = stringResource(R.string.label_lifts),
+                text = label,
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = setsPerformed.toString(),
+                text = value.toString(),
                 style = MaterialTheme.typography.displayLarge.numbers(),
             )
             Spacer(modifier = Modifier.weight(1F))
             Icon(
-                imageVector = KenkoIcons.Reveal,
+                imageVector = icon,
                 tint = MaterialTheme.colorScheme.surfaceContainerHigh,
                 contentDescription = null,
                 modifier = Modifier.offset(x = 30.dp),

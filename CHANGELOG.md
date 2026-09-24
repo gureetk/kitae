@@ -14,9 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rest timer between sets: starts when a set is ticked off, keeps counting with the screen off, shows a countdown notification with +15s and Skip, and alerts when the rest is over. Its length can be changed (or turned off) in settings
 - Weights can be shown and entered in kilograms or pounds
 - Warm-up and failure sets. Warm-ups are marked with a W instead of a number and are left out of the performance rating, sets taken to failure count a little more
-- Workouts can be finished, keeping the sets that were not done as skipped (shown dimmed in the history, never counted as done) or removing them. The plan itself is never changed
+- Workouts can be finished keeping the sets that were not done as skipped (shown dimmed in the history, never counted as done, the plan stays the same) or removing them from the workout and from the day's plan. A workout where nothing was done can be discarded
 - A check mark in the plan editor to finish editing a plan
 - A workout stays in progress until it is finished. Starting a day again after finishing always begins fresh from the plan
+- A days card on the profile, counting the days you trained
+- The app can be reset to a clean slate from the bottom of the settings
 
 ### Changed
 

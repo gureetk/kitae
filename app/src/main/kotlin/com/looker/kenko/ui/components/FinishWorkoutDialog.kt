@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,26 +30,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
+import com.looker.kenko.data.model.FinishMode
 
 // With nothing done, removing from the plan would empty the day
 @Composable
 fun FinishWorkoutDialog(
     incompleteSets: Int,
-    onKeep: () -> Unit,
-    onRemove: () -> Unit,
+    completedSets: Int,
+    onFinish: (FinishMode) -> Unit,
     onDismiss: () -> Unit,
     title: String = stringResource(R.string.label_finish_workout),
     message: String? = null,
 ) {
     val resources = LocalContext.current.resources
-    val setsMessage = if (incompleteSets > 0) {
-        resources.getQuantityString(
+    val setsMessage = when {
+        incompleteSets == 0 -> null
+        completedSets == 0 -> stringResource(R.string.label_nothing_done)
+        else -> resources.getQuantityString(
             R.plurals.finish_incomplete_sets,
             incompleteSets,
             incompleteSets,
         )
-    } else {
-        null
     }
     val text = listOfNotNull(message, setsMessage).joinToString("\n\n")
     AlertDialog(
@@ -61,25 +64,37 @@ fun FinishWorkoutDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (incompleteSets > 0) {
+                if (incompleteSets == 0) {
                     Button(
-                        onClick = onKeep,
+                        onClick = { onFinish(FinishMode.KeepSkipped) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(R.string.label_finish))
+                    }
+                } else {
+                    Button(
+                        onClick = { onFinish(FinishMode.KeepSkipped) },
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(text = stringResource(R.string.label_keep_skipped))
                     }
+                    val removeMode = if (completedSets == 0) FinishMode.Discard else FinishMode.RemoveFromPlan
                     OutlinedButton(
-                        onClick = onRemove,
+                        onClick = { onFinish(removeMode) },
                         modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error,
+                        ),
                     ) {
-                        Text(text = stringResource(R.string.label_remove_unfinished))
-                    }
-                } else {
-                    Button(
-                        onClick = onKeep,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(text = stringResource(R.string.label_finish))
+                        Text(
+                            text = stringResource(
+                                if (completedSets == 0) {
+                                    R.string.label_discard_workout
+                                } else {
+                                    R.string.label_remove_from_plan
+                                },
+                            ),
+                        )
                     }
                 }
                 TextButton(

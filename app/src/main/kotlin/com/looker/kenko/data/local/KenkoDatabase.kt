@@ -37,7 +37,7 @@ import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetTypeEntity
 
 @Database(
-    version = 5,
+    version = 6,
     entities = [
         SessionDataEntity::class,
         ExerciseEntity::class,
@@ -74,5 +74,6 @@ fun kenkoDatabase(context: Context) = Room
             dayNames = context.resources.getStringArray(R.array.day_of_week).toList(),
         ),
         MIGRATION_4_5,
+        MIGRATION_5_6,
     )
     .build()

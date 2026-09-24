@@ -39,9 +39,16 @@ import com.looker.kenko.data.model.SetDraft
             childColumns = ["sessionId"],
             onDelete = ForeignKey.CASCADE,
         ),
+        ForeignKey(
+            entity = RoutineSetEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["routineSetId"],
+            onDelete = ForeignKey.SET_NULL,
+        ),
     ],
     indices = [
         Index("sessionId", "exerciseId"),
+        Index("routineSetId"),
     ],
 )
 data class SetEntity(
@@ -55,6 +62,8 @@ data class SetEntity(
     val rir: Int = 2,
     @ColumnInfo(defaultValue = "1")
     val isCompleted: Boolean = true,
+    // The planned set it was copied from
+    val routineSetId: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -86,6 +95,7 @@ fun SetDraft.toSetEntity(
     exerciseId: Int,
     order: Int,
     isCompleted: Boolean,
+    routineSetId: Int? = null,
 ): SetEntity = SetEntity(
     repsOrDuration = repsOrDuration,
     weight = weight,
@@ -94,4 +104,5 @@ fun SetDraft.toSetEntity(
     sessionId = sessionId,
     exerciseId = exerciseId,
     isCompleted = isCompleted,
+    routineSetId = routineSetId,
 )

@@ -18,6 +18,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.model.ActiveSession
+import com.looker.kenko.data.model.FinishMode
 import com.looker.kenko.data.model.Routine
 import com.looker.kenko.data.model.nextAfter
 import com.looker.kenko.data.repository.PlanRepo
@@ -86,12 +87,12 @@ class HomeViewModel @Inject constructor(
     fun finishAndStart(
         activeSessionId: Int,
         routineId: Int,
-        keepIncompleteSets: Boolean,
+        mode: FinishMode,
         onStarted: (sessionId: Int) -> Unit,
     ) {
         start(onStarted) {
             restTimer.skip()
-            sessionRepo.finishSession(activeSessionId, keepIncompleteSets)
+            sessionRepo.finishSession(activeSessionId, mode)
             sessionRepo.startSession(routineId)
         }
     }

@@ -25,6 +25,7 @@ import com.looker.kenko.data.local.model.toExternal
 import com.looker.kenko.data.local.model.toSetEntity
 import com.looker.kenko.data.model.ActiveSession
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.FinishMode
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.SetDraft
@@ -64,6 +65,8 @@ class LocalSessionRepo @Inject constructor(
 
     override val sessionsCount: Flow<Int> = dao.totalSessions()
 
+    override val daysTrained: Flow<Int> = dao.daysTrained()
+
     // Also workouts that went past midnight
     override val activeSession: Flow<ActiveSession?>
         get() = dao.activeSession(minDate = today().epochDay - 1).map { it?.toActiveSession() }
@@ -85,18 +88,26 @@ class LocalSessionRepo @Inject constructor(
             .associate { it.routineExerciseId to it.exercise.id }
         val sets = routineDao.getRoutineSets(routineId).mapNotNull { planned ->
             val exerciseId = exerciseIds[planned.routineExerciseId] ?: return@mapNotNull null
-            exerciseId to SetDraft(
+            SetDraft(
                 repsOrDuration = planned.repsOrDuration,
                 weight = planned.weight,
                 type = planned.type,
+            ).toSetEntity(
+                sessionId = 0,
+                exerciseId = exerciseId,
+                order = 0,
+                isCompleted = false,
+                routineSetId = planned.id,
             )
         }
-        return createSession(
-            date = date,
-            planId = routine.planId,
-            routineId = routineId,
+        return dao.insertWithSets(
+            session = SessionDataEntity(
+                date = EpochDays(date.epochDay),
+                planId = routine.planId,
+                routineId = routineId,
+                isFinished = false,
+            ),
             sets = sets,
-            isCompleted = false,
         )
     }
 
@@ -123,8 +134,12 @@ class LocalSessionRepo @Inject constructor(
         },
     )
 
-    override suspend fun finishSession(id: Int, keepIncompleteSets: Boolean) {
-        dao.finish(id, keepIncompleteSets)
+    override suspend fun finishSession(id: Int, mode: FinishMode) {
+        dao.finish(
+            sessionId = id,
+            keepIncompleteSets = mode == FinishMode.KeepSkipped,
+            removeFromPlan = mode == FinishMode.RemoveFromPlan,
+        )
     }
 
     override suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean) {

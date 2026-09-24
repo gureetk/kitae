@@ -452,3 +452,50 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         )
     }
 }
+
+// Links sets to the planned set they were copied from
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            ALTER TABLE `sets` ADD COLUMN `routineSetId` INTEGER
+            REFERENCES `routine_sets`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sets_routineSetId` ON `sets` (`routineSetId`)")
+        db.execSQL(
+            """
+            UPDATE `sets` SET `routineSetId` =
+            (SELECT `rs`.`id`
+            FROM `routine_sets` AS `rs`
+            INNER JOIN `routine_exercises` AS `re` ON `re`.`id` = `rs`.`routineExerciseId`
+            INNER JOIN `sessions` AS `session` ON `session`.`id` = `sets`.`sessionId`
+            WHERE `re`.`routineId` = `session`.`routineId`
+            AND `re`.`exerciseId` = `sets`.`exerciseId`
+            AND (SELECT COUNT(*)
+            FROM `routine_sets` AS `rs2`
+            INNER JOIN `routine_exercises` AS `re2` ON `re2`.`id` = `rs2`.`routineExerciseId`
+            WHERE `re2`.`routineId` = `re`.`routineId`
+            AND `re2`.`exerciseId` = `re`.`exerciseId`
+            AND (`re2`.`position`, `re2`.`id`, `rs2`.`position`, `rs2`.`id`)
+            < (`re`.`position`, `re`.`id`, `rs`.`position`, `rs`.`id`))
+            = (SELECT COUNT(*)
+            FROM `sets` AS `s2`
+            WHERE `s2`.`sessionId` = `sets`.`sessionId`
+            AND `s2`.`exerciseId` = `sets`.`exerciseId`
+            AND (`s2`.`order`, `s2`.`id`) < (`sets`.`order`, `sets`.`id`)))
+            WHERE `sessionId` IN
+            (SELECT `id` FROM `sessions` WHERE `isFinished` = 0 AND `routineId` IS NOT NULL)
+            AND (SELECT COUNT(*)
+            FROM `sets` AS `s3`
+            WHERE `s3`.`sessionId` = `sets`.`sessionId`
+            AND `s3`.`exerciseId` = `sets`.`exerciseId`)
+            = (SELECT COUNT(*)
+            FROM `routine_sets` AS `rs3`
+            INNER JOIN `routine_exercises` AS `re3` ON `re3`.`id` = `rs3`.`routineExerciseId`
+            WHERE `re3`.`routineId` = (SELECT `routineId` FROM `sessions` WHERE `id` = `sets`.`sessionId`)
+            AND `re3`.`exerciseId` = `sets`.`exerciseId`)
+            """.trimIndent(),
+        )
+    }
+}

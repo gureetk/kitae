@@ -68,6 +68,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.FinishMode
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.timer.RestTimerState
 import com.looker.kenko.ui.addSet.AddSetSheet
@@ -123,7 +124,7 @@ fun SessionDetails(
             if (incompleteSets > 0) {
                 showFinishDialog = true
             } else {
-                viewModel.finish(keepIncompleteSets = false, onFinished = onBackPress)
+                viewModel.finish(FinishMode.KeepSkipped, onBackPress)
             }
         },
         onStartRest = viewModel::startRest,
@@ -144,16 +145,13 @@ fun SessionDetails(
     }
 
     if (showFinishDialog) {
-        val incompleteSets = (state as? SessionDetailState.Success)?.data?.incompleteSets ?: 0
+        val data = (state as? SessionDetailState.Success)?.data
         FinishWorkoutDialog(
-            incompleteSets = incompleteSets,
-            onKeep = {
+            incompleteSets = data?.incompleteSets ?: 0,
+            completedSets = data?.completedSets ?: 0,
+            onFinish = { mode ->
                 showFinishDialog = false
-                viewModel.finish(keepIncompleteSets = true, onFinished = onBackPress)
-            },
-            onRemove = {
-                showFinishDialog = false
-                viewModel.finish(keepIncompleteSets = false, onFinished = onBackPress)
+                viewModel.finish(mode, onBackPress)
             },
             onDismiss = { showFinishDialog = false },
         )

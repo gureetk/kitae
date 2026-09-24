@@ -15,6 +15,7 @@
 package com.looker.kenko.data.repository
 
 import com.looker.kenko.data.model.ActiveSession
+import com.looker.kenko.data.model.FinishMode
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.SetDraft
@@ -28,6 +29,8 @@ interface SessionRepo {
     val setsCount: Flow<Int>
 
     val sessionsCount: Flow<Int>
+
+    val daysTrained: Flow<Int>
 
     val activeSession: Flow<ActiveSession?>
 
@@ -47,7 +50,7 @@ interface SessionRepo {
         isCompleted: Boolean,
     ): Int
 
-    suspend fun finishSession(id: Int, keepIncompleteSets: Boolean)
+    suspend fun finishSession(id: Int, mode: FinishMode)
 
     suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean = false)
 

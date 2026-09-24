@@ -260,11 +260,13 @@
     <string name="label_finish">Finish</string>
     <string name="label_finish_workout">Finish workout?</string>
     <plurals name="finish_incomplete_sets">
-        <item quantity="one">%d set isn\'t done. Keep it in this workout as skipped, or remove it? Your plan stays the same either way.</item>
-        <item quantity="other">%d sets aren\'t done. Keep them in this workout as skipped, or remove them? Your plan stays the same either way.</item>
+        <item quantity="one">%d set isn\'t done.\n\nKeep as skipped: it stays in this workout as not done, your plan stays the same.\n\nRemove from plan: it\'s removed from this workout and from the day\'s plan, along with exercises that had nothing done.</item>
+        <item quantity="other">%d sets aren\'t done.\n\nKeep as skipped: they stay in this workout as not done, your plan stays the same.\n\nRemove from plan: they\'re removed from this workout and from the day\'s plan, along with exercises that had nothing done.</item>
     </plurals>
+    <string name="label_nothing_done">Nothing was done in this workout. Keep it as skipped, or discard it? Your plan stays the same either way.</string>
     <string name="label_keep_skipped">Keep as skipped</string>
-    <string name="label_remove_unfinished">Remove unfinished</string>
+    <string name="label_remove_from_plan">Remove from plan</string>
+    <string name="label_discard_workout">Discard workout</string>
     <string name="label_skipped">.skipped</string>
     <string name="error_plan_needs_exercise">Add an exercise to a day to save this plan</string>
     <string name="label_edit_set_for">Edit Set for</string>
@@ -281,6 +283,13 @@
     <string name="label_rest_over">Rest over</string>
     <string name="label_rest_over_desc">Time for your next set</string>
     <string name="label_skip">Skip</string>
+    <string name="label_days">Days</string>
+    <string name="label_reset_app">Reset app</string>
+    <string name="label_reset_app_desc">Deletes all plans, workouts, exercises and settings, like a fresh install</string>
+    <string name="label_reset_app_title">Reset Kenko?</string>
+    <string name="label_reset_app_confirm">This permanently deletes all your plans, workouts, exercises and settings. Backups saved to your backup folder are kept.\n\nKenko will close, open it again to start fresh.</string>
+    <string name="label_reset">Reset</string>
+    <string name="error_reset_failed">Couldn\'t reset the app</string>
     <string name="label_add_seconds">+%1$ds</string>
     <string name="label_remove_seconds">−%1$ds</string>
 </resources>

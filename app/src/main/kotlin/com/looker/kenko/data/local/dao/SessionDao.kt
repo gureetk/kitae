@@ -59,6 +59,19 @@ interface SessionDao {
     )
     fun totalSessions(): Flow<Int>
 
+    @Query(
+        """
+        SELECT COUNT(DISTINCT date)
+        FROM sessions
+        WHERE EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 1)
+        """,
+    )
+    fun daysTrained(): Flow<Int>
+
     @Transaction
     @Query(
         """
@@ -184,9 +197,54 @@ interface SessionDao {
     @Query("UPDATE sessions SET isFinished = 1 WHERE id = :sessionId")
     suspend fun markFinished(sessionId: Int)
 
+    @Query(
+        """
+        SELECT DISTINCT routine_sets.routineExerciseId
+        FROM routine_sets
+        WHERE routine_sets.id IN
+        (SELECT routineSetId
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND isCompleted = 0)
+        """,
+    )
+    suspend fun routineExercisesOfIncompleteSets(sessionId: Int): List<Int>
+
+    @Query(
+        """
+        DELETE FROM routine_sets
+        WHERE id IN
+        (SELECT routineSetId
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND isCompleted = 0
+        AND routineSetId IS NOT NULL)
+        """,
+    )
+    suspend fun deleteIncompletePlannedSets(sessionId: Int)
+
+    @Query(
+        """
+        DELETE FROM routine_exercises
+        WHERE id IN (:routineExerciseIds)
+        AND NOT EXISTS
+        (SELECT 1
+        FROM routine_sets
+        WHERE routine_sets.routineExerciseId = routine_exercises.id)
+        """,
+    )
+    suspend fun deleteEmptyRoutineExercises(routineExerciseIds: List<Int>)
+
     @Transaction
-    suspend fun finish(sessionId: Int, keepIncompleteSets: Boolean) {
-        if (!keepIncompleteSets) deleteIncompleteSets(sessionId)
+    suspend fun finish(sessionId: Int, keepIncompleteSets: Boolean, removeFromPlan: Boolean) {
+        if (!keepIncompleteSets) {
+            if (removeFromPlan) {
+                val routineExerciseIds = routineExercisesOfIncompleteSets(sessionId)
+                deleteIncompletePlannedSets(sessionId)
+                deleteEmptyRoutineExercises(routineExerciseIds)
+            }
+            deleteIncompleteSets(sessionId)
+        }
         markFinished(sessionId)
         deleteIfEmpty(sessionId)
     }

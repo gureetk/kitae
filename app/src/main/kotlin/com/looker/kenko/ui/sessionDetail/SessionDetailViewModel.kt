@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
 import com.looker.kenko.data.model.DEFAULT_REPS
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.FinishMode
 import com.looker.kenko.data.model.RoutineExercise
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
@@ -89,10 +90,10 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val previousSessionStream: Flow<Int?> = sessionStream
-        .map { session -> session?.let { it.routineId to it.date } }
+        .map { session -> session?.let { PreviousSessionKey(it.routineId, it.date) } }
         .distinctUntilChanged()
         .mapLatest { key ->
-            key?.let { repo.previousSessionId(sessionId, it.first, it.second) }
+            key?.let { repo.previousSessionId(sessionId, it.routineId, it.date) }
         }
 
     private val isFinishing = MutableStateFlow(false)
@@ -187,12 +188,12 @@ class SessionDetailViewModel @AssistedInject constructor(
         _sheet.value = null
     }
 
-    fun finish(keepIncompleteSets: Boolean, onFinished: () -> Unit) {
+    fun finish(mode: FinishMode, onFinished: () -> Unit) {
         if (isFinishing.value) return
         isFinishing.value = true
         viewModelScope.launch {
             timer.skip()
-            repo.finishSession(sessionId, keepIncompleteSets)
+            repo.finishSession(sessionId, mode)
             onFinished()
         }
     }
@@ -249,6 +250,11 @@ class SessionDetailViewModel @AssistedInject constructor(
         )
     }
 }
+
+private data class PreviousSessionKey(
+    val routineId: Int?,
+    val date: LocalDate,
+)
 
 @Immutable
 data class SetSheet(

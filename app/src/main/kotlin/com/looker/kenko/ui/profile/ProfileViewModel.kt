@@ -42,12 +42,14 @@ class ProfileViewModel @Inject constructor(
     val state: StateFlow<ProfileUiState> = combine(
         currentPlan,
         sessionRepo.setsCount,
+        sessionRepo.daysTrained,
         exerciseRepo.numberOfExercise,
         performanceRepo.activity,
-    ) { plan, sets, number, activity ->
+    ) { plan, sets, days, number, activity ->
         ProfileUiState(
             numberOfExercises = number,
             totalLifts = sets,
+            daysTrained = days,
             isPlanAvailable = plan != null,
             planName = plan?.name ?: "",
             planId = plan?.id ?: -1,
@@ -64,6 +66,7 @@ data class ProfileUiState(
     val planId: Int = -1,
     val planName: String = "",
     val totalLifts: Int = 0,
+    val daysTrained: Int = 0,
     val activity: Map<Int, Int> = emptyMap(),
     val planStat: PlanStat? = null,
 )

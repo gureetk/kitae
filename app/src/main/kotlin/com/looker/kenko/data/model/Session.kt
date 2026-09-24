@@ -37,6 +37,16 @@ data class Session(
         get() = sets.any { !it.isCompleted }
 }
 
+enum class FinishMode {
+    KeepSkipped,
+
+    /** Also removed from the plan. */
+    RemoveFromPlan,
+
+    /** Removed from this workout only. */
+    Discard,
+}
+
 @Immutable
 data class ActiveSession(
     val id: Int,

@@ -14,6 +14,7 @@
 
 package com.looker.kenko.ui.settings
 
+import android.app.ActivityManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -41,6 +43,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -65,6 +68,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -99,6 +104,7 @@ import com.looker.kenko.ui.theme.end
 import com.looker.kenko.ui.theme.start
 import com.looker.kenko.utils.toFormat
 import kotlin.time.Instant
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -141,6 +147,8 @@ private fun Settings(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var showResetDialog by rememberSaveable { mutableStateOf(false) }
 
     // Handle backup messages
     LaunchedEffect(state.backupMessage) {
@@ -220,8 +228,81 @@ private fun Settings(
                 onBackupNow = onBackupNow,
                 onRestore = onRestore,
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            CategoryHeader(title = stringResource(R.string.label_reset_app))
+            Spacer(modifier = Modifier.height(8.dp))
+            ResetSection(onResetClick = { showResetDialog = true })
             Spacer(modifier = Modifier.weight(1F))
             HealthQuotes(Modifier.align(CenterHorizontally))
+        }
+    }
+
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            icon = { Icon(painter = KenkoIcons.Delete, contentDescription = null) },
+            title = { Text(text = stringResource(R.string.label_reset_app_title)) },
+            text = { Text(text = stringResource(R.string.label_reset_app_confirm)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showResetDialog = false
+                        // Closes the app, like Clear storage
+                        val reset = context.getSystemService(ActivityManager::class.java)
+                            ?.clearApplicationUserData() == true
+                        if (!reset) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.error_reset_failed))
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    ),
+                ) {
+                    Text(text = stringResource(R.string.label_reset))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text(text = stringResource(R.string.label_cancel))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun ResetSection(
+    onResetClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.label_reset_app_desc),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        OutlinedButton(
+            onClick = onResetClick,
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.error,
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        ) {
+            Icon(
+                painter = KenkoIcons.Delete,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = stringResource(R.string.label_reset_app))
         }
     }
 }
