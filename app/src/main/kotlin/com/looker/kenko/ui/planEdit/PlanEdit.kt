@@ -78,7 +78,7 @@ import com.looker.kenko.ui.components.ErrorSnackbar
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.SetGroupHeader
 import com.looker.kenko.ui.components.SwipeToDeleteBox
-import com.looker.kenko.ui.extensions.normalizeInt
+import com.looker.kenko.ui.components.setLabels
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.DeleteRoutineDialog
 import com.looker.kenko.ui.planEdit.components.RoutineNameDialog
@@ -469,6 +469,7 @@ private fun RoutineEditor(
                             }
                         }
                     }
+                    val labels = setLabels(routineExercise.sets.map { it.type })
                     itemsIndexed(
                         items = routineExercise.sets,
                         key = { _, set -> "set_${set.id}" },
@@ -484,7 +485,7 @@ private fun RoutineEditor(
                                 isIsometric = exercise.isIsometric,
                                 type = set.type,
                                 onClick = { onEditSet(routineExercise, set) },
-                                title = { Text(normalizeInt(index + 1)) },
+                                title = { Text(labels[index]) },
                             )
                         }
                     }

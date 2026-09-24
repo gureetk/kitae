@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sets are planned ahead for every exercise of a day. Starting a day loads its sets into the workout, where each set is ticked off with a button once done
 - Rest timer between sets: starts when a set is ticked off, keeps counting with the screen off, shows a countdown notification with +15s and Skip, and alerts when the rest is over. Its length can be changed (or turned off) in settings
 - Weights can be shown and entered in kilograms or pounds
+- Warm-up and failure sets. Warm-ups are marked with a W instead of a number and are left out of the performance rating, sets taken to failure count a little more
 - Workouts can be finished, keeping the sets that were not done as skipped (shown dimmed in the history, never counted as done) or removing them. The plan itself is never changed
 - A check mark in the plan editor to finish editing a plan
 - A workout stays in progress until it is finished. Starting a day again after finishing always begins fresh from the plan

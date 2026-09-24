@@ -76,7 +76,7 @@ import com.looker.kenko.ui.components.FinishWorkoutDialog
 import com.looker.kenko.ui.components.SetGroupHeader
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
-import com.looker.kenko.ui.extensions.normalizeInt
+import com.looker.kenko.ui.components.setLabels
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.sessionDetail.components.RestTimerBar
@@ -350,6 +350,7 @@ private fun SetsList(
                     }
                 }
             }
+            val labels = setLabels(sets.map { it.type })
             itemsIndexed(
                 items = sets,
                 key = { index, set -> set.id ?: "${exercise.id}_$index" },
@@ -374,7 +375,7 @@ private fun SetsList(
                             null
                         },
                         title = {
-                            Text(normalizeInt(index + 1))
+                            Text(labels[index])
                         },
                     )
                 }

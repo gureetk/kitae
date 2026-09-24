@@ -21,6 +21,7 @@ import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.room.Upsert
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.local.model.SetTypeEntity
 import com.looker.kenko.data.repository.Performance
 import kotlinx.coroutines.flow.Flow
@@ -77,6 +78,7 @@ interface PerformanceDao {
             append("INNER JOIN set_type ON sets.type = set_type.type ")
             append("INNER JOIN sessions ON sets.sessionId = sessions.id ")
             append("WHERE sets.isCompleted = 1 ")
+            append("AND sets.type != '${SetType.Warmup.name}' ")
             if (exerciseId != null) {
                 append("AND sets.exerciseId = ? ")
                 selection.add(exerciseId)

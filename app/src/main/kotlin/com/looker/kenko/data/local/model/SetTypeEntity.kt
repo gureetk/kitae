@@ -24,18 +24,22 @@ data class SetTypeEntity(
     val modifier: Float,
 )
 
+// Stored by name, don't rename
 enum class SetType(val ratingModifier: Float) {
     Standard(STANDARD_SET_RATING_MODIFIER),
     Drop(DROP_SET_RATING_MODIFIER),
     RestPause(REST_PAUSE_SET_RATING_MODIFIER),
+    Warmup(WARMUP_SET_RATING_MODIFIER),
+    Failure(FAILURE_SET_RATING_MODIFIER),
 }
 
 private const val STANDARD_SET_RATING_MODIFIER: Float = 1.0F
 private const val DROP_SET_RATING_MODIFIER: Float = 1.35F
 private const val REST_PAUSE_SET_RATING_MODIFIER: Float = 1.2F
+private const val WARMUP_SET_RATING_MODIFIER: Float = 0F
 
-fun defaultSetTypes()= listOf(
-    SetTypeEntity(SetType.Standard, STANDARD_SET_RATING_MODIFIER),
-    SetTypeEntity(SetType.Drop, DROP_SET_RATING_MODIFIER),
-    SetTypeEntity(SetType.RestPause, REST_PAUSE_SET_RATING_MODIFIER),
-)
+// RIR 0 instead of the default 2: 1.20 / 1.04
+private const val FAILURE_SET_RATING_MODIFIER: Float = 1.15F
+
+// Performance joins on this table, every type needs a row
+fun defaultSetTypes() = SetType.entries.map { SetTypeEntity(it, it.ratingModifier) }

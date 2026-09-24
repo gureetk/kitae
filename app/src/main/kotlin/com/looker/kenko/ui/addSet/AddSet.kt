@@ -20,6 +20,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -272,12 +276,19 @@ private fun SetTypeSelector(
     onSelect: (SetType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val options = listOf(SetType.Standard, SetType.Drop, SetType.RestPause)
-    Row(
-        modifier.padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = (SetTypeOptions.indexOf(selected) - 1).coerceAtLeast(0),
+    )
+    LazyRow(
+        state = listState,
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            ButtonGroupDefaults.ConnectedSpaceBetween,
+            Alignment.CenterHorizontally,
+        ),
     ) {
-        options.forEachIndexed { index, type ->
+        itemsIndexed(SetTypeOptions, key = { _, type -> type.name }) { index, type ->
             val interactionSource = remember { MutableInteractionSource() }
             val checked = selected == type
             OutlinedToggleButton(
@@ -292,7 +303,7 @@ private fun SetTypeSelector(
                 ),
                 shapes = when (index) {
                     0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    SetTypeOptions.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
             ) {
@@ -363,11 +374,21 @@ private fun processPath(
     return path
 }
 
+private val SetTypeOptions = listOf(
+    SetType.Warmup,
+    SetType.Standard,
+    SetType.Failure,
+    SetType.Drop,
+    SetType.RestPause,
+)
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun setTypeShape(type: SetType): RoundedPolygon = when (type) {
     SetType.Standard -> MaterialShapes.Ghostish
     SetType.Drop -> MaterialShapes.Arrow
     SetType.RestPause -> MaterialShapes.Bun
+    SetType.Warmup -> MaterialShapes.Sunny
+    SetType.Failure -> MaterialShapes.Burst
 }
 
 @Composable
@@ -375,12 +396,16 @@ fun setTypeColor(type: SetType): Color = when (type) {
     SetType.Standard -> MaterialTheme.colorScheme.primary
     SetType.Drop -> MaterialTheme.colorScheme.tertiary
     SetType.RestPause -> JapanRed
+    SetType.Warmup -> MaterialTheme.colorScheme.secondary
+    SetType.Failure -> MaterialTheme.colorScheme.error
 }
 
 fun setTypeLabel(type: SetType): String = when (type) {
     SetType.Standard -> "Standard"
     SetType.Drop -> "Drop"
     SetType.RestPause -> "Rest-Pause"
+    SetType.Warmup -> "Warm-up"
+    SetType.Failure -> "Failure"
 }
 
 @Preview
