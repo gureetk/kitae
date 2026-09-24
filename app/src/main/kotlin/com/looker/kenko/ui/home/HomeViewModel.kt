@@ -16,58 +16,117 @@ package com.looker.kenko.ui.home
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
-import com.looker.kenko.data.model.localDate
+import androidx.lifecycle.viewModelScope
+import com.looker.kenko.data.model.ActiveSession
+import com.looker.kenko.data.model.Routine
+import com.looker.kenko.data.model.nextAfter
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
+import com.looker.kenko.data.timer.RestTimer
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     planRepo: PlanRepo,
-    sessionRepo: SessionRepo,
+    private val sessionRepo: SessionRepo,
+    private val restTimer: RestTimer,
 ) : ViewModel() {
 
-    private val planStream = planRepo.current
+    private val pickedRoutineId = MutableStateFlow<Int?>(null)
 
-    private val sessionStream = sessionRepo.streamByDate(localDate)
+    private val history: Flow<WorkoutHistory> = combine(
+        sessionRepo.activeSession,
+        sessionRepo.lastPerformedRoutineId,
+        sessionRepo.hasCompletedSets,
+    ) { active, lastRoutineId, hasHistory ->
+        WorkoutHistory(active, lastRoutineId, hasHistory)
+    }
 
-    private val sessionsStream = sessionRepo.stream
-
-    private val planItemStream = planRepo.planItems(localDate.dayOfWeek)
-
-    val state = combine(
-        planStream,
-        sessionStream,
-        sessionsStream,
-        planItemStream,
-    ) { currentPlan, currentSession, sessions, planItems ->
-        val isFirstSession = sessions.size <= 1 && sessions.firstOrNull()?.date == localDate
+    val state: StateFlow<HomeUiData> = combine(
+        planRepo.current,
+        planRepo.currentRoutines,
+        history,
+        pickedRoutineId,
+    ) { plan, routines, history, pickedId ->
+        val active = history.activeSession
+        val lastRoutineId = history.lastRoutineId
+        val hasHistory = history.hasCompletedSets
+        val showActive = active != null && (pickedId == null || pickedId == active.routineId)
+        val selected = routines.find { it.id == pickedId }
+            ?: routines.find { it.id == active?.routineId }
+            ?: routines.nextAfter(lastRoutineId)
         HomeUiData(
-            isPlanSelected = currentPlan != null,
-            isSessionStarted = currentSession != null && currentSession.sets.isNotEmpty(),
-            isTodayEmpty = planItems.isEmpty(),
-            isFirstSession = isFirstSession,
-            currentPlanId = currentPlan?.id,
+            isPlanSelected = plan != null,
+            planId = plan?.id,
+            routines = routines,
+            selectedRoutineId = if (showActive) active?.routineId else selected?.id,
+            activeSession = active,
+            showActive = showActive,
+            isFirstSession = !hasHistory,
         )
-    }.asStateFlow(
-        HomeUiData(
-            isPlanSelected = true,
-            isSessionStarted = false,
-            isTodayEmpty = false,
-            isFirstSession = false,
-            currentPlanId = null,
-        ),
-    )
+    }.asStateFlow(HomeUiData(isLoading = true))
+
+    private var isStarting = false
+
+    fun selectRoutine(id: Int) {
+        pickedRoutineId.value = id
+    }
+
+    fun startRoutine(routineId: Int, onStarted: (sessionId: Int) -> Unit) {
+        start(onStarted) { sessionRepo.startSession(routineId) }
+    }
+
+    fun finishAndStart(activeSessionId: Int, routineId: Int, onStarted: (sessionId: Int) -> Unit) {
+        start(onStarted) {
+            restTimer.skip()
+            sessionRepo.finishSession(activeSessionId)
+            sessionRepo.startSession(routineId)
+        }
+    }
+
+    private inline fun start(
+        crossinline onStarted: (Int) -> Unit,
+        crossinline block: suspend () -> Int,
+    ) {
+        // Ignore double taps
+        if (isStarting) return
+        isStarting = true
+        viewModelScope.launch {
+            try {
+                val sessionId = block()
+                pickedRoutineId.value = null
+                onStarted(sessionId)
+            } finally {
+                isStarting = false
+            }
+        }
+    }
 }
+
+private data class WorkoutHistory(
+    val activeSession: ActiveSession?,
+    val lastRoutineId: Int?,
+    val hasCompletedSets: Boolean,
+)
 
 @Immutable
 data class HomeUiData(
-    val isPlanSelected: Boolean,
-    val isSessionStarted: Boolean,
-    val isTodayEmpty: Boolean,
-    val isFirstSession: Boolean,
-    val currentPlanId: Int?,
-)
+    val isLoading: Boolean = false,
+    val isPlanSelected: Boolean = true,
+    val planId: Int? = null,
+    val routines: List<Routine> = emptyList(),
+    val selectedRoutineId: Int? = null,
+    val activeSession: ActiveSession? = null,
+    val showActive: Boolean = false,
+    val isFirstSession: Boolean = false,
+) {
+    val selectedRoutine: Routine?
+        get() = routines.find { it.id == selectedRoutineId }
+}

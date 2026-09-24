@@ -17,12 +17,10 @@ package com.looker.kenko.data.local.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
-import androidx.room.Transaction
 import androidx.room.Upsert
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.looker.kenko.data.local.model.ExerciseEntity
-import com.looker.kenko.data.local.model.PlanDayEntity
 import com.looker.kenko.data.local.model.PlanEntity
+import com.looker.kenko.data.local.model.PlanWithStats
 import com.looker.kenko.data.model.Labels
 import kotlinx.coroutines.flow.Flow
 
@@ -37,36 +35,56 @@ interface PlanDao {
     )
     fun plansFlow(): Flow<List<PlanEntity>>
 
-    @Transaction
     @Query(
         """
-        SELECT *
-        FROM plan_day
-        WHERE planId =
-        (SELECT planId
-        FROM plan_history
-        WHERE `end` IS NULL
-        AND start IS NOT NULL)
-        ORDER BY id ASC
+        SELECT plans.*,
+        (SELECT COUNT(*)
+        FROM routine_exercises
+        INNER JOIN routines ON routines.id = routine_exercises.routineId
+        WHERE routines.planId = plans.id) AS exerciseCount,
+        (SELECT COUNT(*)
+        FROM routines
+        WHERE routines.planId = plans.id) AS routineCount
+        FROM plans
         """,
     )
-    fun currentPlanItemsFlow(): Flow<List<PlanDayEntity>>
+    fun plansWithStatsFlow(): Flow<List<PlanWithStats>>
 
-    @Transaction
     @Query(
         """
-        SELECT *
-        FROM plan_day
-        WHERE planId =
+        SELECT plans.*,
+        (SELECT COUNT(*)
+        FROM routine_exercises
+        INNER JOIN routines ON routines.id = routine_exercises.routineId
+        WHERE routines.planId = plans.id) AS exerciseCount,
+        (SELECT COUNT(*)
+        FROM routines
+        WHERE routines.planId = plans.id) AS routineCount
+        FROM plans
+        WHERE plans.id =
         (SELECT planId
         FROM plan_history
         WHERE `end` IS NULL
         AND start IS NOT NULL)
-        AND dayOfWeek = :day
-        ORDER BY id ASC
         """,
     )
-    fun currentPlanItemsByDayFlow(day: Int): Flow<List<PlanDayEntity>>
+    fun currentPlanWithStatsFlow(): Flow<PlanWithStats?>
+
+    @Query(
+        """
+        SELECT plans.*,
+        (SELECT COUNT(*)
+        FROM routine_exercises
+        INNER JOIN routines ON routines.id = routine_exercises.routineId
+        WHERE routines.planId = plans.id) AS exerciseCount,
+        (SELECT COUNT(*)
+        FROM routines
+        WHERE routines.planId = plans.id) AS routineCount
+        FROM plans
+        WHERE plans.id = :planId
+        """,
+    )
+    suspend fun getPlanWithStats(planId: Int): PlanWithStats?
 
     @Query(
         """
@@ -89,101 +107,14 @@ interface PlanDao {
 
     @Query(
         """
-        SELECT *
-        FROM plan_day
-        WHERE planId = :planId
-        ORDER BY id ASC
+        SELECT EXISTS
+        (SELECT *
+        FROM routine_exercises
+        INNER JOIN routines ON routines.id = routine_exercises.routineId
+        WHERE routines.planId = :planId)
         """,
     )
-    fun planItemsByPlanIdFlow(planId: Int): Flow<List<PlanDayEntity>>
-
-    @Query(
-        """
-        SELECT *
-        FROM plan_day
-        WHERE planId = :planId
-        ORDER BY id ASC
-        """,
-    )
-    suspend fun getPlanItemsByPlanId(planId: Int): List<PlanDayEntity>
-
-    @Query(
-        """
-        SELECT *
-        FROM plans
-        WHERE id =
-        (SELECT planId
-        FROM plan_day
-        WHERE exerciseId = :exerciseId)
-        """,
-    )
-    suspend fun getPlanByExerciseId(exerciseId: Int): List<PlanEntity>
-
-    @Transaction
-    @Query(
-        """
-        SELECT exercises.*
-        FROM exercises
-        INNER JOIN plan_day
-        ON exercises.id = plan_day.exerciseId
-        WHERE plan_day.planId = :planId
-        ORDER BY plan_day.id ASC
-        """,
-    )
-    fun exerciseByPlanIdFlow(planId: Int): Flow<List<ExerciseEntity>>
-
-    @Transaction
-    @Query(
-        """
-        SELECT exercises.*
-        FROM exercises
-        INNER JOIN plan_day
-        ON exercises.id = plan_day.exerciseId
-        WHERE plan_day.planId = :planId
-        ORDER BY plan_day.id ASC
-        """,
-    )
-    suspend fun getExerciseByPlanId(planId: Int): List<ExerciseEntity>
-
-    @Query(
-        """
-        SELECT *
-        FROM plan_day
-        WHERE planId = :planId
-        AND dayOfWeek = :day
-        ORDER BY id ASC
-        """,
-    )
-    fun planItemsByPlanIdAndDayFlow(planId: Int, day: Int): Flow<List<PlanDayEntity>>
-
-    @Query(
-        """
-        SELECT *
-        FROM plan_day
-        WHERE planId = :planId
-        AND dayOfWeek = :day
-        ORDER BY id ASC
-        """,
-    )
-    suspend fun getPlanItemsByPlanIdAndDay(planId: Int, day: Int): List<PlanDayEntity>
-
-    @Query(
-        """
-        SELECT COUNT(exerciseId)
-        FROM plan_day
-        WHERE planId = :planId
-        """,
-    )
-    suspend fun getExerciseCountByPlanId(planId: Int): Int
-
-    @Query(
-        """
-        SELECT COUNT(DISTINCT dayOfWeek)
-        FROM plan_day
-        WHERE planId = :planId
-        """,
-    )
-    suspend fun getWorkDaysByPlanId(planId: Int): Int
+    suspend fun hasExercises(planId: Int): Boolean
 
     suspend fun searchPlans(
         query: String? = null,
@@ -234,15 +165,14 @@ interface PlanDao {
     @Query("DELETE FROM plans WHERE id = :planId")
     suspend fun deletePlan(planId: Int)
 
-    @Query("DELETE FROM plans WHERE id NOT IN (SELECT DISTINCT planId FROM plan_day)")
+    @Query(
+        """
+        DELETE FROM plans
+        WHERE id NOT IN
+        (SELECT DISTINCT routines.planId
+        FROM routines
+        INNER JOIN routine_exercises ON routine_exercises.routineId = routines.id)
+        """,
+    )
     suspend fun deleteEmptyPlans()
-
-    @Upsert
-    suspend fun insertPlanItem(item: PlanDayEntity)
-
-    @Query("DELETE FROM plan_day WHERE id = :planDayId")
-    suspend fun deleteItem(planDayId: Long)
-
-    @Query("DELETE FROM plan_day WHERE exerciseId = :exerciseId")
-    suspend fun deleteItemByExercise(exerciseId: Int)
 }

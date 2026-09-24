@@ -21,7 +21,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.looker.kenko.data.local.model.SessionDataEntity
 import com.looker.kenko.data.local.model.SessionEntity
-import com.looker.kenko.utils.EpochDays
+import com.looker.kenko.data.local.model.SessionSummaryRow
+import com.looker.kenko.data.local.model.SetEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,48 +31,40 @@ interface SessionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(session: SessionDataEntity): Long
 
-    @Query(
-        """
-        SELECT EXISTS
-        (SELECT *
-        FROM sessions
-        WHERE date = :date)
-        """,
-    )
-    suspend fun sessionExistsOn(date: EpochDays): Boolean
+    @Insert
+    suspend fun insertSets(sets: List<SetEntity>)
 
-    @Query(
-        """
-        SELECT date
-        FROM sessions
-        WHERE id = :sessionId
-        """,
-    )
-    suspend fun getDatePerformedOn(sessionId: Int): EpochDays
+    // Fills in sessionId and order of the sets
+    @Transaction
+    suspend fun insertWithSets(session: SessionDataEntity, sets: List<SetEntity>): Int {
+        val sessionId = insert(session).toInt()
+        insertSets(
+            sets.mapIndexed { index, set ->
+                set.copy(sessionId = sessionId, order = index)
+            },
+        )
+        return sessionId
+    }
 
     @Query(
         """
         SELECT COUNT(*)
         FROM sessions
+        WHERE EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 1)
         """,
     )
     fun totalSessions(): Flow<Int>
-
-    @Query(
-        """
-        SELECT id
-        FROM sessions
-        WHERE date = :date
-        """,
-    )
-    suspend fun getSessionId(date: EpochDays): Int?
 
     @Transaction
     @Query(
         """
         SELECT *
         FROM sessions
-        ORDER BY date DESC
+        ORDER BY date DESC, id DESC
         """,
     )
     fun stream(): Flow<List<SessionEntity>>
@@ -81,18 +74,119 @@ interface SessionDao {
         """
         SELECT *
         FROM sessions
-        WHERE date = :date
+        WHERE id = :id
         """,
     )
-    fun session(date: EpochDays): Flow<SessionEntity?>
+    fun session(id: Int): Flow<SessionEntity?>
 
-    @Transaction
     @Query(
         """
-        SELECT *
+        SELECT sessions.*,
+        routines.name AS routineName,
+        (SELECT COUNT(*)
+        FROM sets
+        WHERE sets.sessionId = sessions.id) AS totalSets,
+        (SELECT COUNT(*)
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 1) AS completedSets
         FROM sessions
-        WHERE date = :date
+        LEFT JOIN routines ON routines.id = sessions.routineId
+        WHERE sessions.date >= :minDate
+        AND EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 0)
+        ORDER BY sessions.date DESC, sessions.id DESC
+        LIMIT 1
         """,
     )
-    suspend fun getSession(date: EpochDays): SessionEntity?
+    fun activeSession(minDate: Int): Flow<SessionSummaryRow?>
+
+    @Query(
+        """
+        SELECT routineId
+        FROM sessions
+        WHERE routineId IS NOT NULL
+        AND EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 1)
+        ORDER BY date DESC, id DESC
+        LIMIT 1
+        """,
+    )
+    fun lastPerformedRoutineId(): Flow<Int?>
+
+    @Query(
+        """
+        SELECT EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE isCompleted = 1)
+        """,
+    )
+    fun hasCompletedSets(): Flow<Boolean>
+
+    @Query(
+        """
+        SELECT id
+        FROM sessions
+        WHERE date = :date
+        AND routineId = :routineId
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+    )
+    suspend fun getSessionId(date: Int, routineId: Int): Int?
+
+    // Same routine, or the same weekday for sessions without one
+    @Query(
+        """
+        SELECT id
+        FROM sessions
+        WHERE id != :sessionId
+        AND (
+            (:routineId IS NOT NULL
+            AND routineId = :routineId
+            AND (date < :date OR (date = :date AND id < :sessionId)))
+            OR
+            (:routineId IS NULL
+            AND routineId IS NULL
+            AND date < :date
+            AND (:date - date) % 7 = 0)
+        )
+        AND EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 1)
+        ORDER BY date DESC, id DESC
+        LIMIT 1
+        """,
+    )
+    suspend fun previousSessionId(sessionId: Int, routineId: Int?, date: Int): Int?
+
+    @Query("DELETE FROM sets WHERE sessionId = :sessionId AND isCompleted = 0")
+    suspend fun deleteIncompleteSets(sessionId: Int)
+
+    @Query(
+        """
+        DELETE FROM sessions
+        WHERE id = :sessionId
+        AND NOT EXISTS
+        (SELECT 1
+        FROM sets
+        WHERE sets.sessionId = :sessionId)
+        """,
+    )
+    suspend fun deleteIfEmpty(sessionId: Int)
+
+    @Transaction
+    suspend fun finish(sessionId: Int) {
+        deleteIncompleteSets(sessionId)
+        deleteIfEmpty(sessionId)
+    }
 }

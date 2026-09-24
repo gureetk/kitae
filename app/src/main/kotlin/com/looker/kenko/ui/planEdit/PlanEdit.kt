@@ -26,6 +26,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -33,10 +34,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.IconButtonShapes
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -45,15 +49,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -62,29 +68,27 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.BuildConfig
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
-import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.data.model.PlannedSet
+import com.looker.kenko.data.model.Routine
+import com.looker.kenko.data.model.RoutineExercise
+import com.looker.kenko.ui.addSet.AddSetSheet
 import com.looker.kenko.ui.components.BackButton
-import com.looker.kenko.ui.components.DaySelectorChip
 import com.looker.kenko.ui.components.ErrorSnackbar
-import com.looker.kenko.ui.components.HorizontalDaySelector
 import com.looker.kenko.ui.components.KenkoButton
+import com.looker.kenko.ui.components.SetGroupHeader
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
-import com.looker.kenko.ui.planEdit.components.DaySwitcher
-import com.looker.kenko.ui.planEdit.components.ExerciseItem
-import com.looker.kenko.ui.planEdit.components.kenkoDayName
+import com.looker.kenko.ui.planEdit.components.DeleteRoutineDialog
+import com.looker.kenko.ui.planEdit.components.RoutineNameDialog
 import com.looker.kenko.ui.selectExercise.SelectExercise
+import com.looker.kenko.ui.sessionDetail.components.SetItem
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
-import com.looker.kenko.ui.theme.numbers
-import com.looker.kenko.utils.minus
-import com.looker.kenko.utils.plus
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DayOfWeek
 
 @Composable
 fun PlanEdit(
@@ -94,6 +98,7 @@ fun PlanEdit(
 ) {
     val pageStage by viewModel.pageState.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val suggestions = stringArrayResource(R.array.routine_name_suggestions)
     BackHandler {
         viewModel.onBackPress(pageStage, onBackPress)
     }
@@ -107,12 +112,28 @@ fun PlanEdit(
                     if (pageStage == PlanEditStage.NameEdit) {
                         viewModel.saveName()
                     } else {
-                        viewModel.openSheet()
+                        viewModel.onAddClick()
                     }
                 },
             )
         },
         onBackPress = { viewModel.onBackPress(pageStage, onBackPress) },
+        actions = {
+            if (pageStage == PlanEditStage.PlanEdit && state.selectedRoutine != null) {
+                IconButton(onClick = viewModel::openRenameRoutine) {
+                    Icon(
+                        painter = KenkoIcons.Rename,
+                        contentDescription = stringResource(R.string.label_rename_day),
+                    )
+                }
+                IconButton(onClick = viewModel::openDeleteRoutine) {
+                    Icon(
+                        painter = KenkoIcons.Delete,
+                        contentDescription = stringResource(R.string.label_delete_day),
+                    )
+                }
+            }
+        },
         onDebugMockClick = viewModel::debugFillMockData,
     ) { stage ->
         when (stage) {
@@ -126,22 +147,70 @@ fun PlanEdit(
             }
 
             PlanEditStage.PlanEdit -> {
-                PlanEdit(
+                RoutineEditor(
                     state = state,
-                    onSelectDay = viewModel::setCurrentDay,
-                    onRemoveExerciseClick = viewModel::removeExercise,
-                    onFullDaySelection = viewModel::openFullDaySelection,
+                    suggestions = suggestions.toList(),
+                    onSelectRoutine = viewModel::selectRoutine,
+                    onAddRoutine = viewModel::openCreateRoutine,
+                    onCreateRoutine = viewModel::createRoutine,
+                    onRemoveExercise = viewModel::removeExercise,
+                    onAddSet = viewModel::openAddSet,
+                    onEditSet = viewModel::openEditSet,
+                    onRemoveSet = viewModel::removeSet,
                 )
             }
         }
     }
 
-    if (state.exerciseSheetVisible) {
-        AddExerciseSheet(
+    when (val sheet = state.sheet) {
+        PlanEditSheet.AddExercise -> AddExerciseSheet(
             onDismiss = viewModel::closeSheet,
             onDone = viewModel::addExercise,
             onAddNewExerciseClick = onAddNewExerciseClick,
         )
+
+        is PlanEditSheet.EditSet -> key(sheet.id) {
+            AddSetSheet(
+                exercise = sheet.exercise,
+                initial = sheet.initial,
+                isEdit = sheet.setId != null,
+                onDismiss = viewModel::closeSheet,
+                onDone = viewModel::saveSet,
+            )
+        }
+
+        null -> Unit
+    }
+
+    when (val dialog = state.dialog) {
+        RoutineDialog.Create -> {
+            val usedNames = remember(state.routines) {
+                state.routines.map { it.name.lowercase() }.toSet()
+            }
+            RoutineNameDialog(
+                title = stringResource(R.string.label_new_day),
+                initialName = "",
+                suggestions = suggestions.filter { it.lowercase() !in usedNames },
+                onConfirm = viewModel::createRoutine,
+                onDismiss = viewModel::dismissDialog,
+            )
+        }
+
+        is RoutineDialog.Rename -> RoutineNameDialog(
+            title = stringResource(R.string.label_rename_day),
+            initialName = dialog.routine.name,
+            suggestions = emptyList(),
+            onConfirm = { name -> viewModel.renameRoutine(dialog.routine.id, name) },
+            onDismiss = viewModel::dismissDialog,
+        )
+
+        is RoutineDialog.Delete -> DeleteRoutineDialog(
+            name = dialog.routine.name,
+            onConfirm = { viewModel.deleteRoutine(dialog.routine.id) },
+            onDismiss = viewModel::dismissDialog,
+        )
+
+        null -> Unit
     }
 }
 
@@ -152,6 +221,7 @@ private fun FullEdit(
     stage: PlanEditStage,
     fab: @Composable () -> Unit,
     onBackPress: () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
     onDebugMockClick: (() -> Unit)? = null,
     ui: @Composable (stage: PlanEditStage) -> Unit,
 ) {
@@ -168,6 +238,7 @@ private fun FullEdit(
                 title = {},
                 navigationIcon = { BackButton(onBackPress) },
                 actions = {
+                    actions()
                     if (BuildConfig.DEBUG && stage == PlanEditStage.PlanEdit) {
                         IconButton(onClick = { onDebugMockClick?.invoke() }) {
                             Icon(painter = KenkoIcons.Add, contentDescription = "Mock data")
@@ -283,84 +354,6 @@ private fun NameEdit(
     )
 }
 
-@Composable
-private fun PlanEdit(
-    state: PlanEditState,
-    onSelectDay: (DayOfWeek) -> Unit,
-    onRemoveExerciseClick: (Exercise) -> Unit,
-    onFullDaySelection: () -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    val isCurrentDayBlank by remember(state.exercises) { derivedStateOf { state.exercises.isEmpty() } }
-    PlanExercise(
-        modifier = Modifier.fillMaxSize(),
-        header = {
-            Header(
-                isExpandedView = state.selectionMode,
-                daySelector = {
-                    HorizontalDaySelector(
-                        item = { dayOfWeek ->
-                            DaySelectorChip(
-                                selected = dayOfWeek == state.currentDay,
-                                onClick = { onSelectDay(dayOfWeek) },
-                            ) {
-                                Text(kenkoDayName(dayOfWeek))
-                            }
-                        },
-                    )
-                },
-                daySwitcher = {
-                    DaySwitcher(
-                        selected = state.currentDay,
-                        onNext = { onSelectDay(state.currentDay + 1) },
-                        onPrevious = { onSelectDay(state.currentDay - 1) },
-                        onClick = onFullDaySelection,
-                    )
-                },
-            )
-        },
-        items = {
-            item { Spacer(Modifier.height(12.dp)) }
-            if (isCurrentDayBlank) {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.no_exercises_yet),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-            } else {
-                itemsIndexed(state.exercises) { index, exercise ->
-                    SwipeToDeleteBox(
-                        modifier = Modifier.clip(MaterialTheme.shapes.small),
-                        onDismiss = {
-                            focusManager.clearFocus()
-                            onRemoveExerciseClick(exercise)
-                        },
-                    ) {
-                        ExerciseItem(
-                            modifier = Modifier.animateItem(),
-                            exercise = exercise,
-                            leadingIcon = {
-                                Text(
-                                    text = normalizeInt(index + 1),
-                                    style = LocalTextStyle.current.numbers(),
-                                )
-                            },
-                        )
-                    }
-                }
-            }
-            item { Spacer(Modifier.height(12.dp)) }
-        },
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddExerciseSheet(
@@ -385,18 +378,134 @@ private fun AddExerciseSheet(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun RoutineEditor(
+    state: PlanEditState,
+    suggestions: List<String>,
+    onSelectRoutine: (Int) -> Unit,
+    onAddRoutine: () -> Unit,
+    onCreateRoutine: (String) -> Unit,
+    onRemoveExercise: (Int) -> Unit,
+    onAddSet: (RoutineExercise) -> Unit,
+    onEditSet: (RoutineExercise, PlannedSet) -> Unit,
+    onRemoveSet: (Int) -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    PlanExercise(
+        modifier = Modifier.fillMaxSize(),
+        header = {
+            PlanDaysHeader(
+                routines = state.routines,
+                selectedId = state.selectedRoutineId,
+                onSelect = onSelectRoutine,
+                onAddRoutine = onAddRoutine,
+            )
+        },
+        items = {
+            item { Spacer(Modifier.height(12.dp)) }
+            when {
+                state.routines.isEmpty() -> item(key = "first_day") {
+                    FirstDay(
+                        suggestions = suggestions,
+                        onCreate = onCreateRoutine,
+                        onCustomClick = onAddRoutine,
+                    )
+                }
+
+                state.exercises.isEmpty() -> item(key = "no_exercises") {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_exercises_yet),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+
+                else -> state.exercises.forEach { routineExercise ->
+                    val exercise = routineExercise.exercise
+                    item(key = "exercise_${routineExercise.id}") {
+                        SwipeToDeleteBox(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(top = 8.dp)
+                                .clip(MaterialTheme.shapes.small),
+                            onDismiss = {
+                                focusManager.clearFocus()
+                                onRemoveExercise(routineExercise.id)
+                            },
+                        ) {
+                            SetGroupHeader(
+                                name = exercise.name,
+                                subtitle = stringResource(exercise.target.stringRes),
+                            ) {
+                                FilledTonalIconButton(
+                                    shapes = IconButtonShapes(
+                                        shape = MaterialShapes.Circle.toShape(),
+                                        pressedShape = MaterialShapes.Cookie6Sided.toShape(),
+                                    ),
+                                    onClick = { onAddSet(routineExercise) },
+                                ) {
+                                    Icon(
+                                        painter = KenkoIcons.Add,
+                                        contentDescription = stringResource(R.string.label_add),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    itemsIndexed(
+                        items = routineExercise.sets,
+                        key = { _, set -> "set_${set.id}" },
+                    ) { index, set ->
+                        SwipeToDeleteBox(
+                            modifier = Modifier.animateItem(),
+                            onDismiss = { onRemoveSet(set.id) },
+                        ) {
+                            SetItem(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                repsOrDuration = set.repsOrDuration,
+                                weight = set.weight,
+                                isIsometric = exercise.isIsometric,
+                                type = set.type,
+                                onClick = { onEditSet(routineExercise, set) },
+                                title = { Text(normalizeInt(index + 1)) },
+                            )
+                        }
+                    }
+                }
+            }
+            item { Spacer(Modifier.height(96.dp)) }
+        },
+    )
+}
+
 @Preview
 @Composable
-private fun ExerciseItemPreview(
+private fun RoutineEditorPreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    val exercise = ExercisesPreviewParameter().values.first().first()
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        ExerciseItem(exercise = exercise) {
-            Text(
-                text = normalizeInt(1),
-                style = LocalTextStyle.current.numbers(),
-            )
-        }
+        RoutineEditor(
+            state = PlanEditState(
+                routines = listOf(
+                    Routine(id = 1, planId = 1, name = "Push", position = 0),
+                    Routine(id = 2, planId = 1, name = "Pull", position = 1),
+                ),
+                selectedRoutineId = 1,
+            ),
+            suggestions = listOf("Push", "Pull", "Legs"),
+            onSelectRoutine = {},
+            onAddRoutine = {},
+            onCreateRoutine = {},
+            onRemoveExercise = {},
+            onAddSet = {},
+            onEditSet = { _, _ -> },
+            onRemoveSet = {},
+        )
     }
 }

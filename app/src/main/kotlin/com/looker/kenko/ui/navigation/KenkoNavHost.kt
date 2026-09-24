@@ -95,15 +95,15 @@ fun KenkoNavHost(
                         onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExploreSessionsClick = { backStack.add(Routes.Session) },
                         onExploreExercisesClick = { backStack.add(Routes.Exercises) },
-                        onStartSessionClick = { backStack.add(Routes.SessionDetail(-1)) },
-                        onCurrentPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
+                        onOpenSession = { id -> backStack.add(Routes.SessionDetail(id)) },
+                        onEditPlan = { planId, routineId ->
+                            backStack.add(Routes.PlanEdit(planId, routineId))
+                        },
                         viewModel = hiltViewModel(),
                     )
 
                     is Routes.Session -> Sessions(
-                        onSessionClick = { date ->
-                            backStack.add(Routes.SessionDetail(date?.toEpochDays()?.toInt() ?: -1))
-                        },
+                        onSessionClick = { id -> backStack.add(Routes.SessionDetail(id)) },
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         viewModel = hiltViewModel(),
                     )
@@ -155,10 +155,10 @@ fun KenkoNavHost(
 
                     is Routes.SessionDetail -> SessionDetails(
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
-                        onHistoryClick = { date ->
-                            backStack.add(Routes.SessionDetail(date.toEpochDays().toInt()))
+                        onHistoryClick = { id -> backStack.add(Routes.SessionDetail(id)) },
+                        onEditPlanClick = { planId, routineId ->
+                            backStack.add(Routes.PlanEdit(planId, routineId))
                         },
-                        onEditPlanClick = { planId -> backStack.add(Routes.PlanEdit(planId)) },
                         viewModel = hiltViewModel<SessionDetailViewModel, SessionDetailViewModel.Factory> {
                             it.create(key)
                         },

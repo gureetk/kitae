@@ -22,10 +22,28 @@ data class Session(
     val date: LocalDate,
     val sets: List<Set>,
     val planId: Int?,
+    val routineId: Int? = null,
+    val routineName: String? = null,
     val id: Int? = null,
 ) {
+    val completedSets: List<Set>
+        get() = sets.filter { it.isCompleted }
+
     val performExercises: List<Exercise>
-        get() = sets.map { it.exercise }.distinct()
+        get() = completedSets.map { it.exercise }.distinct()
+
+    val hasIncompleteSets: Boolean
+        get() = sets.any { !it.isCompleted }
 }
+
+@Immutable
+data class ActiveSession(
+    val id: Int,
+    val date: LocalDate,
+    val routineId: Int?,
+    val routineName: String?,
+    val completedSets: Int,
+    val totalSets: Int,
+)
 
 fun Session(planId: Int, sets: List<Set>) = Session(planId = planId, date = localDate, sets = sets)

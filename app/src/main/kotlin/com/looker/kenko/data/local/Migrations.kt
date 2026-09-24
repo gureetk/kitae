@@ -299,3 +299,131 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("ALTER TABLE sets ADD COLUMN rir INTEGER NOT NULL DEFAULT 2")
     }
 }
+
+// Weekday plans become named routines with planned sets
+fun migration3To4(dayNames: List<String>) = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.createRoutineTables()
+        db.execSQL("ALTER TABLE `sets` ADD COLUMN `isCompleted` INTEGER NOT NULL DEFAULT 1")
+        db.execSQL(
+            """
+            ALTER TABLE `sessions` ADD COLUMN `routineId` INTEGER
+            REFERENCES `routines`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sessions_routineId` ON `sessions` (`routineId`)")
+
+        for (dayOfWeek in 1..7) {
+            db.execSQL(
+                """
+                INSERT INTO `routines` (`planId`, `name`, `position`)
+                SELECT DISTINCT `planId`, ?, ?
+                FROM `plan_day`
+                WHERE `dayOfWeek` = ?
+                """.trimIndent(),
+                arrayOf<Any?>(
+                    dayNames.getOrElse(dayOfWeek - 1) { DayOfWeek(dayOfWeek).name },
+                    dayOfWeek - 1,
+                    dayOfWeek,
+                ),
+            )
+        }
+        db.execSQL(
+            """
+            INSERT INTO `routine_exercises` (`routineId`, `exerciseId`, `position`)
+            SELECT `routines`.`id`, `plan_day`.`exerciseId`,
+            (SELECT COUNT(*) FROM `plan_day` AS `previous`
+            WHERE `previous`.`planId` = `plan_day`.`planId`
+            AND `previous`.`dayOfWeek` = `plan_day`.`dayOfWeek`
+            AND `previous`.`id` < `plan_day`.`id`)
+            FROM `plan_day`
+            INNER JOIN `routines` ON `routines`.`planId` = `plan_day`.`planId`
+            AND `routines`.`position` = `plan_day`.`dayOfWeek` - 1
+            ORDER BY `plan_day`.`id`
+            """.trimIndent(),
+        )
+
+        // Epoch day 0 was a Thursday
+        db.execSQL(
+            """
+            UPDATE `sessions` SET `routineId` =
+            (SELECT `routines`.`id`
+            FROM `routines`
+            WHERE `routines`.`planId` = `sessions`.`planId`
+            AND `routines`.`position` = (`sessions`.`date` + 3) % 7)
+            """.trimIndent(),
+        )
+
+        db.planSetsFromLatestSession(sameRoutineOnly = true)
+        db.planSetsFromLatestSession(sameRoutineOnly = false)
+        db.execSQL(
+            """
+            INSERT INTO `routine_sets` (`routineExerciseId`, `reps`, `weight`, `type`, `position`)
+            SELECT `routine_exercises`.`id`, 12, 20.0, 'Standard', `slots`.`position`
+            FROM `routine_exercises`,
+            (SELECT 0 AS `position` UNION ALL SELECT 1 UNION ALL SELECT 2) AS `slots`
+            WHERE NOT EXISTS
+            (SELECT 1 FROM `routine_sets`
+            WHERE `routine_sets`.`routineExerciseId` = `routine_exercises`.`id`)
+            ORDER BY `routine_exercises`.`id`, `slots`.`position`
+            """.trimIndent(),
+        )
+
+        db.execSQL("DROP TABLE IF EXISTS `plan_day`")
+    }
+
+    private fun SupportSQLiteDatabase.createRoutineTables() {
+        execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `routines` (`planId` INTEGER NOT NULL, `name` TEXT NOT NULL, `position` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`planId`) REFERENCES `plans`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )
+            """.trimIndent(),
+        )
+        execSQL("CREATE INDEX IF NOT EXISTS `index_routines_planId` ON `routines` (`planId`)")
+        execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `routine_exercises` (`routineId` INTEGER NOT NULL, `exerciseId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`routineId`) REFERENCES `routines`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )
+            """.trimIndent(),
+        )
+        execSQL("CREATE INDEX IF NOT EXISTS `index_routine_exercises_routineId` ON `routine_exercises` (`routineId`)")
+        execSQL("CREATE INDEX IF NOT EXISTS `index_routine_exercises_exerciseId` ON `routine_exercises` (`exerciseId`)")
+        execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `routine_sets` (`routineExerciseId` INTEGER NOT NULL, `reps` INTEGER NOT NULL, `weight` REAL NOT NULL, `type` TEXT NOT NULL, `position` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`routineExerciseId`) REFERENCES `routine_exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )
+            """.trimIndent(),
+        )
+        execSQL("CREATE INDEX IF NOT EXISTS `index_routine_sets_routineExerciseId` ON `routine_sets` (`routineExerciseId`)")
+    }
+
+    private fun SupportSQLiteDatabase.planSetsFromLatestSession(sameRoutineOnly: Boolean) {
+        val routineFilter = if (sameRoutineOnly) {
+            "AND `latest_session`.`routineId` = `routine_exercises`.`routineId`"
+        } else {
+            ""
+        }
+        execSQL(
+            """
+            INSERT INTO `routine_sets` (`routineExerciseId`, `reps`, `weight`, `type`, `position`)
+            SELECT `routine_exercises`.`id`, `sets`.`reps`, `sets`.`weight`, `sets`.`type`,
+            (SELECT COUNT(*) FROM `sets` AS `previous`
+            WHERE `previous`.`sessionId` = `sets`.`sessionId`
+            AND `previous`.`exerciseId` = `sets`.`exerciseId`
+            AND (`previous`.`order` < `sets`.`order`
+            OR (`previous`.`order` = `sets`.`order` AND `previous`.`id` < `sets`.`id`)))
+            FROM `routine_exercises`
+            INNER JOIN `sets` ON `sets`.`exerciseId` = `routine_exercises`.`exerciseId`
+            WHERE NOT EXISTS
+            (SELECT 1 FROM `routine_sets`
+            WHERE `routine_sets`.`routineExerciseId` = `routine_exercises`.`id`)
+            AND `sets`.`sessionId` =
+            (SELECT `latest_set`.`sessionId`
+            FROM `sets` AS `latest_set`
+            INNER JOIN `sessions` AS `latest_session` ON `latest_session`.`id` = `latest_set`.`sessionId`
+            WHERE `latest_set`.`exerciseId` = `routine_exercises`.`exerciseId`
+            $routineFilter
+            ORDER BY `latest_session`.`date` DESC, `latest_session`.`id` DESC
+            LIMIT 1)
+            ORDER BY `routine_exercises`.`id`, `sets`.`order`, `sets`.`id`
+            """.trimIndent(),
+        )
+    }
+}

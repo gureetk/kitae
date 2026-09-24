@@ -20,6 +20,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.looker.kenko.data.model.ActiveSession
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.utils.EpochDays
@@ -44,29 +45,58 @@ data class SessionEntity(
             childColumns = ["planId"],
             onDelete = ForeignKey.SET_NULL,
         ),
+        ForeignKey(
+            entity = RoutineEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["routineId"],
+            onDelete = ForeignKey.SET_NULL,
+        ),
     ],
 )
 data class SessionDataEntity(
     val date: EpochDays,
     @ColumnInfo(index = true)
     val planId: Int?,
+    @ColumnInfo(index = true)
+    val routineId: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+)
+
+data class SessionSummaryRow(
+    @Embedded
+    val data: SessionDataEntity,
+    val routineName: String?,
+    val totalSets: Int,
+    val completedSets: Int,
+)
+
+fun SessionSummaryRow.toActiveSession(): ActiveSession = ActiveSession(
+    id = data.id,
+    date = LocalDate.fromEpochDays(data.date.value),
+    routineId = data.routineId,
+    routineName = routineName,
+    completedSets = completedSets,
+    totalSets = totalSets,
 )
 
 fun Session.data(): SessionDataEntity = SessionDataEntity(
     date = EpochDays(date.toEpochDays().toInt()),
     planId = planId,
+    routineId = routineId,
     id = id ?: 0,
 )
 
 fun Session.sets(): List<SetEntity> = sets.map { it.toEntity(id!!, sets.indexOf(it)) }
 
 fun SessionEntity.toExternal(
-    setsMap: List<Set>,
+    sets: List<Set>,
+    routineName: String? = null,
 ): Session = Session(
     planId = data.planId,
+    routineId = data.routineId,
+    routineName = routineName,
     date = LocalDate.fromEpochDays(data.date.value),
-    sets = setsMap,
+    sets = sets,
     id = data.id,
 )

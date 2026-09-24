@@ -18,6 +18,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.data.model.settings.WeightUnit
 import com.looker.kenko.data.repository.PerformanceRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.theme.colorSchemes.ColorSchemes
@@ -39,6 +40,9 @@ class MainViewModel @Inject constructor(
 
     val theme: StateFlow<Theme> = repo.get { theme }
         .asStateFlow(Theme.System)
+
+    val weightUnit: StateFlow<WeightUnit> = repo.get { weightUnit }
+        .asStateFlow(WeightUnit.Kilograms)
 
     val colorScheme: StateFlow<ColorSchemes> = repo.stream
         .map { it.colorPalette.scheme ?: dynamicColorSchemes(context) ?: zestfulColorSchemes }

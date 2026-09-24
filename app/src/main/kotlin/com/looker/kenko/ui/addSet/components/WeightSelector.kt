@@ -19,13 +19,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
-import com.looker.kenko.ui.addSet.AddSetViewModel.FloatTransformation
+import com.looker.kenko.data.model.settings.WeightUnit
+import com.looker.kenko.ui.addSet.FloatTransformation
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.components.OnSurfaceBorder
 
 @Composable
 fun WeightTextField(
     state: TextFieldState,
     modifier: Modifier = Modifier,
+    unit: WeightUnit = LocalWeightUnit.current,
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -58,6 +61,14 @@ fun WeightTextField(
                     shape = CircleShape,
                 )
                 .padding(horizontal = 6.dp, vertical = 2.dp),
+        )
+        Text(
+            text = ".${unit.symbol.lowercase()}",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.outline,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
         )
     }
 }

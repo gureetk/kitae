@@ -14,15 +14,15 @@
 
 package com.looker.kenko.data.repository
 
-import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Labels.Difficulty
 import com.looker.kenko.data.model.Labels.Equipment
 import com.looker.kenko.data.model.Labels.Focus
 import com.looker.kenko.data.model.Labels.Time
 import com.looker.kenko.data.model.Plan
-import com.looker.kenko.data.model.PlanItem
+import com.looker.kenko.data.model.Routine
+import com.looker.kenko.data.model.RoutineExercise
+import com.looker.kenko.data.model.SetDraft
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.DayOfWeek
 
 interface PlanRepo {
 
@@ -30,23 +30,17 @@ interface PlanRepo {
 
     val current: Flow<Plan?>
 
-    val planItems: Flow<List<PlanItem>>
+    val currentRoutines: Flow<List<Routine>>
 
-    fun planItems(day: DayOfWeek): Flow<List<PlanItem>>
+    fun routines(planId: Int): Flow<List<Routine>>
 
-    fun planItems(id: Int): Flow<List<PlanItem>>
-
-    fun planItems(id: Int, day: DayOfWeek): Flow<List<PlanItem>>
-
-    fun activeExercises(day: DayOfWeek): Flow<List<Exercise>>
+    fun routineExercises(routineId: Int): Flow<List<RoutineExercise>>
 
     suspend fun plan(id: Int): Plan?
 
     suspend fun planNameExists(name: String): Boolean
 
-    suspend fun getPlanItems(id: Int): List<PlanItem>
-
-    suspend fun getPlanItems(id: Int, day: DayOfWeek): List<PlanItem>
+    suspend fun hasExercises(planId: Int): Boolean
 
     suspend fun createPlan(
         name: String,
@@ -65,9 +59,19 @@ interface PlanRepo {
 
     suspend fun deleteEmptyPlans()
 
-    suspend fun addItem(planItem: PlanItem)
+    suspend fun createRoutine(planId: Int, name: String): Int
 
-    suspend fun removeItem(id: Long)
+    suspend fun renameRoutine(id: Int, name: String)
 
-    suspend fun removeItemById(exerciseId: Int)
+    suspend fun deleteRoutine(id: Int)
+
+    suspend fun addExercise(routineId: Int, exerciseId: Int, sets: List<SetDraft>)
+
+    suspend fun removeExercise(routineExerciseId: Int)
+
+    suspend fun addPlannedSet(routineExerciseId: Int, set: SetDraft)
+
+    suspend fun updatePlannedSet(id: Int, set: SetDraft)
+
+    suspend fun removePlannedSet(id: Int)
 }

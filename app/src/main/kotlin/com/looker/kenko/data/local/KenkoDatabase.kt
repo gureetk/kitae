@@ -18,28 +18,34 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.looker.kenko.R
 import com.looker.kenko.data.local.dao.ExerciseDao
 import com.looker.kenko.data.local.dao.PerformanceDao
 import com.looker.kenko.data.local.dao.PlanDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
+import com.looker.kenko.data.local.dao.RoutineDao
 import com.looker.kenko.data.local.dao.SessionDao
 import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.model.ExerciseEntity
-import com.looker.kenko.data.local.model.PlanDayEntity
 import com.looker.kenko.data.local.model.PlanEntity
 import com.looker.kenko.data.local.model.PlanHistoryEntity
+import com.looker.kenko.data.local.model.RoutineEntity
+import com.looker.kenko.data.local.model.RoutineExerciseEntity
+import com.looker.kenko.data.local.model.RoutineSetEntity
 import com.looker.kenko.data.local.model.SessionDataEntity
 import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetTypeEntity
 
 @Database(
-    version = 3,
+    version = 4,
     entities = [
         SessionDataEntity::class,
         ExerciseEntity::class,
         PlanEntity::class,
         PlanHistoryEntity::class,
-        PlanDayEntity::class,
+        RoutineEntity::class,
+        RoutineExerciseEntity::class,
+        RoutineSetEntity::class,
         SetEntity::class,
         SetTypeEntity::class,
     ],
@@ -51,6 +57,7 @@ abstract class KenkoDatabase : RoomDatabase() {
     abstract fun setsDao(): SetsDao
     abstract fun historyDao(): PlanHistoryDao
     abstract fun performanceDao(): PerformanceDao
+    abstract fun routineDao(): RoutineDao
 }
 
 fun kenkoDatabase(context: Context) = Room
@@ -63,5 +70,8 @@ fun kenkoDatabase(context: Context) = Room
     .addMigrations(
         MIGRATION_1_2,
         MIGRATION_2_3,
+        migration3To4(
+            dayNames = context.resources.getStringArray(R.array.day_of_week).toList(),
+        ),
     )
     .build()

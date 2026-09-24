@@ -20,6 +20,7 @@ import com.looker.kenko.data.local.dao.ExerciseDao
 import com.looker.kenko.data.local.dao.PerformanceDao
 import com.looker.kenko.data.local.dao.PlanDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
+import com.looker.kenko.data.local.dao.RoutineDao
 import com.looker.kenko.data.local.dao.SessionDao
 import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.kenkoDatabase
@@ -75,4 +76,10 @@ object DatabaseModule {
     fun providePerformanceDao(
         database: KenkoDatabase,
     ): PerformanceDao = database.performanceDao()
+
+    @Provides
+    @Singleton
+    fun provideRoutineDao(
+        database: KenkoDatabase,
+    ): RoutineDao = database.routineDao()
 }

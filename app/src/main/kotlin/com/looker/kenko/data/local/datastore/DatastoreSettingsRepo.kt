@@ -19,12 +19,15 @@ import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
+import com.looker.kenko.data.model.settings.DEFAULT_REST_TIMER_SECONDS
 import com.looker.kenko.data.model.settings.Settings
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.data.model.settings.WeightUnit
 import com.looker.kenko.data.repository.SettingsRepo
 import javax.inject.Inject
 import kotlin.time.Instant
@@ -81,6 +84,14 @@ class DatastoreSettingsRepo @Inject constructor(
         }
     }
 
+    override suspend fun setWeightUnit(unit: WeightUnit) {
+        WEIGHT_UNIT.update(unit.name)
+    }
+
+    override suspend fun setRestTimerSeconds(seconds: Int) {
+        REST_TIMER_SECONDS.update(seconds.coerceAtLeast(0))
+    }
+
     private suspend inline fun <T> Preferences.Key<T>.update(value: T) {
         dataStore.edit { preference ->
             preference[this] = value
@@ -95,6 +106,10 @@ class DatastoreSettingsRepo @Inject constructor(
         val backupUri = preferences[BACKUP_URI]
         val backupInterval = preferences[BACKUP_INTERVAL] ?: BackupInterval.Off.name
         val lastBackupTime = preferences[LAST_BACKUP_TIME_SECONDS]
+        val weightUnit = preferences[WEIGHT_UNIT]
+            ?.let { name -> WeightUnit.entries.find { it.name == name } }
+            ?: WeightUnit.Kilograms
+        val restTimerSeconds = preferences[REST_TIMER_SECONDS] ?: DEFAULT_REST_TIMER_SECONDS
         return Settings(
             isOnboardingDone = isOnboardingDone,
             theme = Theme.valueOf(theme),
@@ -103,6 +118,8 @@ class DatastoreSettingsRepo @Inject constructor(
             backupUri = backupUri,
             backupInterval = BackupInterval.valueOf(backupInterval),
             lastBackupTime = lastBackupTime?.let { Instant.fromEpochSeconds(it) },
+            weightUnit = weightUnit,
+            restTimerSeconds = restTimerSeconds,
         )
     }
 
@@ -116,5 +133,7 @@ class DatastoreSettingsRepo @Inject constructor(
         val BACKUP_INTERVAL: Preferences.Key<String> = stringPreferencesKey("backup_interval")
         val LAST_BACKUP_TIME_SECONDS: Preferences.Key<Long> =
             longPreferencesKey("last_backup_time_seconds")
+        val WEIGHT_UNIT: Preferences.Key<String> = stringPreferencesKey("weight_unit")
+        val REST_TIMER_SECONDS: Preferences.Key<Int> = intPreferencesKey("rest_timer_seconds")
     }
 }

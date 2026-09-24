@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12,26 +12,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.looker.kenko.data.model
+package com.looker.kenko.ui.components
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.util.packInts
-import androidx.compose.ui.util.unpackInt1
-import androidx.compose.ui.util.unpackInt2
+import androidx.compose.runtime.staticCompositionLocalOf
+import com.looker.kenko.data.model.settings.WeightUnit
 
-@Immutable
-@JvmInline
-value class PlanStat(private val packedInt: Long) {
-
-    @Stable
-    val exercises: Int get() = unpackInt1(packedInt)
-
-    @Stable
-    val days: Int get() = unpackInt2(packedInt)
-}
-
-fun PlanStat(exercises: Int, days: Int): PlanStat {
-    return PlanStat(packInts(exercises, days))
-}
-
+val LocalWeightUnit = staticCompositionLocalOf { WeightUnit.Kilograms }

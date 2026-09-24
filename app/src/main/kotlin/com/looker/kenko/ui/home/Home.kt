@@ -15,6 +15,9 @@
 package com.looker.kenko.ui.home
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,14 +30,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,11 +53,14 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.TopEnd
@@ -59,6 +69,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -67,8 +78,11 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
+import com.looker.kenko.data.model.Routine
+import com.looker.kenko.ui.components.DaySelectorChip
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.LiftingQuotes
 import com.looker.kenko.ui.components.TertiaryKenkoButton
@@ -87,10 +101,11 @@ fun Home(
     onAddExerciseClick: () -> Unit,
     onExploreSessionsClick: () -> Unit,
     onExploreExercisesClick: () -> Unit,
-    onStartSessionClick: () -> Unit,
-    onCurrentPlanClick: (Int) -> Unit,
+    onOpenSession: (sessionId: Int) -> Unit,
+    onEditPlan: (planId: Int, routineId: Int?) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var switchTo by remember { mutableStateOf<Routine?>(null) }
     Home(
         state = state,
         onProfileClick = onProfileClick,
@@ -98,9 +113,56 @@ fun Home(
         onAddExerciseClick = onAddExerciseClick,
         onExploreSessionsClick = onExploreSessionsClick,
         onExploreExercisesClick = onExploreExercisesClick,
-        onStartSessionClick = onStartSessionClick,
-        onCurrentPlanClick = onCurrentPlanClick,
+        onSelectRoutine = viewModel::selectRoutine,
+        onStartClick = {
+            val active = state.activeSession
+            val routine = state.selectedRoutine
+            when {
+                state.showActive && active != null -> onOpenSession(active.id)
+                routine == null -> {
+                    val planId = state.planId
+                    if (planId != null) onEditPlan(planId, null)
+                }
+                routine.exerciseCount == 0 -> onEditPlan(routine.planId, routine.id)
+                active != null -> {
+                    switchTo = routine
+                }
+                else -> viewModel.startRoutine(routine.id, onOpenSession)
+            }
+        },
     )
+    val active = state.activeSession
+    val target = switchTo
+    if (active != null && target != null) {
+        AlertDialog(
+            onDismissRequest = { switchTo = null },
+            title = { Text(text = stringResource(R.string.label_unfinished_workout)) },
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.label_unfinished_workout_desc,
+                        active.routineName ?: stringResource(R.string.label_workout),
+                        target.name,
+                    ),
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        switchTo = null
+                        viewModel.finishAndStart(active.id, target.id, onOpenSession)
+                    },
+                ) {
+                    Text(text = stringResource(R.string.label_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { switchTo = null }) {
+                    Text(text = stringResource(R.string.label_no))
+                }
+            },
+        )
+    }
 }
 
 // TODO: Add current plan indicator on this page
@@ -112,8 +174,8 @@ private fun Home(
     onAddExerciseClick: () -> Unit = {},
     onExploreSessionsClick: () -> Unit = {},
     onExploreExercisesClick: () -> Unit = {},
-    onStartSessionClick: () -> Unit = {},
-    onCurrentPlanClick: (Int) -> Unit = {},
+    onSelectRoutine: (Int) -> Unit = {},
+    onStartClick: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -161,56 +223,30 @@ private fun Home(
                 }
             }
             HorizontalDivider(thickness = KenkoBorderWidth)
-            if (state.isPlanSelected) {
-                StartSession(
-                    onStartSessionClick = {
-                        if (state.isTodayEmpty) {
-                            onCurrentPlanClick(state.currentPlanId!!)
-                        } else {
-                            onStartSessionClick()
-                        }
-                    },
-                    content = {
-                        val heading = remember(state.isSessionStarted, state.isTodayEmpty) {
-                            if (state.isTodayEmpty) {
-                                R.string.label_nothing_today
-                            } else if (state.isSessionStarted) {
-                                R.string.label_continue_session_heading
-                            } else {
-                                if (state.isFirstSession) {
-                                    R.string.label_start_first_session
-                                } else {
-                                    R.string.label_start_session_heading
-                                }
-                            }
-                        }
-                        Text(
-                            modifier = Modifier
-                                .align(CenterHorizontally)
-                                .padding(horizontal = 16.dp),
-                            text = stringResource(heading),
-                            style = MaterialTheme.typography.header()
-                                .merge(
-                                    lineBreak = LineBreak.Heading,
-                                    color = MaterialTheme.colorScheme.primary,
-                                ),
+            when {
+                state.isLoading -> Spacer(modifier = Modifier.weight(1F))
+                state.isPlanSelected -> StartSession(
+                    onStartSessionClick = onStartClick,
+                    content = { RoutineHeading(state) },
+                    routines = {
+                        RoutineChips(
+                            routines = state.routines,
+                            selectedId = state.selectedRoutineId,
+                            onSelect = onSelectRoutine,
                         )
                     },
                     buttonText = {
-                        val stringRes = remember(state.isSessionStarted, state.isTodayEmpty) {
-                            if (state.isTodayEmpty) {
-                                R.string.label_edit_plan
-                            } else if (state.isSessionStarted) {
-                                R.string.label_continue_session
-                            } else {
-                                R.string.label_start_session
-                            }
+                        val routine = state.selectedRoutine
+                        val label = when {
+                            state.showActive -> R.string.label_continue_session
+                            routine == null || routine.exerciseCount == 0 -> R.string.label_edit_plan
+                            else -> R.string.label_start_session
                         }
-                        Text(text = stringResource(stringRes))
+                        Text(text = stringResource(label))
                     },
                 )
-            } else {
-                SelectPlan(onSelectPlanClick = onSelectPlanClick)
+
+                else -> SelectPlan(onSelectPlanClick = onSelectPlanClick)
             }
             LiftingQuotes(Modifier.align(CenterHorizontally))
         }
@@ -221,11 +257,14 @@ private fun Home(
 private fun ColumnScope.StartSession(
     onStartSessionClick: () -> Unit,
     content: @Composable () -> Unit,
+    routines: @Composable () -> Unit,
     buttonText: @Composable () -> Unit,
 ) {
     Spacer(modifier = Modifier.weight(1F))
     content()
     Spacer(modifier = Modifier.weight(1F))
+    routines()
+    Spacer(modifier = Modifier.height(16.dp))
     TertiaryKenkoButton(
         modifier = Modifier.align(CenterHorizontally),
         onClick = onStartSessionClick,
@@ -238,6 +277,116 @@ private fun ColumnScope.StartSession(
             )
         },
     )
+}
+
+@Composable
+private fun ColumnScope.RoutineHeading(state: HomeUiData) {
+    val resources = LocalContext.current.resources
+    val active = state.activeSession
+    val routine = state.selectedRoutine
+    val label = when {
+        state.showActive -> stringResource(R.string.label_in_progress)
+        routine == null -> null
+        state.isFirstSession -> stringResource(R.string.label_first_session)
+        else -> stringResource(R.string.label_up_next)
+    }
+    val heading = when {
+        state.showActive && active != null ->
+            active.routineName ?: stringResource(R.string.label_workout)
+
+        routine != null -> routine.name
+        else -> stringResource(R.string.label_no_routines)
+    }
+    val detail = when {
+        state.showActive && active != null -> stringResource(
+            R.string.label_session_progress,
+            active.completedSets,
+            active.totalSets,
+        )
+
+        routine != null && routine.exerciseCount > 0 -> {
+            val exercises = resources.getQuantityString(
+                R.plurals.count_exercises,
+                routine.exerciseCount,
+                routine.exerciseCount,
+            )
+            val sets = resources.getQuantityString(
+                R.plurals.count_sets,
+                routine.setCount,
+                routine.setCount,
+            )
+            "$exercises · $sets"
+        }
+
+        routine != null -> stringResource(R.string.no_exercises_yet)
+        else -> null
+    }
+    Column(
+        modifier = Modifier
+            .align(CenterHorizontally)
+            .padding(horizontal = 16.dp),
+    ) {
+        if (label != null) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+        AnimatedContent(
+            targetState = heading,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "RoutineHeading",
+        ) { text ->
+            // Long single words can't wrap
+            val style = when {
+                text.length <= 6 -> MaterialTheme.typography.header()
+                text.length <= 9 -> MaterialTheme.typography.header()
+                    .copy(fontSize = 60.sp, lineHeight = 56.sp)
+
+                else -> MaterialTheme.typography.header()
+                    .copy(fontSize = 48.sp, lineHeight = 46.sp)
+            }
+            Text(
+                text = text,
+                style = style.merge(
+                    lineBreak = LineBreak.Heading,
+                    color = MaterialTheme.colorScheme.primary,
+                ),
+            )
+        }
+        if (detail != null) {
+            Text(
+                text = detail,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+    }
+}
+
+@Composable
+private fun RoutineChips(
+    routines: List<Routine>,
+    selectedId: Int?,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (routines.isEmpty()) return
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        contentPadding = PaddingValues(horizontal = 12.dp),
+    ) {
+        items(routines, key = { it.id }) { routine ->
+            DaySelectorChip(
+                selected = routine.id == selectedId,
+                onClick = { onSelect(routine.id) },
+            ) {
+                Text(text = routine.name, maxLines = 1)
+            }
+        }
+    }
 }
 
 @Composable
@@ -371,6 +520,12 @@ private fun HelperCards(
     }
 }
 
+private val PreviewRoutines = listOf(
+    Routine(id = 1, planId = 1, name = "Push", position = 0, exerciseCount = 5, setCount = 15),
+    Routine(id = 2, planId = 1, name = "Pull", position = 1, exerciseCount = 5, setCount = 15),
+    Routine(id = 3, planId = 1, name = "Legs", position = 2, exerciseCount = 4, setCount = 12),
+)
+
 @Preview
 @Composable
 private fun HomePreview(
@@ -379,11 +534,9 @@ private fun HomePreview(
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Home(
             state = HomeUiData(
-                isPlanSelected = true,
-                isSessionStarted = true,
-                isTodayEmpty = false,
-                isFirstSession = false,
-                currentPlanId = null,
+                planId = 1,
+                routines = PreviewRoutines,
+                selectedRoutineId = 2,
             ),
         )
     }
@@ -391,37 +544,11 @@ private fun HomePreview(
 
 @Preview
 @Composable
-private fun StartTodayPreview(
+private fun NoRoutinesPreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        Home(
-            state = HomeUiData(
-                isPlanSelected = true,
-                isSessionStarted = false,
-                isTodayEmpty = false,
-                isFirstSession = false,
-                currentPlanId = null,
-            ),
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun TodayEmptyPreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        Home(
-            state = HomeUiData(
-                isPlanSelected = true,
-                isSessionStarted = false,
-                isTodayEmpty = true,
-                isFirstSession = false,
-                currentPlanId = null,
-            ),
-        )
+        Home(state = HomeUiData(planId = 1))
     }
 }
 
@@ -434,10 +561,7 @@ private fun FirstStartHomePreview(
         Home(
             state = HomeUiData(
                 isPlanSelected = false,
-                isSessionStarted = false,
-                isTodayEmpty = false,
                 isFirstSession = true,
-                currentPlanId = null,
             ),
         )
     }

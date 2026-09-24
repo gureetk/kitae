@@ -111,10 +111,9 @@ fun PlanItem(
             val stats = remember(plan) { plan.stat }
             Text(
                 text = stringResource(
-                    R.string.label_plan_description,
+                    R.string.label_plan_summary,
                     stats.exercises,
-                    normalizeInt(stats.workDays),
-                    normalizeInt(7 - stats.workDays),
+                    normalizeInt(stats.days),
                 ),
             )
         }

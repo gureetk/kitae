@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,23 +15,21 @@
 package com.looker.kenko.data.model
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.util.packInts
-import androidx.compose.ui.util.unpackInt1
-import androidx.compose.ui.util.unpackInt2
+import com.looker.kenko.data.local.model.SetType
 
 @Immutable
-@JvmInline
-value class PlanStat(private val packedInt: Long) {
+data class SetDraft(
+    val repsOrDuration: Int,
+    val weight: Float,
+    val type: SetType = SetType.Standard,
+)
 
-    @Stable
-    val exercises: Int get() = unpackInt1(packedInt)
+const val DEFAULT_SET_COUNT = 3
 
-    @Stable
-    val days: Int get() = unpackInt2(packedInt)
-}
+const val DEFAULT_REPS = 12
 
-fun PlanStat(exercises: Int, days: Int): PlanStat {
-    return PlanStat(packInts(exercises, days))
-}
-
+fun Set.toDraft(): SetDraft = SetDraft(
+    repsOrDuration = repsOrDuration,
+    weight = weight,
+    type = type,
+)

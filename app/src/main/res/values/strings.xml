@@ -219,4 +219,64 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="heading_plan_days">Plan your days</string>
+    <string name="label_first_day">Name your first day</string>
+    <string name="label_new_day">New day</string>
+    <string name="label_rename_day">Rename day</string>
+    <string name="label_delete_day">Delete day</string>
+    <string name="label_delete_day_confirm">%1$s and its planned sets will be removed from this plan.</string>
+    <string name="label_no_routines">No days yet</string>
+    <string name="label_plan_summary">%1$s exercises\n%2$s days</string>
+    <string-array name="routine_name_suggestions">
+        <item>Push</item>
+        <item>Pull</item>
+        <item>Legs</item>
+        <item>Upper</item>
+        <item>Lower</item>
+        <item>Full Body</item>
+        <item>Chest</item>
+        <item>Back</item>
+        <item>Shoulders</item>
+        <item>Arms</item>
+        <item>Core</item>
+        <item>Cardio</item>
+    </string-array>
+
+    <string name="label_up_next">.up next</string>
+    <string name="label_in_progress">.in progress</string>
+    <string name="label_first_session">.first session</string>
+    <string name="label_workout">Workout</string>
+    <string name="label_session_progress">%1$d/%2$d sets done</string>
+    <plurals name="count_exercises">
+        <item quantity="one">%d exercise</item>
+        <item quantity="other">%d exercises</item>
+    </plurals>
+    <plurals name="count_sets">
+        <item quantity="one">%d set</item>
+        <item quantity="other">%d sets</item>
+    </plurals>
+    <string name="label_unfinished_workout">Workout in progress</string>
+    <string name="label_unfinished_workout_desc">%1$s isn\'t finished yet. Finish it and start %2$s?</string>
+    <string name="label_finish">Finish</string>
+    <string name="label_finish_workout">Finish workout?</string>
+    <plurals name="finish_incomplete_sets">
+        <item quantity="one">%d set that isn\'t done will be removed.</item>
+        <item quantity="other">%d sets that aren\'t done will be removed.</item>
+    </plurals>
+    <string name="label_edit_set_for">Edit Set for</string>
+    <string name="label_complete_set">Set done</string>
+    <string name="label_cancel">Cancel</string>
+
+    <string name="label_units">Units</string>
+    <string name="label_rest_timer">Rest Timer</string>
+    <string name="label_rest_timer_desc">Starts when you complete a set</string>
+    <string name="label_rest_timer_off">Off</string>
+    <string name="label_rest_timer_alerts">Rest timer alerts</string>
+    <string name="label_start_rest">Start rest timer</string>
+    <string name="label_resting">Resting</string>
+    <string name="label_rest_over">Rest over</string>
+    <string name="label_rest_over_desc">Time for your next set</string>
+    <string name="label_skip">Skip</string>
+    <string name="label_add_seconds">+%1$ds</string>
+    <string name="label_remove_seconds">−%1$ds</string>
 </resources>

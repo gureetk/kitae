@@ -40,10 +40,10 @@ sealed interface Routes : NavKey {
     data object Exercises : Routes
 
     @Serializable
-    data class PlanEdit(val id: Int) : Routes
+    data class PlanEdit(val id: Int, val routineId: Int? = null) : Routes
 
     @Serializable
-    data class SessionDetail(val epochDays: Int) : Routes
+    data class SessionDetail(val sessionId: Int) : Routes
 
     @Serializable
     data class AddEditExercise(

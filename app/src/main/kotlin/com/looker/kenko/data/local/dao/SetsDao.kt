@@ -39,11 +39,31 @@ interface SetsDao {
         FROM sets
         INNER JOIN sessions ON sets.sessionId = sessions.id
         WHERE sets.exerciseId = :exerciseId
-        ORDER BY sessions.date DESC
+        AND sets.isCompleted = 1
+        ORDER BY sessions.date DESC, sessions.id DESC, sets.`order` DESC, sets.id DESC
         LIMIT 1
-        """
+        """,
     )
-    fun getLastSetByExerciseId(exerciseId: Int): SetEntity?
+    suspend fun getLastSetByExerciseId(exerciseId: Int): SetEntity?
+
+    @Query(
+        """
+        SELECT *
+        FROM sets
+        WHERE exerciseId = :exerciseId
+        AND isCompleted = 1
+        AND sessionId =
+        (SELECT sets.sessionId
+        FROM sets
+        INNER JOIN sessions ON sessions.id = sets.sessionId
+        WHERE sets.exerciseId = :exerciseId
+        AND sets.isCompleted = 1
+        ORDER BY sessions.date DESC, sessions.id DESC
+        LIMIT 1)
+        ORDER BY `order` ASC, id ASC
+        """,
+    )
+    suspend fun getLastSessionSetsByExerciseId(exerciseId: Int): List<SetEntity>
 
     @Query(
         """
@@ -57,18 +77,19 @@ interface SetsDao {
 
     @Query(
         """
-        SELECT COUNT(*)
+        SELECT COALESCE(MAX(`order`), -1) + 1
         FROM sets
         WHERE sessionId = :sessionId
         """,
     )
-    suspend fun getSetsCountBySessionId(sessionId: Int): Int?
+    suspend fun nextOrder(sessionId: Int): Int
 
     @Query(
         """
         SELECT *
         FROM sets
         WHERE (:exerciseId IS NULL OR exerciseId = :exerciseId)
+        AND isCompleted = 1
         AND sessionId IN (
             SELECT id
             FROM sessions
@@ -84,6 +105,7 @@ interface SetsDao {
         SELECT *
         FROM sets
         WHERE (:exerciseId IS NULL OR exerciseId = :exerciseId)
+        AND isCompleted = 1
         AND sessionId IN (
             SELECT id
             FROM sessions
@@ -101,12 +123,25 @@ interface SetsDao {
         """
         SELECT COUNT (*)
         FROM sets
+        WHERE isCompleted = 1
         """,
     )
     fun totalSetCount(): Flow<Int>
 
     @Insert
     suspend fun insert(set: SetEntity)
+
+    @Query("UPDATE sets SET isCompleted = :isCompleted WHERE id = :setId")
+    suspend fun setCompleted(setId: Int, isCompleted: Boolean)
+
+    @Query(
+        """
+        UPDATE sets
+        SET reps = :reps, weight = :weight, type = :type
+        WHERE id = :setId
+        """,
+    )
+    suspend fun updateValues(setId: Int, reps: Int, weight: Float, type: String)
 
     @Query(
         """

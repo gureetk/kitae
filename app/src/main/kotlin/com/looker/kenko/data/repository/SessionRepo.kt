@@ -14,10 +14,10 @@
 
 package com.looker.kenko.data.repository
 
-import com.looker.kenko.data.local.model.SetType
-import com.looker.kenko.data.model.RepsInReserve
+import com.looker.kenko.data.model.ActiveSession
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
+import com.looker.kenko.data.model.SetDraft
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
@@ -29,24 +29,37 @@ interface SessionRepo {
 
     val sessionsCount: Flow<Int>
 
-    suspend fun addSet(sessionId: Int, set: Set)
+    val activeSession: Flow<ActiveSession?>
 
-    suspend fun addSet(
-        sessionId: Int,
-        exerciseId: Int,
-        weight: Float,
-        reps: Int,
-        setType: SetType,
-        rir: RepsInReserve,
-    )
+    val lastPerformedRoutineId: Flow<Int?>
+
+    val hasCompletedSets: Flow<Boolean>
+
+    fun session(id: Int): Flow<Session?>
+
+    suspend fun startSession(routineId: Int): Int
+
+    suspend fun createSession(
+        date: LocalDate,
+        planId: Int?,
+        routineId: Int?,
+        sets: List<Pair<Int, SetDraft>>,
+        isCompleted: Boolean,
+    ): Int
+
+    suspend fun finishSession(id: Int)
+
+    suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean = false)
+
+    suspend fun updateSet(setId: Int, set: SetDraft)
+
+    suspend fun setCompleted(setId: Int, isCompleted: Boolean)
 
     suspend fun removeSet(setId: Int)
 
-    suspend fun getSessionIdOrCreate(date: LocalDate): Int
-
-    fun streamByDate(date: LocalDate): Flow<Session?>
-
-    suspend fun getSets(sessionId: Int): List<Set>
+    suspend fun previousSessionId(sessionId: Int, routineId: Int?, date: LocalDate): Int?
 
     suspend fun getLastSetByExerciseId(exerciseId: Int): Set?
+
+    suspend fun getLastSessionSets(exerciseId: Int): List<SetDraft>
 }

@@ -15,110 +15,170 @@
 package com.looker.kenko.data.repository.local
 
 import com.looker.kenko.data.local.dao.ExerciseDao
-import com.looker.kenko.data.local.dao.PlanHistoryDao
+import com.looker.kenko.data.local.dao.RoutineDao
 import com.looker.kenko.data.local.dao.SessionDao
 import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.model.SessionDataEntity
-import com.looker.kenko.data.local.model.SetEntity
-import com.looker.kenko.data.local.model.SetType
-import com.looker.kenko.data.local.model.toEntity
+import com.looker.kenko.data.local.model.SessionEntity
+import com.looker.kenko.data.local.model.toActiveSession
 import com.looker.kenko.data.local.model.toExternal
-import com.looker.kenko.data.model.RepsInReserve
+import com.looker.kenko.data.local.model.toSetEntity
+import com.looker.kenko.data.model.ActiveSession
+import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
-import com.looker.kenko.data.model.localDate
+import com.looker.kenko.data.model.SetDraft
+import com.looker.kenko.data.model.toDraft
 import com.looker.kenko.data.repository.SessionRepo
-import com.looker.kenko.utils.toLocalEpochDays
+import com.looker.kenko.utils.EpochDays
+import com.looker.kenko.utils.today
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
 class LocalSessionRepo @Inject constructor(
     private val dao: SessionDao,
     private val setsDao: SetsDao,
-    private val historyDao: PlanHistoryDao,
+    private val routineDao: RoutineDao,
     private val exerciseDao: ExerciseDao,
 ) : SessionRepo {
 
-    override val stream: Flow<List<Session>> =
-        dao.stream().map {
-            it.map { session ->
-                session.toExternal(session.sets.toExternal())
-            }
+    private val exercises: Flow<Map<Int, Exercise>> =
+        exerciseDao.stream().map { exercises ->
+            exercises.associate { it.id to it.toExternal() }
         }
-    override val setsCount: Flow<Int> =
-        setsDao.totalSetCount()
+
+    private val routineNames: Flow<Map<Int, String>> =
+        routineDao.allRoutinesFlow().map { routines ->
+            routines.associate { it.id to it.name }
+        }
+
+    override val stream: Flow<List<Session>> =
+        combine(dao.stream(), exercises, routineNames) { sessions, exercises, names ->
+            sessions.map { it.toSession(exercises, names) }
+        }
+
+    override val setsCount: Flow<Int> = setsDao.totalSetCount()
 
     override val sessionsCount: Flow<Int> = dao.totalSessions()
 
-    override suspend fun addSet(sessionId: Int, set: Set) {
+    // Also workouts that went past midnight
+    override val activeSession: Flow<ActiveSession?>
+        get() = dao.activeSession(minDate = today().epochDay - 1).map { it?.toActiveSession() }
+
+    override val lastPerformedRoutineId: Flow<Int?> = dao.lastPerformedRoutineId()
+
+    override val hasCompletedSets: Flow<Boolean> = dao.hasCompletedSets()
+
+    override fun session(id: Int): Flow<Session?> =
+        combine(dao.session(id), exercises, routineNames) { session, exercises, names ->
+            session?.toSession(exercises, names)
+        }
+
+    override suspend fun startSession(routineId: Int): Int {
+        val date = today()
+        dao.getSessionId(date.epochDay, routineId)?.let { return it }
+        val routine = requireNotNull(routineDao.getRoutine(routineId)) { "Routine $routineId not found" }
+        val exerciseIds = routineDao.getRoutineExercises(routineId)
+            .associate { it.routineExerciseId to it.exercise.id }
+        val sets = routineDao.getRoutineSets(routineId).mapNotNull { planned ->
+            val exerciseId = exerciseIds[planned.routineExerciseId] ?: return@mapNotNull null
+            exerciseId to SetDraft(
+                repsOrDuration = planned.repsOrDuration,
+                weight = planned.weight,
+                type = planned.type,
+            )
+        }
+        return createSession(
+            date = date,
+            planId = routine.planId,
+            routineId = routineId,
+            sets = sets,
+            isCompleted = false,
+        )
+    }
+
+    override suspend fun createSession(
+        date: LocalDate,
+        planId: Int?,
+        routineId: Int?,
+        sets: List<Pair<Int, SetDraft>>,
+        isCompleted: Boolean,
+    ): Int = dao.insertWithSets(
+        session = SessionDataEntity(
+            date = EpochDays(date.epochDay),
+            planId = planId,
+            routineId = routineId,
+        ),
+        sets = sets.map { (exerciseId, set) ->
+            set.toSetEntity(
+                sessionId = 0,
+                exerciseId = exerciseId,
+                order = 0,
+                isCompleted = isCompleted,
+            )
+        },
+    )
+
+    override suspend fun finishSession(id: Int) {
+        dao.finish(id)
+    }
+
+    override suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean) {
         setsDao.insert(
-            set.toEntity(
-                sessionId,
-                setsDao.getSetsCountBySessionId(sessionId) ?: 0,
+            set.toSetEntity(
+                sessionId = sessionId,
+                exerciseId = exerciseId,
+                order = setsDao.nextOrder(sessionId),
+                isCompleted = isCompleted,
             ),
         )
     }
 
-    override suspend fun addSet(
-        sessionId: Int,
-        exerciseId: Int,
-        weight: Float,
-        reps: Int,
-        setType: SetType,
-        rir: RepsInReserve,
-    ) {
-        setsDao.insert(
-            SetEntity(
-                repsOrDuration = reps,
-                weight = weight,
-                exerciseId = exerciseId,
-                sessionId = sessionId,
-                type = setType,
-                order = setsDao.getSetsCountBySessionId(sessionId) ?: 0,
-                rir = rir.value,
-            ),
+    override suspend fun updateSet(setId: Int, set: SetDraft) {
+        setsDao.updateValues(
+            setId = setId,
+            reps = set.repsOrDuration,
+            weight = set.weight,
+            type = set.type.name,
         )
+    }
+
+    override suspend fun setCompleted(setId: Int, isCompleted: Boolean) {
+        setsDao.setCompleted(setId, isCompleted)
     }
 
     override suspend fun removeSet(setId: Int) {
-        if (!dao.sessionExistsOn(localDate.toLocalEpochDays())) {
-            error("Session does not exist so set cannot be removed")
-        }
         setsDao.delete(setId)
     }
 
-    override suspend fun getSessionIdOrCreate(date: LocalDate): Int {
-        val currentPlanId = requireNotNull(historyDao.getCurrentId()) { "No plan active" }
-        val existingId = dao.getSessionId(date.toLocalEpochDays())
-        if (existingId != null) {
-            return existingId
+    override suspend fun previousSessionId(sessionId: Int, routineId: Int?, date: LocalDate): Int? =
+        dao.previousSessionId(sessionId = sessionId, routineId = routineId, date = date.epochDay)
+
+    override suspend fun getLastSetByExerciseId(exerciseId: Int): Set? {
+        val exercise = exerciseDao.get(exerciseId) ?: return null
+        return setsDao.getLastSetByExerciseId(exerciseId)?.toExternal(exercise.toExternal())
+    }
+
+    override suspend fun getLastSessionSets(exerciseId: Int): List<SetDraft> {
+        val exercise = exerciseDao.get(exerciseId)?.toExternal() ?: return emptyList()
+        return setsDao.getLastSessionSetsByExerciseId(exerciseId).map {
+            it.toExternal(exercise).toDraft()
         }
-        return dao.insert(SessionDataEntity(date.toLocalEpochDays(), currentPlanId)).toInt()
     }
 
-    override fun streamByDate(date: LocalDate): Flow<Session?> {
-        return dao
-            .session(date.toLocalEpochDays())
-            .map { session ->
-                if (session == null) return@map null
-                session.toExternal(session.sets.toExternal())
-            }
-    }
+    private fun SessionEntity.toSession(
+        exercises: Map<Int, Exercise>,
+        routineNames: Map<Int, String>,
+    ): Session = toExternal(
+        sets = sets
+            .sortedWith(compareBy({ it.order }, { it.id }))
+            .mapNotNull { set -> exercises[set.exerciseId]?.let { set.toExternal(it) } },
+        routineName = data.routineId?.let { routineNames[it] },
+    )
 
-    override suspend fun getSets(sessionId: Int): List<Set> =
-        setsDao.getSetsBySessionId(sessionId).toExternal()
-
-    override suspend fun getLastSetByExerciseId(exerciseId: Int): Set? = withContext(Dispatchers.IO) {
-        val exercise = exerciseDao.get(exerciseId) ?: return@withContext null
-        setsDao.getLastSetByExerciseId(exerciseId)?.toExternal(exercise.toExternal())
-    }
-
-    private suspend fun List<SetEntity>.toExternal(): List<Set> = mapNotNull {
-        val exercise = exerciseDao.get(it.exerciseId) ?: return@mapNotNull null
-        it.toExternal(exercise.toExternal())
-    }
+    private val LocalDate.epochDay: Int
+        get() = toEpochDays().toInt()
 }

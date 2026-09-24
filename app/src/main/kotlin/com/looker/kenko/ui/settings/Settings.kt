@@ -43,6 +43,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -82,7 +83,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
+import com.looker.kenko.data.model.settings.RestTimerOptions
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.data.model.settings.WeightUnit
+import com.looker.kenko.data.timer.formatClock
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.HealthQuotes
 import com.looker.kenko.ui.components.KenkoBorderWidth
@@ -108,6 +112,8 @@ fun Settings(
         state = state,
         onSelectTheme = viewModel::updateTheme,
         onSelectColorPalette = viewModel::updateColorPalette,
+        onSelectWeightUnit = viewModel::updateWeightUnit,
+        onSelectRestTimer = viewModel::updateRestTimer,
         onSelectBackupLocation = viewModel::setBackupLocation,
         onSelectBackupInterval = viewModel::setBackupInterval,
         onBackupNow = viewModel::backupNow,
@@ -130,6 +136,8 @@ private fun Settings(
     onClearMessage: () -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
+    onSelectWeightUnit: (WeightUnit) -> Unit = {},
+    onSelectRestTimer: (seconds: Int) -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -182,6 +190,21 @@ private fun Settings(
                 selectedColorPalette = state.selectedColorPalette,
                 selectedTheme = state.selectedTheme,
                 onClickPalette = onSelectColorPalette,
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            CategoryHeader(title = stringResource(R.string.label_units))
+            Spacer(modifier = Modifier.height(4.dp))
+            WeightUnitButton(
+                modifier = Modifier.align(CenterHorizontally),
+                selected = state.weightUnit,
+                onClick = onSelectWeightUnit,
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            CategoryHeader(title = stringResource(R.string.label_rest_timer))
+            Spacer(modifier = Modifier.height(8.dp))
+            RestTimerSelection(
+                selectedSeconds = state.restTimerSeconds,
+                onSelect = onSelectRestTimer,
             )
             Spacer(modifier = Modifier.height(24.dp))
             CategoryHeader(title = stringResource(R.string.label_backup))
@@ -417,6 +440,68 @@ private fun SingleChoiceSegmentedButtonRowScope.DarkButton(
         modifier = Modifier.padding(2.dp),
     ) {
         Text(text = stringResource(theme.nameRes))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun WeightUnitButton(
+    selected: WeightUnit,
+    onClick: (WeightUnit) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SingleChoiceSegmentedButtonRow(modifier = modifier) {
+        WeightUnit.entries.forEachIndexed { index, unit ->
+            SegmentedButton(
+                selected = selected == unit,
+                onClick = { onClick(unit) },
+                shape = if (index == 0) CircleShape.end(4.dp) else CircleShape.start(4.dp),
+                colors = themeButtonColors,
+                modifier = Modifier.padding(2.dp),
+            ) {
+                Text(text = unit.symbol)
+            }
+        }
+    }
+}
+
+@Composable
+private fun RestTimerSelection(
+    selectedSeconds: Int,
+    onSelect: (seconds: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            RestTimerOptions.forEach { seconds ->
+                FilterChip(
+                    selected = seconds == selectedSeconds,
+                    onClick = { onSelect(seconds) },
+                    label = {
+                        Text(
+                            text = if (seconds == 0) {
+                                stringResource(R.string.label_rest_timer_off)
+                            } else {
+                                formatClock(seconds * 1000L)
+                            },
+                        )
+                    },
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(
+            text = stringResource(R.string.label_rest_timer_desc),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
     }
 }
 

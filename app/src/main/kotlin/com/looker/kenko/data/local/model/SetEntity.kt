@@ -22,6 +22,7 @@ import androidx.room.PrimaryKey
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
+import com.looker.kenko.data.model.SetDraft
 
 @Entity(
     "sets",
@@ -52,6 +53,8 @@ data class SetEntity(
     val sessionId: Int,
     val exerciseId: Int,
     val rir: Int = 2,
+    @ColumnInfo(defaultValue = "1")
+    val isCompleted: Boolean = true,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -62,6 +65,7 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     type = type,
     exercise = exercise,
     rir = RepsInReserve(rir),
+    isCompleted = isCompleted,
     id = id,
 )
 
@@ -74,4 +78,20 @@ fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
     sessionId = sessionId,
     exerciseId = requireNotNull(exercise.id),
     rir = rir.value,
+    isCompleted = isCompleted,
+)
+
+fun SetDraft.toSetEntity(
+    sessionId: Int,
+    exerciseId: Int,
+    order: Int,
+    isCompleted: Boolean,
+): SetEntity = SetEntity(
+    repsOrDuration = repsOrDuration,
+    weight = weight,
+    type = type,
+    order = order,
+    sessionId = sessionId,
+    exerciseId = exerciseId,
+    isCompleted = isCompleted,
 )

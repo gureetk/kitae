@@ -14,118 +14,65 @@
 
 package com.looker.kenko.data.repository.local
 
-import com.looker.kenko.data.local.dao.ExerciseDao
 import com.looker.kenko.data.local.dao.PlanDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
+import com.looker.kenko.data.local.dao.RoutineDao
 import com.looker.kenko.data.local.model.PlanEntity
 import com.looker.kenko.data.local.model.PlanHistoryEntity
+import com.looker.kenko.data.local.model.RoutineEntity
 import com.looker.kenko.data.local.model.toEntity
 import com.looker.kenko.data.local.model.toExternal
-import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.local.model.toRoutineSet
+import com.looker.kenko.data.local.model.withSets
 import com.looker.kenko.data.model.Labels
 import com.looker.kenko.data.model.Plan
-import com.looker.kenko.data.model.PlanItem
-import com.looker.kenko.data.model.PlanStat
-import com.looker.kenko.data.model.localDate
+import com.looker.kenko.data.model.Routine
+import com.looker.kenko.data.model.RoutineExercise
+import com.looker.kenko.data.model.SetDraft
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.utils.toLocalEpochDays
+import com.looker.kenko.utils.today
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.isoDayNumber
 
 class LocalPlanRepo @Inject constructor(
     private val dao: PlanDao,
-    private val exerciseDao: ExerciseDao,
+    private val routineDao: RoutineDao,
     private val historyDao: PlanHistoryDao,
 ) : PlanRepo {
 
     override val plans: Flow<List<Plan>> =
-        combine(dao.plansFlow(), historyDao.currentIdFlow()) { plans, current ->
-            plans.map {
-                it.toExternal(isActive = it.id == current, stat = stats(it.id))
-            }
+        combine(dao.plansWithStatsFlow(), historyDao.currentIdFlow()) { plans, current ->
+            plans.map { it.toExternal(isActive = it.plan.id == current) }
         }
 
     override val current: Flow<Plan?> =
-        historyDao.currentIdFlow().map { current ->
-            if (current != null) {
-                dao.getPlanById(current)?.toExternal(true, stats(current))
-            } else {
-                null
-            }
-        }
+        dao.currentPlanWithStatsFlow().map { it?.toExternal(isActive = true) }
 
-    override val planItems: Flow<List<PlanItem>> =
-        dao.currentPlanItemsFlow().map { planDays ->
-            planDays.map { planDay ->
-                planDay.toExternal { exerciseId ->
-                    exerciseDao.get(exerciseId)?.toExternal()
-                }
-            }
-        }
+    override val currentRoutines: Flow<List<Routine>> =
+        routineDao.currentRoutinesFlow().map { routines -> routines.map { it.toExternal() } }
 
-    override fun planItems(day: DayOfWeek): Flow<List<PlanItem>> =
-        dao.currentPlanItemsByDayFlow(day.isoDayNumber).map { planDays ->
-            planDays.map { planDay ->
-                planDay.toExternal { exerciseId ->
-                    exerciseDao.get(exerciseId)?.toExternal()
-                }
-            }
-        }
+    override fun routines(planId: Int): Flow<List<Routine>> =
+        routineDao.routinesFlow(planId).map { routines -> routines.map { it.toExternal() } }
+
+    override fun routineExercises(routineId: Int): Flow<List<RoutineExercise>> =
+        combine(
+            routineDao.routineExercisesFlow(routineId),
+            routineDao.routineSetsFlow(routineId),
+        ) { exercises, sets -> exercises.withSets(sets) }
 
     override suspend fun plan(id: Int): Plan? {
-        val isCurrent = current.first()?.id
-        return dao.getPlanById(id)?.toExternal(isCurrent == id, stats(id))
+        val currentId = historyDao.getCurrentId()
+        return dao.getPlanWithStats(id)?.toExternal(isActive = currentId == id)
     }
 
     override suspend fun planNameExists(name: String): Boolean =
         dao.exists(name)
 
-    override fun planItems(id: Int): Flow<List<PlanItem>> =
-        dao.planItemsByPlanIdFlow(id).map {
-            it.map { planDay ->
-                planDay.toExternal { exerciseId ->
-                    exerciseDao.get(exerciseId)?.toExternal()
-                }
-            }
-        }
-
-    override fun planItems(id: Int, day: DayOfWeek): Flow<List<PlanItem>> =
-        dao.planItemsByPlanIdAndDayFlow(id, day.isoDayNumber).map {
-            it.map { planDay ->
-                planDay.toExternal { exerciseId ->
-                    exerciseDao.get(exerciseId)?.toExternal()
-                }
-            }
-        }
-
-    override fun activeExercises(day: DayOfWeek): Flow<List<Exercise>> =
-        dao.currentPlanItemsByDayFlow(day.isoDayNumber).map {
-            it.mapNotNull { planDay ->
-                exerciseDao.get(planDay.exerciseId)?.toExternal()
-            }
-        }
-
-    override suspend fun getPlanItems(id: Int): List<PlanItem> =
-        dao.getPlanItemsByPlanId(id).map {
-            it.toExternal { exerciseId ->
-                exerciseDao.get(exerciseId)?.toExternal()
-            }
-        }
-
-    override suspend fun getPlanItems(id: Int, day: DayOfWeek): List<PlanItem> =
-        dao.getPlanItemsByPlanIdAndDay(id, day.isoDayNumber).map {
-            it.toExternal { exerciseId ->
-                exerciseDao.get(exerciseId)?.toExternal()
-            }
-        }
-
-    private suspend fun stats(id: Int): PlanStat =
-        PlanStat(dao.getExerciseCountByPlanId(id), dao.getWorkDaysByPlanId(id))
+    override suspend fun hasExercises(planId: Int): Boolean =
+        dao.hasExercises(planId)
 
     override suspend fun createPlan(
         name: String,
@@ -150,11 +97,12 @@ class LocalPlanRepo @Inject constructor(
     }
 
     override suspend fun setCurrent(id: Int) {
+        val date = today().toLocalEpochDays()
         val current = historyDao.getCurrent()
         if (current != null) {
-            historyDao.upsert(current.copy(end = localDate.toLocalEpochDays()))
+            historyDao.upsert(current.copy(end = date))
         }
-        historyDao.upsert(PlanHistoryEntity(planId = id, start = localDate.toLocalEpochDays()))
+        historyDao.upsert(PlanHistoryEntity(planId = id, start = date))
     }
 
     override suspend fun deletePlan(id: Int) {
@@ -165,15 +113,54 @@ class LocalPlanRepo @Inject constructor(
         dao.deleteEmptyPlans()
     }
 
-    override suspend fun addItem(planItem: PlanItem) {
-        dao.insertPlanItem(planItem.toEntity())
+    override suspend fun createRoutine(planId: Int, name: String): Int =
+        routineDao.insertRoutine(
+            RoutineEntity(
+                planId = planId,
+                name = name.trim(),
+                position = routineDao.nextRoutinePosition(planId),
+            ),
+        ).toInt()
+
+    override suspend fun renameRoutine(id: Int, name: String) {
+        routineDao.renameRoutine(id, name.trim())
     }
 
-    override suspend fun removeItem(id: Long) {
-        dao.deleteItem(id)
+    override suspend fun deleteRoutine(id: Int) {
+        routineDao.deleteRoutine(id)
     }
 
-    override suspend fun removeItemById(exerciseId: Int) {
-        dao.deleteItemByExercise(exerciseId)
+    override suspend fun addExercise(routineId: Int, exerciseId: Int, sets: List<SetDraft>) {
+        routineDao.insertExerciseWithSets(
+            routineId = routineId,
+            exerciseId = exerciseId,
+            sets = sets.map { it.toRoutineSet(routineExerciseId = 0, position = 0) },
+        )
+    }
+
+    override suspend fun removeExercise(routineExerciseId: Int) {
+        routineDao.deleteRoutineExercise(routineExerciseId)
+    }
+
+    override suspend fun addPlannedSet(routineExerciseId: Int, set: SetDraft) {
+        routineDao.insertRoutineSet(
+            set.toRoutineSet(
+                routineExerciseId = routineExerciseId,
+                position = routineDao.nextSetPosition(routineExerciseId),
+            ),
+        )
+    }
+
+    override suspend fun updatePlannedSet(id: Int, set: SetDraft) {
+        routineDao.updateRoutineSet(
+            id = id,
+            reps = set.repsOrDuration,
+            weight = set.weight,
+            type = set.type.name,
+        )
+    }
+
+    override suspend fun removePlannedSet(id: Int) {
+        routineDao.deleteRoutineSet(id)
     }
 }

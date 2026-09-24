@@ -18,6 +18,7 @@ import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.settings.Settings
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.data.model.settings.WeightUnit
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -38,5 +39,9 @@ interface SettingsRepo {
     suspend fun setBackupInterval(interval: BackupInterval)
 
     suspend fun setLastBackupTime(instant: Instant?)
+
+    suspend fun setWeightUnit(unit: WeightUnit)
+
+    suspend fun setRestTimerSeconds(seconds: Int)
 
 }

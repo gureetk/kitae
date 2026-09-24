@@ -25,10 +25,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.rememberNavBackStack
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.navigation.KenkoNavHost
 import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.ui.theme.KenkoTheme
@@ -45,13 +47,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val theme by viewModel.theme.collectAsStateWithLifecycle()
             val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
+            val weightUnit by viewModel.weightUnit.collectAsStateWithLifecycle()
             KenkoTheme(
                 theme = theme,
                 colorSchemes = colorScheme,
             ) {
                 val backStack = rememberNavBackStack(Routes.GetStarted(true))
-                Kenko {
-                    KenkoNavHost(backStack = backStack)
+                CompositionLocalProvider(LocalWeightUnit provides weightUnit) {
+                    Kenko {
+                        KenkoNavHost(backStack = backStack)
+                    }
                 }
             }
         }

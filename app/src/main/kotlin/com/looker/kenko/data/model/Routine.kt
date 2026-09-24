@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,20 +16,41 @@ package com.looker.kenko.data.model
 
 import androidx.compose.runtime.Immutable
 import com.looker.kenko.data.local.model.SetType
-import kotlinx.serialization.Serializable
 
-@Serializable
 @Immutable
-data class Set(
+data class Routine(
+    val id: Int,
+    val planId: Int,
+    val name: String,
+    val position: Int,
+    val exerciseCount: Int = 0,
+    val setCount: Int = 0,
+)
+
+// id is the routine slot's, not the exercise's
+@Immutable
+data class RoutineExercise(
+    val id: Int,
+    val exercise: Exercise,
+    val sets: List<PlannedSet>,
+)
+
+@Immutable
+data class PlannedSet(
+    val id: Int,
     val repsOrDuration: Int,
     val weight: Float,
     val type: SetType,
-    val exercise: Exercise,
-    val rir: RepsInReserve,
-    val isCompleted: Boolean = true,
-    val id: Int? = null,
 )
 
-val Set.rating: Rating
-    get() = Rating(repsOrDuration * weight * type.ratingModifier * rir.modifier)
+fun PlannedSet.toDraft(): SetDraft = SetDraft(
+    repsOrDuration = repsOrDuration,
+    weight = weight,
+    type = type,
+)
 
+fun List<Routine>.nextAfter(lastRoutineId: Int?): Routine? {
+    if (isEmpty()) return null
+    val index = indexOfFirst { it.id == lastRoutineId }
+    return if (index == -1) first() else get((index + 1) % size)
+}

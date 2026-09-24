@@ -24,4 +24,11 @@ data class Settings(
     val backupUri: String?,
     val backupInterval: BackupInterval,
     val lastBackupTime: Instant?,
+    val weightUnit: WeightUnit = WeightUnit.Kilograms,
+    val restTimerSeconds: Int = DEFAULT_REST_TIMER_SECONDS,
 )
+
+const val DEFAULT_REST_TIMER_SECONDS = 90
+
+// Seconds, 0 is off
+val RestTimerOptions: List<Int> = listOf(0, 30, 60, 90, 120, 180, 300)

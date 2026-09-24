@@ -23,7 +23,9 @@ import com.looker.kenko.data.backup.BackupManager
 import com.looker.kenko.data.backup.BackupResult
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
+import com.looker.kenko.data.model.settings.DEFAULT_REST_TIMER_SECONDS
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.data.model.settings.WeightUnit
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,6 +53,8 @@ class SettingsViewModel @Inject constructor(
         SettingsUiData(
             selectedTheme = settings.theme,
             selectedColorPalette = settings.colorPalette,
+            weightUnit = settings.weightUnit,
+            restTimerSeconds = settings.restTimerSeconds,
             backupUri = settings.backupUri,
             backupInterval = settings.backupInterval,
             lastBackupTime = settings.lastBackupTime,
@@ -70,6 +74,18 @@ class SettingsViewModel @Inject constructor(
             backupMessage = null,
         ),
     )
+
+    fun updateWeightUnit(unit: WeightUnit) {
+        viewModelScope.launch {
+            repo.setWeightUnit(unit)
+        }
+    }
+
+    fun updateRestTimer(seconds: Int) {
+        viewModelScope.launch {
+            repo.setRestTimerSeconds(seconds)
+        }
+    }
 
     fun updateTheme(theme: Theme) {
         viewModelScope.launch {
@@ -173,4 +189,6 @@ data class SettingsUiData(
     val isBackingUp: Boolean,
     val isRestoring: Boolean,
     val backupMessage: BackupMessage?,
+    val weightUnit: WeightUnit = WeightUnit.Kilograms,
+    val restTimerSeconds: Int = DEFAULT_REST_TIMER_SECONDS,
 )

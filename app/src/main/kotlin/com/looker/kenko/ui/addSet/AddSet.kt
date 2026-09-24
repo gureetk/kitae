@@ -29,23 +29,31 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.toPath
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -65,15 +73,20 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.SetDraft
+import com.looker.kenko.data.model.repDurationStringRes
+import com.looker.kenko.data.model.settings.formatInput
+import com.looker.kenko.data.model.settings.formatWeightValue
+import com.looker.kenko.data.model.settings.parseToKg
 import com.looker.kenko.ui.addSet.components.ITEMS
 import com.looker.kenko.ui.addSet.components.ItemSize
 import com.looker.kenko.ui.addSet.components.VerticalSelector
 import com.looker.kenko.ui.addSet.components.WeightStepper
 import com.looker.kenko.ui.addSet.components.WeightTextField
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -81,30 +94,78 @@ import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.colorSchemes.JapanRed
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddSet(exercise: Exercise, onDone: () -> Unit) {
-    val viewModel: AddSetViewModel =
-        hiltViewModel<AddSetViewModel, AddSetViewModel.AddSetViewModelFactory>(key = exercise.name) {
-            it.create(exercise.id!!)
-        }
+fun AddSetSheet(
+    exercise: Exercise,
+    initial: SetDraft,
+    onDismiss: () -> Unit,
+    onDone: (SetDraft) -> Unit,
+    isEdit: Boolean = false,
+) {
+    val scope = rememberCoroutineScope()
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        sheetState = state,
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        AddSet(
+            exercise = exercise,
+            initial = initial,
+            isEdit = isEdit,
+            onDone = { set ->
+                onDone(set)
+                scope.launch { state.hide() }.invokeOnCompletion {
+                    if (!state.isVisible) onDismiss()
+                }
+            },
+        )
+    }
+}
+
+@Composable
+fun AddSet(
+    exercise: Exercise,
+    initial: SetDraft,
+    onDone: (SetDraft) -> Unit,
+    isEdit: Boolean = false,
+) {
+    val unit = LocalWeightUnit.current
+    // In the display unit
+    val weights = rememberTextFieldState(unit.formatInput(initial.weight))
+    var reps by remember { mutableIntStateOf(initial.repsOrDuration) }
+    var setType by remember { mutableStateOf(initial.type) }
     AddSetContent(
+        title = stringResource(if (isEdit) R.string.label_edit_set_for else R.string.label_add_set_for),
         exerciseName = exercise.name,
-        weights = viewModel.weights,
-        reps = viewModel.reps,
-        selectedSetType = viewModel.selectedSetType,
-        onSelectSetType = viewModel::setSetType,
-        onAddWeight = viewModel::addWeight,
-        onRepsChanged = { viewModel.reps = it },
+        repsLabel = stringResource(exercise.repDurationStringRes),
+        weights = weights,
+        reps = reps,
+        selectedSetType = setType,
+        onSelectSetType = { setType = it },
+        onAddWeight = { step ->
+            val current = weights.text.toString().toFloatOrNull() ?: 0F
+            weights.setTextAndPlaceCursorAtEnd(formatWeightValue(current + step))
+        },
+        onRepsChanged = { reps = it },
         onDoneClick = {
-            viewModel.addSet()
-            onDone()
+            onDone(
+                SetDraft(
+                    repsOrDuration = reps,
+                    weight = unit.parseToKg(weights.text) ?: initial.weight,
+                    type = setType,
+                ),
+            )
         },
     )
 }
 
 @Composable
 private fun AddSetContent(
+    title: String,
     exerciseName: String,
+    repsLabel: String,
     weights: TextFieldState,
     reps: Int,
     selectedSetType: SetType,
@@ -122,6 +183,7 @@ private fun AddSetContent(
         Spacer(modifier = Modifier.height(16.dp))
         AddSetHeader(
             modifier = Modifier.fillMaxWidth(),
+            title = title,
             exerciseName = exerciseName,
             onClick = onDoneClick,
         )
@@ -160,7 +222,7 @@ private fun AddSetContent(
                 )
             }
             VerticalSelector(
-                label = stringResource(R.string.label_reps),
+                label = repsLabel,
                 value = reps,
                 onChanged = onRepsChanged,
                 onChange = { haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick) },
@@ -172,6 +234,7 @@ private fun AddSetContent(
 
 @Composable
 private fun AddSetHeader(
+    title: String,
     exerciseName: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -183,7 +246,7 @@ private fun AddSetHeader(
     ) {
         Column(modifier = Modifier.weight(1F)) {
             Text(
-                text = stringResource(R.string.label_add_set_for).uppercase(),
+                text = title.uppercase(),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.outline,
             )
@@ -308,7 +371,7 @@ private fun setTypeShape(type: SetType): RoundedPolygon = when (type) {
 }
 
 @Composable
-private fun setTypeColor(type: SetType): Color = when (type) {
+fun setTypeColor(type: SetType): Color = when (type) {
     SetType.Standard -> MaterialTheme.colorScheme.primary
     SetType.Drop -> MaterialTheme.colorScheme.tertiary
     SetType.RestPause -> JapanRed
@@ -328,7 +391,9 @@ private fun AddSetPreview(
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Surface {
             AddSetContent(
+                title = stringResource(R.string.label_add_set_for),
                 exerciseName = "Bench Press",
+                repsLabel = stringResource(R.string.label_reps),
                 weights = rememberTextFieldState("40.0"),
                 reps = 12,
                 selectedSetType = SetType.Standard,

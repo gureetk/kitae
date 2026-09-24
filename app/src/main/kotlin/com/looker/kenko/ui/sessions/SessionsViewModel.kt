@@ -17,7 +17,6 @@ package com.looker.kenko.ui.sessions
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import com.looker.kenko.data.model.Session
-import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,21 +32,19 @@ class SessionsViewModel @Inject constructor(
 ) : ViewModel() {
     private val sessionsStream: Flow<List<Session>> = repo.stream
 
-    private val isCurrentSessionActive: Flow<Boolean> = repo.streamByDate(localDate).map { it != null }
-
     val state: StateFlow<SessionsUiData> = combine(
         sessionsStream,
-        isCurrentSessionActive,
-    ) { sessions, isCurrentSessionActive ->
+        repo.activeSession,
+    ) { sessions, activeSession ->
         SessionsUiData(
-            sessions = sessions.filter { it.sets.isNotEmpty() },
-            isCurrentSessionActive = isCurrentSessionActive,
+            sessions = sessions.filter { session -> session.sets.any { it.isCompleted } },
+            activeSessionId = activeSession?.id,
         )
-    }.asStateFlow(SessionsUiData(emptyList(), false))
+    }.asStateFlow(SessionsUiData(emptyList(), null))
 }
 
 @Stable
 data class SessionsUiData(
     val sessions: List<Session>,
-    val isCurrentSessionActive: Boolean,
+    val activeSessionId: Int?,
 )

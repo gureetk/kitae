@@ -47,6 +47,9 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.looker.kenko.data.model.settings.WeightUnit
+import com.looker.kenko.data.model.settings.formatWeightValue
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.components.OnSurfaceVariantBorder
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.ui.theme.top
@@ -60,23 +63,42 @@ private const val INCREMENT_DELAY = 200L
 private const val INCREMENT_DELAY_STEP = 20L
 private const val MIN_INCREMENT_DELAY = 100L
 
-enum class WeightStep(val weight: Float, val label: String) {
-    LargeDecrement(-2.5F, "-2.5"),
-    Decrement(-1F, "-1.0"),
-    Rest(0F, "•"),
-    Increment(1F, "+1.0"),
-    LargeIncrement(2.5F, "+2.5"),
+enum class WeightStep {
+    LargeDecrement,
+    Decrement,
+    Rest,
+    Increment,
+    LargeIncrement,
+    ;
+
+    fun amount(unit: WeightUnit): Float = when (this) {
+        LargeDecrement -> -unit.largeStep
+        Decrement -> -unit.smallStep
+        Rest -> 0F
+        Increment -> unit.smallStep
+        LargeIncrement -> unit.largeStep
+    }
+
+    fun label(unit: WeightUnit): String {
+        val amount = amount(unit)
+        return when {
+            amount > 0F -> "+${formatWeightValue(amount)}"
+            amount < 0F -> "-${formatWeightValue(-amount)}"
+            else -> "•"
+        }
+    }
 }
 
 @Composable
 fun WeightStepper(
     onStep: (Float) -> Unit,
     modifier: Modifier = Modifier,
+    unit: WeightUnit = LocalWeightUnit.current,
 ) {
     val state = remember { AnchoredDraggableState(initialValue = WeightStep.Rest) }
     val interactionSource = remember { MutableInteractionSource() }
 
-    RepeatStepEffect(state, onStep)
+    RepeatStepEffect(state, unit, onStep)
     SettleToRestEffect(state, interactionSource)
 
     Box(
@@ -93,7 +115,7 @@ fun WeightStepper(
                 interactionSource = interactionSource,
             ),
     ) {
-        WeightStepLabels()
+        WeightStepLabels(unit)
         DraggablePill(offset = { state.requireOffset().roundToInt() })
     }
 }
@@ -101,16 +123,18 @@ fun WeightStepper(
 @Composable
 private fun RepeatStepEffect(
     state: AnchoredDraggableState<WeightStep>,
+    unit: WeightUnit,
     onStep: (Float) -> Unit,
 ) {
     val currentOnStep by rememberUpdatedState(onStep)
+    val currentUnit by rememberUpdatedState(unit)
     LaunchedEffect(Unit) {
         snapshotFlow { state.currentValue }.collectLatest { step ->
             var incrementTimer = INCREMENT_DELAY
             while (step != WeightStep.Rest) {
                 delay(incrementTimer.milliseconds)
                 if (incrementTimer > MIN_INCREMENT_DELAY) incrementTimer -= INCREMENT_DELAY_STEP
-                currentOnStep(step.weight)
+                currentOnStep(step.amount(currentUnit))
             }
         }
     }
@@ -146,7 +170,10 @@ private fun Modifier.weightStepAnchors(state: AnchoredDraggableState<WeightStep>
 }
 
 @Composable
-private fun WeightStepLabels(modifier: Modifier = Modifier) {
+private fun WeightStepLabels(
+    unit: WeightUnit,
+    modifier: Modifier = Modifier,
+) {
     Row(modifier = modifier.fillMaxSize()) {
         WeightStep.entries.forEach { step ->
             Box(
@@ -156,7 +183,7 @@ private fun WeightStepLabels(modifier: Modifier = Modifier) {
                     .fillMaxHeight(),
             ) {
                 Text(
-                    text = step.label,
+                    text = step.label(unit),
                     style = MaterialTheme.typography.labelMedium.numbers(),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

@@ -14,7 +14,9 @@
 
 package com.looker.kenko.ui.sessionDetail.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +26,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -33,26 +35,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
-import com.looker.kenko.data.model.ExercisesPreviewParameter
-import com.looker.kenko.data.model.RepsInReserve
-import com.looker.kenko.data.model.Set
-import com.looker.kenko.data.model.repDurationStringRes
-import com.looker.kenko.ui.addSet.setTypeLabel
+import com.looker.kenko.data.model.settings.format
+import com.looker.kenko.ui.addSet.setTypeColor
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -61,10 +57,39 @@ import com.looker.kenko.ui.theme.numbers
 
 @Composable
 fun SetItem(
-    set: Set,
+    repsOrDuration: Int,
+    weight: Float,
+    isIsometric: Boolean,
     modifier: Modifier = Modifier,
+    type: SetType = SetType.Standard,
+    isCompleted: Boolean? = null,
+    onCompletedChange: ((Boolean) -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
     title: @Composable () -> Unit,
 ) {
+    val unit = LocalWeightUnit.current
+    val isDone = isCompleted == true
+    val showToggle = isCompleted != null && onCompletedChange != null
+    val containerColor by animateColorAsState(
+        targetValue = if (isDone) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        },
+        label = "SetContainerColor",
+    )
+    val contentColor by animateColorAsState(
+        targetValue = if (isDone) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        label = "SetContentColor",
+    )
+    val indexColor by animateColorAsState(
+        targetValue = if (isDone) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outline,
+        label = "SetIndexColor",
+    )
     Row(
         modifier = Modifier
             .heightIn(64.dp)
@@ -74,7 +99,7 @@ fun SetItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colorScheme.outline,
+            LocalContentColor provides indexColor,
             LocalTextStyle provides MaterialTheme.typography.displayMedium.numbers(),
         ) {
             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -82,79 +107,40 @@ fun SetItem(
             }
         }
         Spacer(modifier = Modifier.width(12.dp))
-        Row(
-            modifier = Modifier
-                .weight(1F)
-                .clip(MaterialTheme.shapes.large)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .padding(vertical = 16.dp, horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            PerformedItem(
-                title = stringResource(set.exercise.repDurationStringRes),
-                performance = "${set.repsOrDuration}",
-            )
-            PerformedItem(
-                title = stringResource(R.string.label_weight),
-                performance = "${set.weight} KG",
-            )
-        }
-    }
-}
-
-@Composable
-fun SuggestedSetItem(
-    modifier: Modifier = Modifier,
-    repCount: Int = 10,
-    weight: Float = 100F,
-    type: SetType = SetType.Standard,
-    color: Color = MaterialTheme.colorScheme.surfaceVariant,
-    onAccept: () -> Unit = {},
-    textStyle: TextStyle = LocalTextStyle.current,
-) {
-    Surface(
-        color = color,
-        modifier = modifier,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 12.dp),
-        ) {
-            val typeLabel = remember(type) { setTypeLabel(type) }
-            Text(
-                text = typeLabel,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(Modifier.width(12.dp))
-            val spanStyle1 = textStyle
-                .copy(fontWeight = FontWeight.Bold)
-                .toSpanStyle()
-            val spanStyle2 = textStyle
-                .copy(color = MaterialTheme.colorScheme.onSurface)
-                .toSpanStyle()
-
-            val annotatedString = remember {
-                buildAnnotatedString {
-                    withStyle(spanStyle1) {
-                        append(repCount.toString())
-                    }
-                    withStyle(spanStyle2) {
-                        append("@")
-                    }
-                    withStyle(spanStyle1) {
-                        append(weight.toString())
-                    }
-                    withStyle(spanStyle2) {
-                        append("KG")
-                    }
-                }
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Row(
+                modifier = Modifier
+                    .weight(1F)
+                    .clip(MaterialTheme.shapes.large)
+                    .background(containerColor)
+                    .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+                    .padding(vertical = 16.dp, horizontal = if (showToggle) 16.dp else 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                PerformedItem(
+                    title = stringResource(if (isIsometric) R.string.label_duration else R.string.label_reps),
+                    titleColor = if (type == SetType.Standard) {
+                        MaterialTheme.colorScheme.outline
+                    } else {
+                        setTypeColor(type)
+                    },
+                    performance = "$repsOrDuration",
+                )
+                PerformedItem(
+                    title = stringResource(R.string.label_weight),
+                    performance = unit.format(weight),
+                )
             }
-            Text(annotatedString)
-            Spacer(modifier = Modifier.weight(1F))
-            FilledIconButton(onClick = onAccept) {
+        }
+        if (showToggle) {
+            Spacer(modifier = Modifier.width(8.dp))
+            FilledIconToggleButton(
+                checked = isDone,
+                onCheckedChange = { onCompletedChange?.invoke(it) },
+            ) {
                 Icon(
                     painter = KenkoIcons.Done,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.label_complete_set),
                 )
             }
         }
@@ -166,12 +152,13 @@ private fun PerformedItem(
     title: String,
     performance: String,
     modifier: Modifier = Modifier,
+    titleColor: Color = MaterialTheme.colorScheme.outline,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.outline,
+            color = titleColor,
         )
         Text(
             text = performance,
@@ -185,22 +172,32 @@ private fun PerformedItem(
 private fun SetItemPreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    val exercise = ExercisesPreviewParameter().values.first().first()
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        SetItem(
-            Set(12, 40F, SetType.Drop, exercise, RepsInReserve(2)),
-        ) {
-            Text(text = "01")
+        Surface {
+            Column {
+                SetItem(
+                    repsOrDuration = 12,
+                    weight = 40F,
+                    isIsometric = false,
+                    type = SetType.Drop,
+                    isCompleted = true,
+                    onCompletedChange = {},
+                ) {
+                    Text(text = "01")
+                }
+                SetItem(
+                    repsOrDuration = 8,
+                    weight = 60F,
+                    isIsometric = false,
+                    isCompleted = false,
+                    onCompletedChange = {},
+                ) {
+                    Text(text = "02")
+                }
+                SetItem(repsOrDuration = 45, weight = 0F, isIsometric = true) {
+                    Text(text = "03")
+                }
+            }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun SuggestionPreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        SuggestedSetItem()
     }
 }

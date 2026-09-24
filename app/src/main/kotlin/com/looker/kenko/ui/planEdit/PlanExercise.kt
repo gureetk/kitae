@@ -14,28 +14,34 @@
 
 package com.looker.kenko.ui.planEdit
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
+import com.looker.kenko.data.model.Routine
+import com.looker.kenko.ui.components.DaySelectorChip
+import com.looker.kenko.ui.theme.KenkoIcons
 
 @Composable
 fun PlanExercise(
@@ -56,37 +62,94 @@ fun PlanExercise(
 }
 
 @Composable
-fun Header(
-    isExpandedView: Boolean,
+fun PlanDaysHeader(
+    routines: List<Routine>,
+    selectedId: Int?,
+    onSelect: (Int) -> Unit,
+    onAddRoutine: () -> Unit,
     modifier: Modifier = Modifier,
-    daySelector: @Composable () -> Unit,
-    daySwitcher: @Composable () -> Unit,
 ) {
-    Column {
+    val listState = rememberLazyListState()
+    LaunchedEffect(selectedId, routines.size) {
+        val index = routines.indexOfFirst { it.id == selectedId }
+        if (index >= 0) listState.animateScrollToItem(index)
+    }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface),
+    ) {
         Text(
-            text = stringResource(R.string.heading_select_plan_items),
+            text = stringResource(R.string.heading_plan_days),
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.secondary,
         )
         Spacer(Modifier.height(8.dp))
-        AnimatedContent(
-            modifier = modifier.background(MaterialTheme.colorScheme.surface),
-            targetState = isExpandedView,
-            label = "Header",
-            transitionSpec = {
-                if (targetState) {
-                    slideInVertically { it / 3 } + fadeIn() togetherWith slideOutVertically { -it / 3 } + fadeOut()
-                } else {
-                    slideInVertically { -it / 3 } + fadeIn() togetherWith slideOutVertically { it / 3 } + fadeOut()
-                } using SizeTransform(clip = false)
-            },
-            contentAlignment = Alignment.Center,
-        ) { expanded ->
-            if (expanded) {
-                daySelector()
-            } else {
-                daySwitcher()
+        LazyRow(
+            state = listState,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(routines, key = { it.id }) { routine ->
+                DaySelectorChip(
+                    selected = routine.id == selectedId,
+                    onClick = { onSelect(routine.id) },
+                ) {
+                    Text(text = routine.name, maxLines = 1)
+                }
             }
+            item(key = "add_day") {
+                DaySelectorChip(
+                    selected = false,
+                    onClick = onAddRoutine,
+                ) {
+                    Icon(
+                        painter = KenkoIcons.Add,
+                        contentDescription = stringResource(R.string.label_new_day),
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+}
+
+@Composable
+fun FirstDay(
+    suggestions: List<String>,
+    onCreate: (String) -> Unit,
+    onCustomClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.label_first_day),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            suggestions.forEach { name ->
+                SuggestionChip(
+                    onClick = { onCreate(name) },
+                    label = { Text(text = name) },
+                )
+            }
+            AssistChip(
+                onClick = onCustomClick,
+                label = { Text(text = stringResource(R.string.label_new_day)) },
+                leadingIcon = {
+                    Icon(
+                        painter = KenkoIcons.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                },
+            )
         }
     }
 }

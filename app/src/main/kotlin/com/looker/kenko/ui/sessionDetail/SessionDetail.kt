@@ -14,25 +14,30 @@
 
 package com.looker.kenko.ui.sessionDetail
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -42,35 +47,41 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonShapes
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Set
-import com.looker.kenko.ui.addSet.AddSet
+import com.looker.kenko.data.timer.RestTimerState
+import com.looker.kenko.ui.addSet.AddSetSheet
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.SetGroupHeader
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
+import com.looker.kenko.ui.sessionDetail.components.RestTimerBar
 import com.looker.kenko.ui.sessionDetail.components.SetItem
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
@@ -79,33 +90,111 @@ import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 @Composable
 fun SessionDetails(
     viewModel: SessionDetailViewModel,
     onBackPress: () -> Unit,
-    onHistoryClick: (LocalDate) -> Unit,
-    onEditPlanClick: (Int) -> Unit,
+    onHistoryClick: (sessionId: Int) -> Unit,
+    onEditPlanClick: (planId: Int, routineId: Int?) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val restTimer by viewModel.restTimer.collectAsStateWithLifecycle()
+    val restSeconds by viewModel.restSeconds.collectAsStateWithLifecycle()
+    val sheet by viewModel.sheet.collectAsStateWithLifecycle()
+    val requestNotifications = rememberNotificationPermissionRequest()
+    var showFinishDialog by rememberSaveable { mutableStateOf(false) }
+
     SessionDetail(
         state = state,
+        restTimer = restTimer,
+        restSeconds = restSeconds,
         onBackPress = onBackPress,
         onEditPlanClick = onEditPlanClick,
+        onHistoryClick = onHistoryClick,
         onRemoveSet = viewModel::removeSet,
+        onToggleSet = { set ->
+            if (!set.isCompleted && restSeconds > 0) requestNotifications()
+            viewModel.toggleSet(set)
+        },
+        onEditSet = viewModel::openEditSet,
+        onAddSet = viewModel::openAddSet,
         onReferenceClick = viewModel::openReference,
-        onSelectBottomSheet = viewModel::showBottomSheet,
-        onHistoryClick = { onHistoryClick(viewModel.previousSessionDate) },
+        onFinishClick = { incompleteSets ->
+            if (incompleteSets > 0) {
+                showFinishDialog = true
+            } else {
+                viewModel.finish(onBackPress)
+            }
+        },
+        onStartRest = viewModel::startRest,
+        onAdjustRest = viewModel::adjustRest,
+        onSkipRest = viewModel::skipRest,
     )
-    val exercise by viewModel.current.collectAsStateWithLifecycle()
-    if (exercise != null) {
-        AddSetSheet(
-            exercise = exercise!!,
-            onDismiss = viewModel::hideSheet,
-            onAddSet = {},
+
+    sheet?.let { current ->
+        key(current.id) {
+            AddSetSheet(
+                exercise = current.exercise,
+                initial = current.initial,
+                isEdit = current.setId != null,
+                onDismiss = viewModel::dismissSheet,
+                onDone = viewModel::saveSheet,
+            )
+        }
+    }
+
+    if (showFinishDialog) {
+        val incompleteSets = (state as? SessionDetailState.Success)?.data?.incompleteSets ?: 0
+        val resources = LocalContext.current.resources
+        AlertDialog(
+            onDismissRequest = { showFinishDialog = false },
+            title = { Text(text = stringResource(R.string.label_finish_workout)) },
+            text = {
+                Text(
+                    text = resources.getQuantityString(
+                        R.plurals.finish_incomplete_sets,
+                        incompleteSets,
+                        incompleteSets,
+                    ),
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showFinishDialog = false
+                        viewModel.finish(onBackPress)
+                    },
+                ) {
+                    Text(text = stringResource(R.string.label_finish))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showFinishDialog = false }) {
+                    Text(text = stringResource(R.string.label_cancel))
+                }
+            },
         )
+    }
+}
+
+@Composable
+private fun rememberNotificationPermissionRequest(): () -> Unit {
+    val context = LocalContext.current
+    var asked by rememberSaveable { mutableStateOf(false) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
+    return remember(launcher) {
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !asked) {
+                asked = true
+                val granted = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED
+                if (!granted) launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 }
 
@@ -113,12 +202,20 @@ fun SessionDetails(
 @Composable
 private fun SessionDetail(
     state: SessionDetailState,
+    restTimer: RestTimerState = RestTimerState.Idle,
+    restSeconds: Int = 0,
     onBackPress: () -> Unit = {},
-    onEditPlanClick: (Int) -> Unit = {},
+    onEditPlanClick: (Int, Int?) -> Unit = { _, _ -> },
+    onHistoryClick: (Int) -> Unit = {},
     onRemoveSet: (Int?) -> Unit = {},
+    onToggleSet: (Set) -> Unit = {},
+    onEditSet: (Set) -> Unit = {},
+    onAddSet: (Exercise) -> Unit = {},
     onReferenceClick: (String) -> Unit = {},
-    onSelectBottomSheet: (Exercise) -> Unit = {},
-    onHistoryClick: () -> Unit = {},
+    onFinishClick: (incompleteSets: Int) -> Unit = {},
+    onStartRest: () -> Unit = {},
+    onAdjustRest: (Int) -> Unit = {},
+    onSkipRest: () -> Unit = {},
 ) {
     when (state) {
         is SessionDetailState.Error -> {
@@ -156,19 +253,34 @@ private fun SessionDetail(
 
         is SessionDetailState.Success -> {
             val data = state.data
-            SetsList(
-                date = data.date,
-                exerciseSets = data.sets,
-                planId = data.planId,
-                isEditable = data.isToday,
-                hasPreviousSession = data.hasPreviousSession,
-                onBackPress = onBackPress,
-                onEditPlanClick = onEditPlanClick,
-                onRemoveSet = onRemoveSet,
-                onReferenceClick = onReferenceClick,
-                onSelectBottomSheet = onSelectBottomSheet,
-                onHistoryClick = onHistoryClick,
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                SetsList(
+                    data = data,
+                    onBackPress = onBackPress,
+                    onEditPlanClick = onEditPlanClick,
+                    onHistoryClick = onHistoryClick,
+                    onRemoveSet = onRemoveSet,
+                    onToggleSet = onToggleSet,
+                    onEditSet = onEditSet,
+                    onAddSet = onAddSet,
+                    onReferenceClick = onReferenceClick,
+                )
+                if (data.isEditable) {
+                    RestTimerBar(
+                        state = restTimer,
+                        restSeconds = restSeconds,
+                        showFinish = data.totalSets > 0,
+                        onStart = onStartRest,
+                        onAdjust = onAdjustRest,
+                        onSkip = onSkipRest,
+                        onFinish = { onFinishClick(data.incompleteSets) },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .navigationBarsPadding()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                    )
+                }
+            }
         }
     }
 }
@@ -176,41 +288,42 @@ private fun SessionDetail(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SetsList(
-    date: LocalDate,
-    exerciseSets: Map<Exercise, List<Set>>,
-    planId: Int?,
-    isEditable: Boolean,
-    hasPreviousSession: Boolean,
+    data: SessionUiData,
     onBackPress: () -> Unit,
-    onEditPlanClick: (Int) -> Unit,
+    onEditPlanClick: (Int, Int?) -> Unit,
+    onHistoryClick: (Int) -> Unit,
     onRemoveSet: (Int?) -> Unit,
+    onToggleSet: (Set) -> Unit,
+    onEditSet: (Set) -> Unit,
+    onAddSet: (Exercise) -> Unit,
     onReferenceClick: (String) -> Unit,
-    onSelectBottomSheet: (Exercise) -> Unit,
-    onHistoryClick: () -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(360.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(LocalDensity.current) +
-                PaddingValues(bottom = 12.dp),
+            PaddingValues(bottom = if (data.isEditable) 96.dp else 12.dp),
     ) {
         item(
             span = { GridItemSpan(maxLineSpan) },
         ) {
             Header(
-                performedOn = date,
+                title = data.title,
+                performedOn = data.date,
                 onBackPress = onBackPress,
                 actions = {
-                    if (hasPreviousSession) {
-                        IconButton(onClick = onHistoryClick) {
+                    val previousSessionId = data.previousSessionId
+                    if (previousSessionId != null) {
+                        IconButton(onClick = { onHistoryClick(previousSessionId) }) {
                             Icon(
                                 painter = KenkoIcons.History,
                                 contentDescription = null,
                             )
                         }
                     }
+                    val planId = data.planId
                     if (planId != null) {
-                        IconButton(onClick = { onEditPlanClick(planId) }) {
+                        IconButton(onClick = { onEditPlanClick(planId, data.routineId) }) {
                             Icon(
                                 painter = KenkoIcons.Rename,
                                 contentDescription = null,
@@ -220,41 +333,80 @@ private fun SetsList(
                 },
             )
         }
-        exerciseSets.forEach { (exercise, sets) ->
+        if (data.exercises.isEmpty()) {
             item(
                 span = { GridItemSpan(maxLineSpan) },
             ) {
-                StickyHeader(name = exercise.name) {
+                Text(
+                    text = stringResource(R.string.no_exercises_yet),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(16.dp),
+                )
+            }
+        }
+        data.exercises.forEach { (exercise, sets) ->
+            item(
+                key = "exercise_${exercise.id}",
+                span = { GridItemSpan(maxLineSpan) },
+            ) {
+                SetGroupHeader(name = exercise.name) {
                     if (!exercise.reference.isNullOrBlank()) {
                         FilledTonalIconButton(onClick = { onReferenceClick(exercise.reference) }) {
                             Icon(painter = KenkoIcons.Lightbulb, contentDescription = null)
                         }
                     }
-                    if (isEditable) {
+                    if (data.isEditable) {
                         FilledTonalIconButton(
                             shapes = IconButtonShapes(
                                 shape = MaterialShapes.Circle.toShape(),
                                 pressedShape = MaterialShapes.Cookie6Sided.toShape(),
                             ),
-                            onClick = { onSelectBottomSheet(exercise) },
+                            onClick = { onAddSet(exercise) },
                         ) {
                             Icon(painter = KenkoIcons.Add, contentDescription = null)
                         }
                     }
                 }
             }
-            itemsIndexed(items = sets) { index, set ->
-                SwipeToDeleteBox(
-                    modifier = Modifier.animateItem(),
-                    onDismiss = { onRemoveSet(set.id) },
-                ) {
+            itemsIndexed(
+                items = sets,
+                key = { index, set -> set.id ?: "${exercise.id}_$index" },
+            ) { index, set ->
+                val item = @Composable {
                     SetItem(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                        set = set,
+                        repsOrDuration = set.repsOrDuration,
+                        weight = set.weight,
+                        isIsometric = exercise.isIsometric,
+                        type = set.type,
+                        isCompleted = if (data.isEditable) set.isCompleted else null,
+                        onCompletedChange = if (data.isEditable) {
+                            { onToggleSet(set) }
+                        } else {
+                            null
+                        },
+                        onClick = if (data.isEditable) {
+                            { onEditSet(set) }
+                        } else {
+                            null
+                        },
                         title = {
                             Text(normalizeInt(index + 1))
                         },
                     )
+                }
+                if (data.isEditable) {
+                    SwipeToDeleteBox(
+                        modifier = Modifier.animateItem(),
+                        onDismiss = { onRemoveSet(set.id) },
+                    ) {
+                        item()
+                    }
+                } else {
+                    Box(modifier = Modifier.animateItem()) {
+                        item()
+                    }
                 }
             }
         }
@@ -264,14 +416,18 @@ private fun SetsList(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Header(
+    title: String?,
     performedOn: LocalDate,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable (RowScope.() -> Unit),
 ) {
-    val date = remember {
+    val dayName = dayName(performedOn.dayOfWeek)
+    val heading = title ?: dayName
+    val date = remember(performedOn) {
         formatDate(performedOn, DateFormat.SessionLabel)
     }
+    val subtitle = if (heading != dayName) "$dayName · $date" else date
     TopAppBar(
         modifier = modifier,
         actions = actions,
@@ -284,13 +440,13 @@ private fun Header(
                     mutableStateOf(false)
                 }
                 TypingText(
-                    text = dayName(performedOn.dayOfWeek),
+                    text = heading,
                     onCompleteListener = {
                         startAnimatingDate = true
                     },
                 )
                 TypingText(
-                    text = date,
+                    text = subtitle,
                     startTyping = startAnimatingDate,
                     initialDelay = 0.milliseconds,
                     style = MaterialTheme.typography.labelLarge,
@@ -298,36 +454,7 @@ private fun Header(
                 )
             }
         },
-
     )
-}
-
-@Composable
-private fun StickyHeader(
-    name: String,
-    actions: (@Composable RowScope.() -> Unit)? = null,
-) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(24.dp)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(modifier = Modifier.weight(1F))
-            if (actions != null) {
-                actions()
-            }
-        }
-    }
 }
 
 @Composable
@@ -352,32 +479,6 @@ private fun SessionError(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddSetSheet(
-    exercise: Exercise,
-    onDismiss: () -> Unit,
-    onAddSet: () -> Unit,
-) {
-    val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-        sheetState = state,
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-    ) {
-        AddSet(
-            exercise = exercise,
-            onDone = {
-                onAddSet()
-                scope.launch { state.hide() }.invokeOnCompletion {
-                    if (!state.isVisible) onDismiss()
-                }
-            },
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun SessionDetailPreview(
@@ -387,14 +488,16 @@ private fun SessionDetailPreview(
         val data = remember {
             SessionDetailState.Success(
                 SessionUiData(
+                    sessionId = 1,
                     date = LocalDate(2024, 4, 15),
-                    sets = emptyMap(),
-                    isToday = true,
+                    title = "Push",
+                    exercises = emptyList(),
+                    isEditable = true,
                 ),
             )
         }
         Surface(modifier = Modifier.fillMaxSize()) {
-            SessionDetail(state = data)
+            SessionDetail(state = data, restSeconds = 90)
         }
     }
 }

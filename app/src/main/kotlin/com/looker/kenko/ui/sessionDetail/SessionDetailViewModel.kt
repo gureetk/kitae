@@ -15,45 +15,58 @@
 package com.looker.kenko.ui.sessionDetail
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
+import com.looker.kenko.data.model.DEFAULT_REPS
 import com.looker.kenko.data.model.Exercise
-import com.looker.kenko.data.model.PlanItem
+import com.looker.kenko.data.model.RoutineExercise
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
-import com.looker.kenko.data.model.localDate
-import com.looker.kenko.data.model.week
+import com.looker.kenko.data.model.SetDraft
+import com.looker.kenko.data.model.settings.DEFAULT_REST_TIMER_SECONDS
+import com.looker.kenko.data.model.toDraft
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
+import com.looker.kenko.data.repository.SettingsRepo
+import com.looker.kenko.data.timer.RestTimer
+import com.looker.kenko.data.timer.RestTimerState
 import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
-import com.looker.kenko.utils.isToday
+import com.looker.kenko.utils.today
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
 
 @HiltViewModel(assistedFactory = SessionDetailViewModel.Factory::class)
 class SessionDetailViewModel @AssistedInject constructor(
     private val repo: SessionRepo,
     private val planRepo: PlanRepo,
-    @Assisted private val routeData: Routes.SessionDetail,
+    private val settingsRepo: SettingsRepo,
+    private val timer: RestTimer,
     private val uriHandler: UriHandler,
+    @Assisted private val routeData: Routes.SessionDetail,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -61,77 +74,72 @@ class SessionDetailViewModel @AssistedInject constructor(
         fun create(routeData: Routes.SessionDetail): SessionDetailViewModel
     }
 
-    private val epochDays: Int? = routeData.epochDays.takeIf { it != -1 }
+    private val sessionId: Int = routeData.sessionId
 
-    private val sessionDate: LocalDate = epochDays?.let {
-        LocalDate.fromEpochDays(it)
-    } ?: localDate
-
-    val previousSessionDate = sessionDate - week
-
-    private val previousSessionExists: Flow<Boolean> = repo.streamByDate(previousSessionDate)
-        .map { it != null }
-
-    private val sessionStream: Flow<Session?> = repo.streamByDate(sessionDate)
+    private val sessionStream: Flow<Session?> = repo.session(sessionId)
+        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val exercisesToday: Flow<List<Exercise>> = sessionStream.flatMapLatest { session ->
-        if (sessionDate.isToday) {
-            planRepo.activeExercises(sessionDate.dayOfWeek)
-        } else if (session != null) {
-            if (session.planId != null) {
-                planRepo.planItems(session.planId, sessionDate.dayOfWeek)
-                    .map { it.map(PlanItem::exercise) }
+    private val routineStream: Flow<List<RoutineExercise>> = sessionStream
+        .map { it?.routineId }
+        .distinctUntilChanged()
+        .flatMapLatest { routineId ->
+            if (routineId == null) flowOf(emptyList()) else planRepo.routineExercises(routineId)
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val previousSessionStream: Flow<Int?> = sessionStream
+        .map { session -> session?.let { it.routineId to it.date } }
+        .distinctUntilChanged()
+        .mapLatest { key ->
+            key?.let { repo.previousSessionId(sessionId, it.first, it.second) }
+        }
+
+    private val isFinishing = MutableStateFlow(false)
+
+    private var routine: List<RoutineExercise> = emptyList()
+    private var lastSuccess: SessionDetailState.Success? = null
+
+    val state: StateFlow<SessionDetailState> = combine(
+        sessionStream,
+        routineStream,
+        previousSessionStream,
+        isFinishing,
+    ) { session, routine, previousSessionId, finishing ->
+        this.routine = routine
+        if (session == null) {
+            return@combine if (finishing) {
+                lastSuccess ?: SessionDetailState.Loading
             } else {
-                flowOf(session.sets.map { it.exercise })
+                SessionDetailState.Error.InvalidSession
             }
-        } else {
-            flowOf(emptyList())
+        }
+        SessionDetailState.Success(session.toUiData(routine, previousSessionId))
+            .also { lastSuccess = it }
+    }.asStateFlow(SessionDetailState.Loading)
+
+    val restTimer: StateFlow<RestTimerState> = timer.state
+
+    val restSeconds: StateFlow<Int> = settingsRepo.get { restTimerSeconds }
+        .asStateFlow(DEFAULT_REST_TIMER_SECONDS)
+
+    private val _sheet = MutableStateFlow<SetSheet?>(null)
+    val sheet: StateFlow<SetSheet?> = _sheet.asStateFlow()
+    private var sheetCount = 0L
+
+    fun toggleSet(set: Set) {
+        val setId = set.id ?: return
+        val completing = !set.isCompleted
+        val data = (state.value as? SessionDetailState.Success)?.data
+        val isLastSet = data != null && data.incompleteSets <= 1
+        viewModelScope.launch {
+            repo.setCompleted(setId, completing)
+            if (completing && !isLastSet) {
+                val seconds = settingsRepo.get { restTimerSeconds }.first()
+                if (seconds > 0) timer.start(seconds.seconds)
+            }
         }
     }
-
-    private val _currentExercise: MutableStateFlow<Exercise?> = MutableStateFlow(null)
-    val current: StateFlow<Exercise?> = _currentExercise
-
-    val state: StateFlow<SessionDetailState> =
-        combine(
-            sessionStream,
-            exercisesToday,
-            previousSessionExists,
-            planRepo.current,
-        ) { session, exercises, previousSession, activePlan ->
-            if (session == null && epochDays != null) {
-                return@combine SessionDetailState.Error.InvalidSession
-            }
-
-            if (exercises.isEmpty() && sessionDate.isToday) {
-                return@combine SessionDetailState.Error.EmptyPlan
-            }
-
-            val currentSession = session ?: Session(-1, emptyList())
-
-            val exerciseMap = when {
-                sessionDate.isToday || exercises.isNotEmpty() -> exercises.associateWith { exercise ->
-                    currentSession.sets.filter { it.exercise.id == exercise.id }
-                }
-
-                currentSession.sets.isNotEmpty() -> currentSession.sets.groupBy { it.exercise }
-                else -> emptyMap()
-            }
-
-            val planId = session?.planId ?: if (sessionDate.isToday) activePlan?.id else null
-
-            SessionDetailState.Success(
-                SessionUiData(
-                    date = currentSession.date,
-                    sets = exerciseMap,
-                    isToday = currentSession.date.isToday,
-                    planId = planId,
-                    hasPreviousSession = previousSession,
-                ),
-            )
-        }.onStart { emit(SessionDetailState.Loading) }
-            .asStateFlow(SessionDetailState.Loading)
 
     fun removeSet(setId: Int?) {
         if (setId == null) return
@@ -140,16 +148,70 @@ class SessionDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun showBottomSheet(exercise: Exercise) {
+    fun openAddSet(exercise: Exercise) {
+        val exerciseId = exercise.id ?: return
         viewModelScope.launch {
-            _currentExercise.emit(exercise)
+            val data = (state.value as? SessionDetailState.Success)?.data
+            val initial = data?.exercises
+                ?.firstOrNull { it.exercise.id == exerciseId }
+                ?.sets?.lastOrNull()?.toDraft()
+                ?: routine.firstOrNull { it.exercise.id == exerciseId }
+                    ?.sets?.lastOrNull()?.toDraft()
+                ?: repo.getLastSetByExerciseId(exerciseId)?.toDraft()
+                ?: defaultSet()
+            _sheet.value = SetSheet(id = ++sheetCount, exercise = exercise, initial = initial)
         }
     }
 
-    fun hideSheet() {
+    fun openEditSet(set: Set) {
+        val setId = set.id ?: return
+        _sheet.value = SetSheet(
+            id = ++sheetCount,
+            exercise = set.exercise,
+            initial = set.toDraft(),
+            setId = setId,
+        )
+    }
+
+    fun saveSheet(set: SetDraft) {
+        val sheet = _sheet.value ?: return
+        if (sheet.isSaved) return
+        _sheet.value = sheet.copy(isSaved = true)
         viewModelScope.launch {
-            _currentExercise.emit(null)
+            if (sheet.setId != null) {
+                repo.updateSet(sheet.setId, set)
+            } else {
+                val exerciseId = sheet.exercise.id ?: return@launch
+                repo.addSet(sessionId = sessionId, exerciseId = exerciseId, set = set)
+            }
         }
+    }
+
+    fun dismissSheet() {
+        _sheet.value = null
+    }
+
+    fun finish(onFinished: () -> Unit) {
+        if (isFinishing.value) return
+        isFinishing.value = true
+        viewModelScope.launch {
+            timer.skip()
+            repo.finishSession(sessionId)
+            onFinished()
+        }
+    }
+
+    fun startRest() {
+        val seconds = restSeconds.value
+        if (seconds > 0) timer.start(seconds.seconds)
+    }
+
+    fun adjustRest(seconds: Int) {
+        timer.adjust(seconds.seconds)
+    }
+
+    fun skipRest() {
+        timer.skip()
     }
 
     fun openReference(reference: String) {
@@ -161,16 +223,63 @@ class SessionDetailViewModel @AssistedInject constructor(
             }
         }
     }
+
+    private suspend fun defaultSet(): SetDraft {
+        val unit = settingsRepo.get { weightUnit }.first()
+        return SetDraft(repsOrDuration = DEFAULT_REPS, weight = unit.defaultWeightKg)
+    }
+
+    private fun Session.toUiData(
+        routine: List<RoutineExercise>,
+        previousSessionId: Int?,
+    ): SessionUiData {
+        val today = today()
+        val isEditable = date == today ||
+            (hasIncompleteSets && date.toEpochDays() >= today.toEpochDays() - 1)
+        return SessionUiData(
+            sessionId = sessionId,
+            date = date,
+            title = routineName,
+            exercises = groupSessionExercises(
+                sets = sets,
+                routineExercises = routine.map { it.exercise },
+                isEditable = isEditable,
+            ),
+            isEditable = isEditable,
+            planId = planId,
+            routineId = routineId,
+            previousSessionId = previousSessionId,
+            completedSets = completedSets.size,
+            totalSets = sets.size,
+        )
+    }
 }
+
+@Immutable
+data class SetSheet(
+    val id: Long,
+    val exercise: Exercise,
+    val initial: SetDraft,
+    val setId: Int? = null,
+    val isSaved: Boolean = false,
+)
 
 @Stable
 data class SessionUiData(
+    val sessionId: Int,
     val date: LocalDate,
-    val sets: Map<Exercise, List<Set>>,
-    val isToday: Boolean = false,
+    val title: String?,
+    val exercises: List<SessionExercise>,
+    val isEditable: Boolean,
     val planId: Int? = null,
-    val hasPreviousSession: Boolean = false,
-)
+    val routineId: Int? = null,
+    val previousSessionId: Int? = null,
+    val completedSets: Int = 0,
+    val totalSets: Int = 0,
+) {
+    val incompleteSets: Int
+        get() = totalSets - completedSets
+}
 
 sealed interface SessionDetailState {
 
@@ -185,11 +294,6 @@ sealed interface SessionDetailState {
         data object InvalidSession : Error(
             title = R.string.label_missed_day,
             errorMessage = R.string.error_cant_find_session,
-        )
-
-        data object EmptyPlan : Error(
-            title = R.string.label_nothing_today,
-            errorMessage = R.string.label_no_exercise_today,
         )
     }
 }

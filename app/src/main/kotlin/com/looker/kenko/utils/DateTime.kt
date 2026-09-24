@@ -34,6 +34,9 @@ operator fun EpochDays.plus(other: EpochDays) = EpochDays(value + other.value)
 
 fun LocalDate.toLocalEpochDays() = EpochDays(toEpochDays().toInt())
 
+// Not cached, stays right past midnight
+fun today(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
 inline operator fun DayOfWeek.plus(days: Int): DayOfWeek {
     val amount = (days % 7)
     return DayOfWeek(((ordinal + (amount + 7)) % 7) + 1)

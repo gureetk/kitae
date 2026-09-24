@@ -33,6 +33,7 @@ interface PerformanceDao {
         SELECT sessions.date AS date, COUNT(sets.id) AS count
         FROM sessions
         LEFT JOIN sets ON sets.sessionId = sessions.id
+        AND sets.isCompleted = 1
         GROUP BY sessions.date
         ORDER BY sessions.date ASC
         """,
@@ -75,17 +76,13 @@ interface PerformanceDao {
             append(") AS rating FROM sets ")
             append("INNER JOIN set_type ON sets.type = set_type.type ")
             append("INNER JOIN sessions ON sets.sessionId = sessions.id ")
+            append("WHERE sets.isCompleted = 1 ")
             if (exerciseId != null) {
-                append("WHERE (sets.exerciseId = ?) ")
+                append("AND sets.exerciseId = ? ")
                 selection.add(exerciseId)
             }
             if (planId != null) {
-                if (exerciseId != null) {
-                    append("AND ")
-                } else {
-                    append("WHERE ")
-                }
-                append("sessions.planId = ? ")
+                append("AND sessions.planId = ? ")
                 selection.add(planId)
             }
             append("GROUP BY sessions.date ")

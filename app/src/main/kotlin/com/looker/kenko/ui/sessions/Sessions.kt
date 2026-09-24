@@ -65,7 +65,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun Sessions(
     viewModel: SessionsViewModel,
-    onSessionClick: (LocalDate?) -> Unit,
+    onSessionClick: (sessionId: Int) -> Unit,
     onBackPress: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -80,7 +80,7 @@ fun Sessions(
 @Composable
 private fun Sessions(
     state: SessionsUiData,
-    onSessionClick: (LocalDate?) -> Unit,
+    onSessionClick: (sessionId: Int) -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,18 +97,11 @@ private fun Sessions(
             )
         },
         floatingActionButton = {
-            TertiaryKenkoButton(
-                onClick = { onSessionClick(null) },
+            val activeSessionId = state.activeSessionId
+            if (activeSessionId != null) TertiaryKenkoButton(
+                onClick = { onSessionClick(activeSessionId) },
                 label = {
-                    val isCurrentSessionActive = state.isCurrentSessionActive
-                    val text = remember(isCurrentSessionActive) {
-                        if (isCurrentSessionActive) {
-                            R.string.label_continue_session
-                        } else {
-                            R.string.label_start_session
-                        }
-                    }
-                    Text(text = stringResource(id = text))
+                    Text(text = stringResource(id = R.string.label_continue_session))
                 },
                 icon = {
                     Icon(
@@ -137,7 +130,7 @@ private fun Sessions(
                     SessionCard(
                         modifier = Modifier.padding(horizontal = 14.dp),
                         session = session,
-                        onClick = { onSessionClick(session.date) },
+                        onClick = { session.id?.let(onSessionClick) },
                     )
                 }
             }
@@ -175,7 +168,7 @@ fun SessionCard(
         ) {
             val titleStyle = MaterialTheme.typography.titleLarge
             val secondaryEmphasis = MaterialTheme.colorScheme.outline
-            val dayName = dayName(session.date.dayOfWeek)
+            val dayName = session.routineName ?: dayName(session.date.dayOfWeek)
             val string = remember(session.date, dayName) {
                 buildAnnotatedString {
                     withStyle(titleStyle.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
@@ -226,7 +219,7 @@ private fun SessionsPreview(
 ) {
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Sessions(
-            state = SessionsUiData(listOf(Session(1, emptyList())), false),
+            state = SessionsUiData(listOf(Session(1, emptyList())), null),
             onBackPress = {},
             onSessionClick = {},
         )
