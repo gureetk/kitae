@@ -40,7 +40,8 @@ android {
         minSdk = 26
         targetSdk = 37
         versionName = "1.0.0"
-        versionCode = versionCodeFor(versionName)
+        // 1.2.3 -> 102030
+        versionCode = 100000
     }
 
     dependenciesInfo.includeInApk = false
@@ -140,19 +141,4 @@ dependencies {
 
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)
-}
-
-fun versionCodeFor(version: String?): Int? {
-    if (version == null) return null
-    val (major, minor, patch) = version
-        .substringBefore('-')
-        .trim()
-        .split('.')
-        .map { it.toUIntOrNull() }
-
-    require(major != null && minor != null && patch != null) {
-        "Each segment must be within 0..99 for mapping, was: '$version'"
-    }
-
-    return (major * 100_000u + minor * 1_000u + patch * 10u).toInt()
 }

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="metadata/en-US/images/featureGraphic.png" alt="Kitae">
+<img src="fastlane/metadata/android/en-US/images/featureGraphic.png" alt="Kitae">
 
 Kitae is a workout journal built around your training days: plan your split once, then pick a day and tick off your sets.
 
