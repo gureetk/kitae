@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Weights can be shown and entered in kilograms or pounds
 - Workouts can be finished, keeping the sets that were not done as skipped (shown dimmed in the history, never counted as done) or removing them. The plan itself is never changed
 - A check mark in the plan editor to finish editing a plan
+- A workout stays in progress until it is finished. Starting a day again after finishing always begins fresh from the plan
 
 ### Changed
 

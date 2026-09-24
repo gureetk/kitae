@@ -230,10 +230,7 @@ class SessionDetailViewModel @AssistedInject constructor(
         previousSessionId: Int?,
     ): SessionUiData {
         val today = today()
-        val isEditable = !isFinished && (
-            date == today ||
-                (hasIncompleteSets && date.toEpochDays() >= today.toEpochDays() - 1)
-            )
+        val isEditable = !isFinished && date.toEpochDays() >= today.toEpochDays() - 1
         return SessionUiData(
             sessionId = sessionId,
             date = date,

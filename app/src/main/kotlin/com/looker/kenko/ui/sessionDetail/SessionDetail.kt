@@ -250,7 +250,7 @@ private fun SessionDetail(
                     RestTimerBar(
                         state = restTimer,
                         restSeconds = restSeconds,
-                        showFinish = data.totalSets > 0,
+                        showFinish = true,
                         onStart = onStartRest,
                         onAdjust = onAdjustRest,
                         onSkip = onSkipRest,

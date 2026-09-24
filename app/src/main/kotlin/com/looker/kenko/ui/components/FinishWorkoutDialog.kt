@@ -40,33 +40,47 @@ fun FinishWorkoutDialog(
     message: String? = null,
 ) {
     val resources = LocalContext.current.resources
-    val setsMessage = resources.getQuantityString(
-        R.plurals.finish_incomplete_sets,
-        incompleteSets,
-        incompleteSets,
-    )
+    val setsMessage = if (incompleteSets > 0) {
+        resources.getQuantityString(
+            R.plurals.finish_incomplete_sets,
+            incompleteSets,
+            incompleteSets,
+        )
+    } else {
+        null
+    }
+    val text = listOfNotNull(message, setsMessage).joinToString("\n\n")
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = title) },
         text = {
-            Text(text = if (message != null) "$message\n\n$setsMessage" else setsMessage)
+            if (text.isNotEmpty()) Text(text = text)
         },
         confirmButton = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Button(
-                    onClick = onKeep,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = stringResource(R.string.label_keep_skipped))
-                }
-                OutlinedButton(
-                    onClick = onRemove,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = stringResource(R.string.label_remove_unfinished))
+                if (incompleteSets > 0) {
+                    Button(
+                        onClick = onKeep,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(R.string.label_keep_skipped))
+                    }
+                    OutlinedButton(
+                        onClick = onRemove,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(R.string.label_remove_unfinished))
+                    }
+                } else {
+                    Button(
+                        onClick = onKeep,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(R.string.label_finish))
+                    }
                 }
                 TextButton(
                     onClick = onDismiss,

@@ -94,11 +94,6 @@ interface SessionDao {
         LEFT JOIN routines ON routines.id = sessions.routineId
         WHERE sessions.date >= :minDate
         AND sessions.isFinished = 0
-        AND EXISTS
-        (SELECT 1
-        FROM sets
-        WHERE sets.sessionId = sessions.id
-        AND sets.isCompleted = 0)
         ORDER BY sessions.date DESC, sessions.id DESC
         LIMIT 1
         """,
