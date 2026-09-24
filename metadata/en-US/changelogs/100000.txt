@@ -1,1 +1,8 @@
-Initial Release
+First release of Kitae, based on Kenko 1.3.3
+
+• Plans made of named training days, like Push, Pull and Legs
+• Sets planned ahead and ticked off as you train
+• Rest timer that keeps counting with the screen off
+• Warm-up and failure sets
+• Kilograms or pounds
+• Days trained on your profile

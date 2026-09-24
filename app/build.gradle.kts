@@ -35,10 +35,11 @@ android {
     compileSdk { version = release(37) }
 
     defaultConfig {
-        applicationId = "com.kenkoroutines.app"
+        // Never change once published
+        applicationId = "page.codeberg.wingback.kitae"
         minSdk = 26
         targetSdk = 37
-        versionName = "1.3.3"
+        versionName = "1.0.0"
         versionCode = versionCodeFor(versionName)
     }
 
