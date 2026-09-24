@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Izpētiet\nVingrinājumus</string>
     <string name="label_session_history_home">Sesijas\nVēsture</string>
     <string name="label_sessions_title">Trenings</string>
-    <string name="label_nothing_today">Šodien neko</string>
     <string name="label_missed_day">Vai palaidāt kādu dienu?</string>
     <string name="label_plans_title">Plāni</string>
     <string name="label_edit_plan">Rediģēt plānu</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Tīrīt</string>
     <string name="label_clean_up_plans">Vai dzēst tukšos plānus?</string>
     <string name="heading_select_plan_name">Izvēlieties plāna nosaukumu</string>
-    <string name="heading_select_plan_items">Izvēlieties vingrinājumus</string>
     <string name="desc_select_plan_name">Plāna nosaukumam jābūt viegli atcerams un ne pārāk garam. Ideāli, ja tas ir unikāls un nesatur īpašus simbolus.
   piemēram: Push Pull Leg, Strength Cycle, utt.</string>
     <string name="label_select_plan">Izvēlieties plānu</string>
     <string name="label_select_plan_one">Izvēlieties plānu</string>
     <string name="label_current_plan_FORMAT">Pašreizējais: %s</string>
     <string name="label_lifts">Līkumi</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Pārlūkot vingrinājumus</string>
     <string name="label_all_muscle_groups">Viss</string>
     <string name="label_create_exercise">Izveidot</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Šis vingrojums jau pastāv</string>
     <string name="label_add_exercise_header">Pievienot vingrinājumu</string>
     <string name="label_search_exercise">Meklēt vingrinājumu</string>
-    <string name="label_no_exercise_today">Šodien nav ieplānoti treniņi.</string>
     <string name="label_add_set_for">Pievienot seri ju</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Iestatījumi</string>
     <string name="label_name">Vārds</string>
     <string name="label_add">Pievienot</string>
     <string name="label_save">Saglabāt</string>
     <string name="label_yes">Jā</string>
     <string name="label_no">Nē</string>
-    <string name="label_session">Sesija</string>
     <string name="label_exercise">Vingrinājums</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Pleci</string>
     <string name="label_select_a_plan">Izvēlieties plānu</string>
     <string name="label_selecting_a_plan">Sāciet, izvēloties plānu.</string>
-    <string name="label_start_first_session">Sāciet savu pirmo treniņu.</string>
-    <string name="label_start_session_heading">Sāciet šodienas treniņu</string>
-    <string name="label_continue_session_heading">Turpināt šodienas treniņu</string>
     <string name="label_next">Nākamais</string>
     <string name="label_boarding_quote">Tava nākamā transformācija sākas šeit.</string>
     <string name="label_no_sessions">Nav veikta neviena treniņu sesija</string>

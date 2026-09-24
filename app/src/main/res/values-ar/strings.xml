@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">استكشف التمارين</string>
     <string name="label_session_history_home">السجل\nالتاريخ</string>
     <string name="label_sessions_title">الجلسات</string>
-    <string name="label_nothing_today">لا شيء اليوم</string>
     <string name="label_missed_day">هل فوّت يومًا؟</string>
     <string name="label_plans_title">خطط</string>
     <string name="label_edit_plan">تعديل الخطة</string>
@@ -30,14 +29,12 @@
     <string name="label_clean_up">نظف</string>
     <string name="label_clean_up_plans">هل تريد مسح الخطط الفارغة؟</string>
     <string name="heading_select_plan_name">اختر اسمًا للخطة</string>
-    <string name="heading_select_plan_items">اختر التمارين</string>
     <string name="desc_select_plan_name">يجب أن يكون اسم الخطة سهل التذكر وغير طويل جدًا. من الأفضل أن يكون فريدًا ولا يحتوي على رموز خاصة.
   مثال: Push Pull Leg, Strength Cycle، إلخ.</string>
     <string name="label_select_plan">اختر البرنامج</string>
     <string name="label_select_plan_one">اختر البرنامج</string>
     <string name="label_current_plan_FORMAT">الحالي: %s</string>
     <string name="label_lifts">رفعات</string>
-    <string name="label_plan_description">هذه سلسلة نصية من تطبيق لتتبع اللياقة البدنية للتمارين في صالة الألعاب الرياضية.</string>
     <string name="label_browse_exercises">تصفح التمارين</string>
     <string name="label_all_muscle_groups">كل</string>
     <string name="label_create_exercise">إنشاء</string>
@@ -51,17 +48,13 @@
     <string name="label_exercise_exists">تمت إضافة التمرين بالفعل</string>
     <string name="label_add_exercise_header">إضافة تمرين</string>
     <string name="label_search_exercise">ابحث عن تمرين</string>
-    <string name="label_no_exercise_today">لم يتم تخطيط أي تمارين لليوم.</string>
     <string name="label_add_set_for">أضف مجموعة تمارين</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">الإعدادات</string>
     <string name="label_name">الاسم</string>
     <string name="label_add">أضف</string>
     <string name="label_save">حفظ</string>
     <string name="label_yes">نعم</string>
     <string name="label_no">لا</string>
-    <string name="label_session">الجلسة</string>
     <string name="label_exercise">تمرين</string>
     <string name="label_reps">عدد التكرارات</string>
     <string name="label_duration">المدة</string>
@@ -120,9 +113,6 @@
     <string name="label_muscle_shoulders">الكتفين</string>
     <string name="label_select_a_plan">اختر خطة</string>
     <string name="label_selecting_a_plan">ابدأ باختيار خطة</string>
-    <string name="label_start_first_session">ابدأ أول تمرين لك</string>
-    <string name="label_start_session_heading">ابدأ جلسة اليوم</string>
-    <string name="label_continue_session_heading">استمر في التمرين اليوم.</string>
     <string name="label_next">التالي</string>
     <string name="label_boarding_quote">تبدأ رحلتك نحو التحول التالي من هنا.</string>
     <string name="label_no_sessions">لم يتم إجراء أي جلسات</string>

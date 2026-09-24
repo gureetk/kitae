@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Εξερευνήστε\nΑσκήσεις</string>
     <string name="label_session_history_home">Ιστορικό προπονήσεων</string>
     <string name="label_sessions_title">Προπονήσεις</string>
-    <string name="label_nothing_today">Τίποτα σήμερα</string>
     <string name="label_missed_day">Ξεπαστήσατε την ημέρα;</string>
     <string name="label_plans_title">Προγράμματα</string>
     <string name="label_edit_plan">Επεξεργασία Προγράμματος</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Καθαρισμός</string>
     <string name="label_clean_up_plans">Θα διαγράψετε τα άδεια προγράμματα;</string>
     <string name="heading_select_plan_name">Επιλέξτε ένα όνομα προγράμματος</string>
-    <string name="heading_select_plan_items">Επιλέξτε ασκήσεις</string>
     <string name="desc_select_plan_name">Το όνομα του προγράμματος πρέπει να είναι εύκολο να το θυμάστε και όχι πολύ μεγάλο. Ιδανικά, θα πρέπει να είναι μοναδικό και να μην περιέχει ειδικούς χαρακτήρες.\n
   Παραδείγματα: Push Pull Leg, Strength Cycle, κ.λπ.</string>
     <string name="label_select_plan">Επιλέξτε πρόγραμμα</string>
     <string name="label_select_plan_one">Επιλέξτε πρόγραμμα</string>
     <string name="label_current_plan_FORMAT">Τρέχουσα: %s</string>
     <string name="label_lifts">Ασκήσεις</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Περιήγηση στις Ασκήσεις</string>
     <string name="label_all_muscle_groups">Όλα</string>
     <string name="label_create_exercise">Δημιουργία</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Η άσκηση υπάρχει ήδη.</string>
     <string name="label_add_exercise_header">Προσθήκη Άσκησης</string>
     <string name="label_search_exercise">Αναζήτηση Άσκησης</string>
-    <string name="label_no_exercise_today">Δεν έχουν προγραμματιστεί ασκήσεις για σήμερα.</string>
     <string name="label_add_set_for">Προσθήκη Σετ για</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Ρυθμίσεις</string>
     <string name="label_name">Όνομα</string>
     <string name="label_add">Προσθέστε</string>
     <string name="label_save">Αποθήκευση</string>
     <string name="label_yes">Ναι</string>
     <string name="label_no">Όχι</string>
-    <string name="label_session">Συνεδρία</string>
     <string name="label_exercise">Άσκηση</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">διάρκεια</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Ώμοι</string>
     <string name="label_select_a_plan">Επιλέξτε ένα πρόγραμμα</string>
     <string name="label_selecting_a_plan">Ξεκινήστε επιλέγοντας ένα πρόγραμμα.</string>
-    <string name="label_start_first_session">Ξεκινήστε την πρώτη σας προπόνηση</string>
-    <string name="label_start_session_heading">Ξεκινήστε τη σημερινή προπόνηση</string>
-    <string name="label_continue_session_heading">Συνεχίστε τη σημερινή προπόνηση</string>
     <string name="label_next">Επόμενο</string>
     <string name="label_boarding_quote">Η επόμενη σας μεταμόρφωση ξεκινά εδώ.</string>
     <string name="label_no_sessions">Δεν πραγματοποιήθηκαν προπονήσεις</string>

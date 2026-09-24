@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">운동\n루틴 둘러보기</string>
     <string name="label_session_history_home">세션 기록</string>
     <string name="label_sessions_title">세션</string>
-    <string name="label_nothing_today">오늘 아무것도 없음</string>
     <string name="label_missed_day">오늘 운동을 놓치셨나요?</string>
     <string name="label_plans_title">계획</string>
     <string name="label_edit_plan">계획 편집</string>
@@ -30,14 +29,12 @@
     <string name="label_clean_up">정리</string>
     <string name="label_clean_up_plans">빈 운동 계획을 삭제하시겠습니까?</string>
     <string name="heading_select_plan_name">계획 이름을 선택하세요.</string>
-    <string name="heading_select_plan_items">운동 선택</string>
     <string name="desc_select_plan_name">계획 이름은 기억하기 쉽고 너무 길지 않아야 합니다. 이상적으로는 고유하며 특수 문자가 없어야 합니다.\n
   예: Push Pull Leg, Strength Cycle 등.</string>
     <string name="label_select_plan">계획 선택</string>
     <string name="label_select_plan_one">계획 선택</string>
     <string name="label_current_plan_FORMAT">현재: %s</string>
     <string name="label_lifts">운동</string>
-    <string name="label_plan_description">빈칸</string>
     <string name="label_browse_exercises">운동 루틴 둘러보기</string>
     <string name="label_all_muscle_groups">전체</string>
     <string name="label_create_exercise">생성</string>
@@ -51,17 +48,13 @@
     <string name="label_exercise_exists">운동이 이미 존재합니다</string>
     <string name="label_add_exercise_header">운동 추가</string>
     <string name="label_search_exercise">운동 검색</string>
-    <string name="label_no_exercise_today">오늘 운동 계획이 없습니다</string>
     <string name="label_add_set_for">세트 추가</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">설정</string>
     <string name="label_name">이름</string>
     <string name="label_add">추가</string>
     <string name="label_save">저장</string>
     <string name="label_yes">네</string>
     <string name="label_no">아니요</string>
-    <string name="label_session">세션</string>
     <string name="label_exercise">운동</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -120,9 +113,6 @@
     <string name="label_muscle_shoulders">어깨</string>
     <string name="label_select_a_plan">계획을 선택하세요</string>
     <string name="label_selecting_a_plan">계획을 선택하여 시작하세요.</string>
-    <string name="label_start_first_session">첫 번째 운동 시작하기</string>
-    <string name="label_start_session_heading">오늘 세션 시작하기</string>
-    <string name="label_continue_session_heading">오늘 세션을 계속합니다.</string>
     <string name="label_next">다음</string>
     <string name="label_boarding_quote">당신의 다음 변화는 여기서 시작됩니다.</string>
     <string name="label_no_sessions">세션이 수행되지 않았습니다.</string>

@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Ontdek\nOefeningen</string>
     <string name="label_session_history_home">Training\nHistorie</string>
     <string name="label_sessions_title">Trainings</string>
-    <string name="label_nothing_today">Niets voor vandaag</string>
     <string name="label_missed_day">Heb je de dag gemist?</string>
     <string name="label_plans_title">Plannen</string>
     <string name="label_edit_plan">Bewerk plan</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Opruimen</string>
     <string name="label_clean_up_plans">Lege lege trainingsplannen op?</string>
     <string name="heading_select_plan_name">Selecteer een plannaam</string>
-    <string name="heading_select_plan_items">Selecteer oefeningen</string>
     <string name="desc_select_plan_name">De naam van je trainingsplan moet gemakkelijk te onthouden zijn en niet te lang. Idealiter is deze uniek en bevat deze geen speciale symbolen.
   e.g: Push Pull Leg, Strength Cycle, etc.</string>
     <string name="label_select_plan">Selecteer plan</string>
     <string name="label_select_plan_one">Selecteer plan</string>
     <string name="label_current_plan_FORMAT">Huidig: %s</string>
     <string name="label_lifts">Oefeningen</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Bekijk oefeningen</string>
     <string name="label_all_muscle_groups">Alles</string>
     <string name="label_create_exercise">Maak</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Oefening bestaat al</string>
     <string name="label_add_exercise_header">Voeg oefening toe</string>
     <string name="label_search_exercise">Zoek oefening</string>
-    <string name="label_no_exercise_today">Geen trainingen gepland voor vandaag</string>
     <string name="label_add_set_for">Voeg set toe voor</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Instellingen</string>
     <string name="label_name">Naam</string>
     <string name="label_add">Voeg toe</string>
     <string name="label_save">Opslaan</string>
     <string name="label_yes">Ja</string>
     <string name="label_no">Nee</string>
-    <string name="label_session">Training</string>
     <string name="label_exercise">Oefening</string>
     <string name="label_reps">herhalingen</string>
     <string name="label_duration">duur</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Schouders</string>
     <string name="label_select_a_plan">Selecteer een programma</string>
     <string name="label_selecting_a_plan">Begin met het selecteren van een programma</string>
-    <string name="label_start_first_session">Start je eerste sessie</string>
-    <string name="label_start_session_heading">Start vandaag\&#39;s sessie</string>
-    <string name="label_continue_session_heading">Ga verder met de huidige sessie</string>
     <string name="label_next">Volgende</string>
     <string name="label_boarding_quote">Jouw volgende transformatie begint hier.</string>
     <string name="label_no_sessions">Geen sessies uitgevoerd</string>

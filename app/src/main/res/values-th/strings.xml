@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">ค้นหา\nแบบฝึก</string>
     <string name="label_session_history_home">ประวัติการใช้งาน</string>
     <string name="label_sessions_title">เซสชัน</string>
-    <string name="label_nothing_today">ไม่มีอะไรในวันนี้</string>
     <string name="label_missed_day">คุณพลาดวันไปหรือเปล่า</string>
     <string name="label_plans_title">แผน</string>
     <string name="label_edit_plan">แก้ไขแผน</string>
@@ -30,14 +29,12 @@
     <string name="label_clean_up">ทำความสะอาด</string>
     <string name="label_clean_up_plans">ต้องการล้างแผนการฝึกที่ว่างเปล่าหรือไม่</string>
     <string name="heading_select_plan_name">เลือกชื่อแผน</string>
-    <string name="heading_select_plan_items">เลือกท่าออกกำลังกาย</string>
     <string name="desc_select_plan_name">ชื่อแผนควรเป็นชื่อที่จำง่ายและไม่ยาวเกินไป ควรเป็นชื่อที่ไม่ซ้ำและไม่มีสัญลักษณ์พิเศษ
 ตัวอย่าง: Push Pull Leg, Strength Cycle, เป็นต้น</string>
     <string name="label_select_plan">เลือกแผน</string>
     <string name="label_select_plan_one">เลือกแผน</string>
     <string name="label_current_plan_FORMAT">ปัจจุบัน: %s</string>
     <string name="label_lifts">การยกน้ำหนัก</string>
-    <string name="label_plan_description">(ไม่มีข้อความที่ต้องแปล)</string>
     <string name="label_browse_exercises">เรียกดูท่าออกกำลังกาย</string>
     <string name="label_all_muscle_groups">ทั้งหมด</string>
     <string name="label_create_exercise">สร้าง</string>
@@ -51,17 +48,13 @@
     <string name="label_exercise_exists">แบบฝึกหัดนี้มีอยู่แล้ว</string>
     <string name="label_add_exercise_header">เพิ่มการออกกำลังกาย</string>
     <string name="label_search_exercise">ค้นหาท่าออกกำลังกาย</string>
-    <string name="label_no_exercise_today">วันนี้ไม่มีการวางแผนการออกกำลังกาย</string>
     <string name="label_add_set_for">เพิ่มเซ็ตสำหรับ</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">การตั้งค่า</string>
     <string name="label_name">ชื่อ</string>
     <string name="label_add">เพิ่ม</string>
     <string name="label_save">บันทึก</string>
     <string name="label_yes">ใช่</string>
     <string name="label_no">ไม่มี</string>
-    <string name="label_session">เซสชัน</string>
     <string name="label_exercise">การออกกำลังกาย</string>
     <string name="label_reps">จำนวนครั้ง</string>
     <string name="label_duration">ระยะเวลา</string>
@@ -120,9 +113,6 @@
     <string name="label_muscle_shoulders">ไหล่</string>
     <string name="label_select_a_plan">เลือกแผน</string>
     <string name="label_selecting_a_plan">เริ่มต้นด้วยการเลือกแผน</string>
-    <string name="label_start_first_session">เริ่มต้นเซสชันแรกของคุณ</string>
-    <string name="label_start_session_heading">เริ่มเซสชันของวันนี้</string>
-    <string name="label_continue_session_heading">ดำเนินการต่อเซสชันในวันนี้</string>
     <string name="label_next">ถัดไป</string>
     <string name="label_boarding_quote">การเปลี่ยนแปลงครั้งต่อไปของคุณเริ่มต้นที่นี่</string>
     <string name="label_no_sessions">ยังไม่มีเซสชันที่บันทึก</string>

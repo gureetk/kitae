@@ -23,7 +23,6 @@
     <string name="label_session_history_home">Sesja
 Historia</string>
     <string name="label_sessions_title">Sesje</string>
-    <string name="label_nothing_today">Nic dziś.</string>
     <string name="label_missed_day">Czy pominąłeś ten dzień?</string>
     <string name="label_plans_title">Plany</string>
     <string name="label_edit_plan">Edytuj plan</string>
@@ -31,15 +30,12 @@ Historia</string>
     <string name="label_clean_up">Uporządkuj</string>
     <string name="label_clean_up_plans">Czy usunąć puste plany?</string>
     <string name="heading_select_plan_name">Wybierz nazwę planu.</string>
-    <string name="heading_select_plan_items">Wybierz ćwiczenia</string>
     <string name="desc_select_plan_name">Nazwa planu powinna być łatwa do zapamiętania i nie za długa. Idealnie unikalna i bez specjalnych znaków.
   e.g.: Push Pull Leg, Strength Cycle, itp.</string>
     <string name="label_select_plan">Wybierz plan</string>
     <string name="label_select_plan_one">Wybierz plan</string>
     <string name="label_current_plan_FORMAT">Aktualne: %s</string>
     <string name="label_lifts">Ćwiczenia</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Przeglądaj ćwiczenia</string>
     <string name="label_all_muscle_groups">Wszystko</string>
     <string name="label_create_exercise">Utwórz</string>
@@ -53,17 +49,13 @@ Historia</string>
     <string name="label_exercise_exists">Ćwiczenie już istnieje.</string>
     <string name="label_add_exercise_header">Dodaj ćwiczenie</string>
     <string name="label_search_exercise">Wyszukaj ćwiczenie</string>
-    <string name="label_no_exercise_today">Brak zaplanowanych ćwiczeń na dzisiaj.</string>
     <string name="label_add_set_for">Dodaj serię dla</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Ustawienia</string>
     <string name="label_name">Nazwa</string>
     <string name="label_add">Dodaj</string>
     <string name="label_save">Zapisz</string>
     <string name="label_yes">Tak</string>
     <string name="label_no">Nie</string>
-    <string name="label_session">Sesja</string>
     <string name="label_exercise">Ćwiczenie</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">czas trwania</string>
@@ -122,9 +114,6 @@ Historia</string>
     <string name="label_muscle_shoulders">Ramiona</string>
     <string name="label_select_a_plan">Wybierz plan</string>
     <string name="label_selecting_a_plan">Rozpocznij, wybierając plan.</string>
-    <string name="label_start_first_session">Rozpocznij swoją pierwszą sesję.</string>
-    <string name="label_start_session_heading">Rozpocznij dzisiejszą sesję</string>
-    <string name="label_continue_session_heading">Kontynuuj dzisiejszą sesję</string>
     <string name="label_next">Następne</string>
     <string name="label_boarding_quote">Twoja kolejna metamorfoza zaczyna się tutaj.</string>
     <string name="label_no_sessions">Brak wykonanych treningów</string>

@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Arakatu\nAriketak</string>
     <string name="label_session_history_home">Sesio\nHistoria</string>
     <string name="label_sessions_title">Sesioak</string>
-    <string name="label_nothing_today">Ezer gaur</string>
     <string name="label_missed_day">Egun hori galdu al duzu?</string>
     <string name="label_plans_title">Planak</string>
     <string name="label_edit_plan">Plan editatu</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Garbitu</string>
     <string name="label_clean_up_plans">Plano hutsak ezabatu?</string>
     <string name="heading_select_plan_name">Hautatu planaren izena</string>
-    <string name="heading_select_plan_items">Aukatu ariketak</string>
     <string name="desc_select_plan_name">Planaren izena erraz gogoratu behar da eta ez oso luzea izan. Idealki, bakarra izan behar da eta ez ditu ikur bereziarik izan.\n
   e.g.: Push Pull Leg, Strength Cycle, etab.</string>
     <string name="label_select_plan">Plan bat aukatu</string>
     <string name="label_select_plan_one">Plan bat aukatu</string>
     <string name="label_current_plan_FORMAT">Unua: %s</string>
     <string name="label_lifts">Lortutako altuera</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Arakatu ariketak</string>
     <string name="label_all_muscle_groups">Guzti</string>
     <string name="label_create_exercise">Sortu</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Ariketa dagoeneko existitzen da</string>
     <string name="label_add_exercise_header">Ariketa gehiago</string>
     <string name="label_search_exercise">Bilatu ariketa</string>
-    <string name="label_no_exercise_today">Gaur ez dago ariketa planifikatu.</string>
     <string name="label_add_set_for">Gehitu seriea</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Ezarpenak</string>
     <string name="label_name">Izena</string>
     <string name="label_add">Gehitu</string>
     <string name="label_save">Gorde</string>
     <string name="label_yes">Bai</string>
     <string name="label_no">Ez</string>
-    <string name="label_session">Sesio</string>
     <string name="label_exercise">Ariketa</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Hegaztak</string>
     <string name="label_select_a_plan">Hautatu plan bat</string>
     <string name="label_selecting_a_plan">Hasi plan bat auketa eginez.</string>
-    <string name="label_start_first_session">Hasi zure lehen saioan</string>
-    <string name="label_start_session_heading">Hasi gaurko saioa</string>
-    <string name="label_continue_session_heading">Jolastu gaurko saioari</string>
     <string name="label_next">Hurrenera</string>
     <string name="label_boarding_quote">Zure hurrengo aldaketa hemen hasten da.</string>
     <string name="label_no_sessions">Ez dago jarduera bat ere eginda.</string>

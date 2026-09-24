@@ -39,21 +39,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.DayOfWeek
 
 @Composable
-fun HorizontalDaySelector(
-    item: @Composable (DayOfWeek) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        items(DayOfWeek.entries) {
-            item(it)
-        }
-    }
-}
-
-@Composable
 fun DaySelectorChip(
     selected: Boolean,
     onClick: () -> Unit,

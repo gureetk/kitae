@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Tutustu\nHarjoituksiin</string>
     <string name="label_session_history_home">Harjoituskerta\nHistoria</string>
     <string name="label_sessions_title">Treenit</string>
-    <string name="label_nothing_today">Ei mitään tänään</string>
     <string name="label_missed_day">Jäikö treeni väliin?</string>
     <string name="label_plans_title">Suunnitelmat</string>
     <string name="label_edit_plan">Muokkaa ohjelma</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Siivoa</string>
     <string name="label_clean_up_plans">Tyhjennäkö tyhjät suunnitelmat?</string>
     <string name="heading_select_plan_name">Valitse ohjelman nimi</string>
-    <string name="heading_select_plan_items">Valitse harjoitukset</string>
     <string name="desc_select_plan_name">Suunnitelman nimen tulisi olla helppo muistaa ja ei liian pitkä. Ihannetapauksessa se on yksilöllinen eikä sisällä erikoismerkkejä.\n
   esim: Push Pull Leg, Strength Cycle jne.</string>
     <string name="label_select_plan">Valitse ohjelma</string>
     <string name="label_select_plan_one">Valitse ohjelma</string>
     <string name="label_current_plan_FORMAT">Nykyinen: %s</string>
     <string name="label_lifts">Toiminnat</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Sela harjoitukset</string>
     <string name="label_all_muscle_groups">Kaikki</string>
     <string name="label_create_exercise">Luo</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Harjoitus on jo olemassa</string>
     <string name="label_add_exercise_header">Lisää harjoitus</string>
     <string name="label_search_exercise">Etsi harjoitus</string>
-    <string name="label_no_exercise_today">Ei suunniteltuja harjoituksia tänään.</string>
     <string name="label_add_set_for">Lisää toisto</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Asetukset</string>
     <string name="label_name">Nimi</string>
     <string name="label_add">Lisää</string>
     <string name="label_save">Tallenna</string>
     <string name="label_yes">Kyllä</string>
     <string name="label_no">Ei</string>
-    <string name="label_session">Treeni</string>
     <string name="label_exercise">Harjoitus</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">kesto</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Olkapäät</string>
     <string name="label_select_a_plan">Valitse ohjelma</string>
     <string name="label_selecting_a_plan">Aloita valitsemalla ohjelma.</string>
-    <string name="label_start_first_session">Aloita ensimmäinen harjoituskerta</string>
-    <string name="label_start_session_heading">Aloita tämän päivän treeni.</string>
-    <string name="label_continue_session_heading">Jatka tämän päivän treeniä</string>
     <string name="label_next">Seuraava</string>
     <string name="label_boarding_quote">Seuraava kehitysmatkasi alkaa tästä.</string>
     <string name="label_no_sessions">Ei suoritettuja treenejä</string>

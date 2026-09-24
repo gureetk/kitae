@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Raziskovanje\nVadbe</string>
     <string name="label_session_history_home">Seja\nZgodovina</string>
     <string name="label_sessions_title">Treningi</string>
-    <string name="label_nothing_today">Nič danes</string>
     <string name="label_missed_day">Ste zamudili dan?</string>
     <string name="label_plans_title">Plani</string>
     <string name="label_edit_plan">Uredi načrt</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Poskrbite za red.</string>
     <string name="label_clean_up_plans">Ali želite izbrisati prazne načrte?</string>
     <string name="heading_select_plan_name">Izberite ime načrta.</string>
-    <string name="heading_select_plan_items">Izberite vaje</string>
     <string name="desc_select_plan_name">Ime načrta naj bo enostavno za zapomnitev in ne preveč dolgo. Idealno bi bilo, da je edinstveno in brez posebnih znakov.\n
   e.g.: Push Pull Leg, Strength Cycle, itd.</string>
     <string name="label_select_plan">Izberite načrt</string>
     <string name="label_select_plan_one">Izberite načrt</string>
     <string name="label_current_plan_FORMAT">Trenutno: %s</string>
     <string name="label_lifts">Ponovi</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Prebrskajte vaje</string>
     <string name="label_all_muscle_groups">Vse</string>
     <string name="label_create_exercise">Ustvari</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Vaja že obstaja.</string>
     <string name="label_add_exercise_header">Dodaj vajo</string>
     <string name="label_search_exercise">Poiščite vajo</string>
-    <string name="label_no_exercise_today">Danes ni načrtovanih vaje.</string>
     <string name="label_add_set_for">Dodaj serijo za</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Nastavitve</string>
     <string name="label_name">Ime</string>
     <string name="label_add">Dodaj</string>
     <string name="label_save">Shrani</string>
     <string name="label_yes">Da</string>
     <string name="label_no">Ne.</string>
-    <string name="label_session">Seansa</string>
     <string name="label_exercise">Vaja</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">trajanje</string>
@@ -122,9 +114,6 @@ To bo nadomestilo vse trenutne podatke. Želite nadaljevati?</string>
     <string name="label_muscle_shoulders">Ramena</string>
     <string name="label_select_a_plan">Izberite načrt</string>
     <string name="label_selecting_a_plan">Začnite z izbiro načrta.</string>
-    <string name="label_start_first_session">Začnite svojo prvo vadbo.</string>
-    <string name="label_start_session_heading">Začnite današnjo vadbo.</string>
-    <string name="label_continue_session_heading">Nadaljujte s današnjo vadbo</string>
     <string name="label_next">Naslednja</string>
     <string name="label_boarding_quote">Vaša naslednja transformacija se začne tukaj.</string>
     <string name="label_no_sessions">Nobena vadba ni bila izvedena.</string>

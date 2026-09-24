@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">エクササイズを探す</string>
     <string name="label_session_history_home">セッション履歴</string>
     <string name="label_sessions_title">セッション</string>
-    <string name="label_nothing_today">今日は何もありません</string>
     <string name="label_missed_day">その日はトレーニングを逃しましたか？</string>
     <string name="label_plans_title">プラン</string>
     <string name="label_edit_plan">プランの編集</string>
@@ -30,16 +29,12 @@
     <string name="label_clean_up">整理</string>
     <string name="label_clean_up_plans">空のプランを削除しますか？</string>
     <string name="heading_select_plan_name">プラン名を選択してください</string>
-    <string name="heading_select_plan_items">エクササイズを選択</string>
     <string name="desc_select_plan_name">プラン名は覚えやすく、短くするのが理想的です。ユニークで、特殊な記号を含まないようにしましょう。\n
   例：Push Pull Leg、Strength Cycleなど。</string>
     <string name="label_select_plan">プランを選択</string>
     <string name="label_select_plan_one">プランを選択</string>
     <string name="label_current_plan_FORMAT">現在: %s</string>
     <string name="label_lifts">挙上回数</string>
-    <string name="label_plan_description">改行
-
-  改行</string>
     <string name="label_browse_exercises">エクササイズ一覧</string>
     <string name="label_all_muscle_groups">すべて</string>
     <string name="label_create_exercise">作成</string>
@@ -53,17 +48,13 @@
     <string name="label_exercise_exists">エクササイズはすでに存在します</string>
     <string name="label_add_exercise_header">運動を追加</string>
     <string name="label_search_exercise">検索エクササイズ</string>
-    <string name="label_no_exercise_today">今日はトレーニングメニューがありません</string>
     <string name="label_add_set_for">セットを追加</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">設定</string>
     <string name="label_name">名前</string>
     <string name="label_add">追加</string>
     <string name="label_save">保存</string>
     <string name="label_yes">はい</string>
     <string name="label_no">いいえ</string>
-    <string name="label_session">セッション</string>
     <string name="label_exercise">エクササイズ</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -122,9 +113,6 @@
     <string name="label_muscle_shoulders">肩</string>
     <string name="label_select_a_plan">プランを選択してください</string>
     <string name="label_selecting_a_plan">まず、プランを選択してください。</string>
-    <string name="label_start_first_session">最初のセッションを開始します</string>
-    <string name="label_start_session_heading">今日のセッションを開始します</string>
-    <string name="label_continue_session_heading">今日のセッションを続行します</string>
     <string name="label_next">次</string>
     <string name="label_boarding_quote">あなたの次の変身はここから始まります。</string>
     <string name="label_no_sessions">トレーニングセッションは実施されていません。</string>

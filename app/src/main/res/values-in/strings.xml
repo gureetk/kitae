@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Jelajahi\nLatihan</string>
     <string name="label_session_history_home">Riwayat Sesi</string>
     <string name="label_sessions_title">Sesi</string>
-    <string name="label_nothing_today">Tidak ada yang perlu dilakukan hari ini</string>
     <string name="label_missed_day">Apakah Anda melewatkan hari itu?</string>
     <string name="label_plans_title">Rencana</string>
     <string name="label_edit_plan">Edit Rencana</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Bersihkan</string>
     <string name="label_clean_up_plans">Apakah Anda ingin menghapus rencana yang kosong?</string>
     <string name="heading_select_plan_name">Pilih nama rencana</string>
-    <string name="heading_select_plan_items">Pilih latihan</string>
     <string name="desc_select_plan_name">Nama rencana sebaiknya mudah diingat dan tidak terlalu panjang. Idealnya unik dan tidak mengandung simbol khusus.
   e.g: Push Pull Leg, Strength Cycle, dll.</string>
     <string name="label_select_plan">Pilih Program</string>
     <string name="label_select_plan_one">Pilih Program</string>
     <string name="label_current_plan_FORMAT">Saat ini: %s</string>
     <string name="label_lifts">Latihan</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Jelajahi Latihan</string>
     <string name="label_all_muscle_groups">Semua</string>
     <string name="label_create_exercise">Buat</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Latihan Sudah Ada</string>
     <string name="label_add_exercise_header">Tambahkan Latihan</string>
     <string name="label_search_exercise">Cari Latihan</string>
-    <string name="label_no_exercise_today">Tidak ada latihan yang direncanakan hari ini</string>
     <string name="label_add_set_for">Tambahkan Set untuk</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Pengaturan</string>
     <string name="label_name">Nama</string>
     <string name="label_add">Tambahkan</string>
     <string name="label_save">Simpan</string>
     <string name="label_yes">Ya</string>
     <string name="label_no">Tidak</string>
-    <string name="label_session">Sesi</string>
     <string name="label_exercise">Latihan</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">durasi</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Bahu</string>
     <string name="label_select_a_plan">Pilih Rencana</string>
     <string name="label_selecting_a_plan">Mulai dengan memilih sebuah rencana.</string>
-    <string name="label_start_first_session">Mulai sesi pertama Anda</string>
-    <string name="label_start_session_heading">Mulai sesi hari ini</string>
-    <string name="label_continue_session_heading">Lanjutkan sesi hari ini</string>
     <string name="label_next">Selanjutnya</string>
     <string name="label_boarding_quote">Transformasi Anda berikutnya dimulai di sini.</string>
     <string name="label_no_sessions">Tidak ada sesi yang dilakukan</string>

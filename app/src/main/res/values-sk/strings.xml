@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Objavte\nCvičenia</string>
     <string name="label_session_history_home">Tréning\nHistória</string>
     <string name="label_sessions_title">Tréningy</string>
-    <string name="label_nothing_today">Nič dnes</string>
     <string name="label_missed_day">Ste ste tento deň vynechali?</string>
     <string name="label_plans_title">Plány</string>
     <string name="label_edit_plan">Uprav plán</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Upratať</string>
     <string name="label_clean_up_plans">Chcete odstrániť prázdne tréningové plány?</string>
     <string name="heading_select_plan_name">Vyberte názov plánu.</string>
-    <string name="heading_select_plan_items">Vyberte cviky</string>
     <string name="desc_select_plan_name">Názov tréningového plánu by mal byť ľahko zapamätateľný a nie príliš dlhý. Ideálne by mal byť jedinečný a bez špeciálnych symbolov.\n
   e.g.: Push Pull Leg, Strength Cycle, atď.</string>
     <string name="label_select_plan">Vyberte plán</string>
     <string name="label_select_plan_one">Vyberte plán</string>
     <string name="label_current_plan_FORMAT">Aktuálne: %s</string>
     <string name="label_lifts">Opakovania</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Prehliadať cviky</string>
     <string name="label_all_muscle_groups">Všetko</string>
     <string name="label_create_exercise">Vytvoriť</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Cvičenie už existuje.</string>
     <string name="label_add_exercise_header">Pridať cvičenie</string>
     <string name="label_search_exercise">Hľadať cvičenie</string>
-    <string name="label_no_exercise_today">Žiadne tréningy naplánované na dnes.</string>
     <string name="label_add_set_for">Pridať sériu</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Nastavenia</string>
     <string name="label_name">Názov</string>
     <string name="label_add">Pridať</string>
     <string name="label_save">Uložiť</string>
     <string name="label_yes">Áno</string>
     <string name="label_no">Nie</string>
-    <string name="label_session">Tréning</string>
     <string name="label_exercise">Cvičenie</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">doba trvania</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Ramena</string>
     <string name="label_select_a_plan">Vyberte plán</string>
     <string name="label_selecting_a_plan">Začnite výberom plánu.</string>
-    <string name="label_start_first_session">Začnite svoju prvú tréningovú jednotku.</string>
-    <string name="label_start_session_heading">Začnite dnešné cvičenie.</string>
-    <string name="label_continue_session_heading">Pokračovať v dnešnej tréningovej jednotke</string>
     <string name="label_next">Ďalej</string>
     <string name="label_boarding_quote">Vaša ďalšia transformácia začína tu.</string>
     <string name="label_no_sessions">Neboli vykonané žiadne tréningy.</string>

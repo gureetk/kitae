@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Explorar\nExercícios</string>
     <string name="label_session_history_home">Histórico de treinos</string>
     <string name="label_sessions_title">Sessões</string>
-    <string name="label_nothing_today">Nada para hoje</string>
     <string name="label_missed_day">Você perdeu o dia?</string>
     <string name="label_plans_title">Planos</string>
     <string name="label_edit_plan">Editar plano</string>
@@ -30,16 +29,12 @@
     <string name="label_clean_up">Limpar</string>
     <string name="label_clean_up_plans">Limpar planos vazios?</string>
     <string name="heading_select_plan_name">Selecione um nome de plano</string>
-    <string name="heading_select_plan_items">Selecione os exercícios</string>
     <string name="desc_select_plan_name">O nome do plano deve ser fácil de lembrar e não muito longo. Idealmente, deve ser único e não conter símbolos especiais.
   e.g.: Treino de Empurrar/Puxar/Pernas, Ciclo de Força, etc.</string>
     <string name="label_select_plan">Selecione o plano</string>
     <string name="label_select_plan_one">Selecione o plano</string>
     <string name="label_current_plan_FORMAT">Atual: %s</string>
     <string name="label_lifts">Levantamentos</string>
-    <string name="label_plan_description">```text
-  \n
-```</string>
     <string name="label_browse_exercises">Navegar Exercícios</string>
     <string name="label_all_muscle_groups">Tudo</string>
     <string name="label_create_exercise">Criar</string>
@@ -53,17 +48,13 @@
     <string name="label_exercise_exists">Exercício já existe</string>
     <string name="label_add_exercise_header">Adicionar exercício</string>
     <string name="label_search_exercise">Pesquisar Exercício</string>
-    <string name="label_no_exercise_today">Nenhum exercício planejado para hoje.</string>
     <string name="label_add_set_for">Adicionar série para</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Configurações</string>
     <string name="label_name">Nome</string>
     <string name="label_add">Adicionar</string>
     <string name="label_save">Salvar</string>
     <string name="label_yes">Sim</string>
     <string name="label_no">Não</string>
-    <string name="label_session">Sessão</string>
     <string name="label_exercise">Exercício</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">duração</string>
@@ -122,9 +113,6 @@
     <string name="label_muscle_shoulders">Ombros</string>
     <string name="label_select_a_plan">Selecione um plano</string>
     <string name="label_selecting_a_plan">Comece selecionando um plano.</string>
-    <string name="label_start_first_session">Comece sua primeira sessão</string>
-    <string name="label_start_session_heading">Comece a sessão de hoje</string>
-    <string name="label_continue_session_heading">Continue a sessão de hoje</string>
     <string name="label_next">Próximo</string>
     <string name="label_boarding_quote">Sua próxima transformação começa aqui.</string>
     <string name="label_no_sessions">Nenhuma sessão realizada</string>

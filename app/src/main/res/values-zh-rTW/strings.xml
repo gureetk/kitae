@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">探索\n運動</string>
     <string name="label_session_history_home">训练\n记录</string>
     <string name="label_sessions_title">訓練課程</string>
-    <string name="label_nothing_today">今天沒有任何內容</string>
     <string name="label_missed_day">您錯過了一天嗎？</string>
     <string name="label_plans_title">計畫</string>
     <string name="label_edit_plan">編輯計畫</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">清理</string>
     <string name="label_clean_up_plans">清除空的計畫？</string>
     <string name="heading_select_plan_name">選擇計畫名稱</string>
-    <string name="heading_select_plan_items">選擇運動項目</string>
     <string name="desc_select_plan_name">計畫名稱應該容易記住且不宜過長。理想情況下，名稱應獨一無二且不含特殊符號。
   例如：Push Pull Leg, Strength Cycle 等。</string>
     <string name="label_select_plan">選擇方案</string>
     <string name="label_select_plan_one">選擇方案</string>
     <string name="label_current_plan_FORMAT">目前：%s</string>
     <string name="label_lifts">舉重</string>
-    <string name="label_plan_description">\n
-  \n</string>
     <string name="label_browse_exercises">瀏覽運動項目</string>
     <string name="label_all_muscle_groups">全部</string>
     <string name="label_create_exercise">創建</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">運動已存在</string>
     <string name="label_add_exercise_header">新增運動</string>
     <string name="label_search_exercise">搜尋運動</string>
-    <string name="label_no_exercise_today">今天沒有安排任何運動項目。</string>
     <string name="label_add_set_for">添加组数</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">設定</string>
     <string name="label_name">名稱</string>
     <string name="label_add">新增</string>
     <string name="label_save">儲存</string>
     <string name="label_yes">是</string>
     <string name="label_no">無</string>
-    <string name="label_session">Session</string>
     <string name="label_exercise">運動</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">肩膀</string>
     <string name="label_select_a_plan">選擇方案</string>
     <string name="label_selecting_a_plan">開始時，請選擇一個計畫。</string>
-    <string name="label_start_first_session">開始您的第一項訓練</string>
-    <string name="label_start_session_heading">開始今天的訓練。</string>
-    <string name="label_continue_session_heading">繼續今天的訓練</string>
     <string name="label_next">下一步</string>
     <string name="label_boarding_quote">您的下一次蛻變從這裡開始。</string>
     <string name="label_no_sessions">尚未進行任何訓練。</string>

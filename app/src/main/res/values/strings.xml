@@ -32,7 +32,6 @@
     <string name="label_sessions_title">Sessions</string>
 
     <!--Session Details-->
-    <string name="label_nothing_today">Nothing today</string>
     <string name="label_missed_day">Did you miss the day?</string>
 
     <!--Plans-->
@@ -43,7 +42,6 @@
     <string name="label_clean_up_plans">Clear empty plans?</string>
 
     <string name="heading_select_plan_name">Select a plan name</string>
-    <string name="heading_select_plan_items">Select exercises</string>
     <string name="desc_select_plan_name">
         Plan name should be easy to remember and not too long. Ideally unique with no special symbols.\n
         e.g: Push Pull Leg, Strength Cycle, etc.
@@ -54,11 +52,6 @@
     <string name="label_select_plan_one">Select Plan</string>
     <string name="label_current_plan_FORMAT">Current: %s</string>
     <string name="label_lifts">Lifts</string>
-    <string name="label_plan_description">
-        <ul>%1$s exercises</ul>\n
-        <ul>%2$s days</ul>\n
-        <ul>%3$s rest days</ul>
-    </string>
 
     <!--Exercises-->
     <string name="label_browse_exercises">Browse Exercises</string>
@@ -78,12 +71,9 @@
     <!--Select Exercises-->
     <string name="label_add_exercise_header">Add Exercise</string>
     <string name="label_search_exercise">Search Exercise</string>
-    <string name="label_no_exercise_today">No exercises planned today</string>
 
     <!--Add Sets-->
     <string name="label_add_set_for">Add Set for</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
 
     <string name="label_settings">Settings</string>
 
@@ -95,7 +85,6 @@
     <string name="label_no">No</string>
 
     <!--Project Specific-->
-    <string name="label_session">Session</string>
     <string name="label_exercise">Exercise</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -170,9 +159,6 @@
     <!--Day of Week-->
     <string name="label_select_a_plan">Select A Plan</string>
     <string name="label_selecting_a_plan">Start by Selecting a Plan</string>
-    <string name="label_start_first_session">Start your first session</string>
-    <string name="label_start_session_heading">Start today\'s session</string>
-    <string name="label_continue_session_heading">Continue today\'s session</string>
     <string name="label_next">Next</string>
     <string name="label_boarding_quote">Your next transformation starts here.</string>
     <string name="label_no_sessions">No sessions performed</string>

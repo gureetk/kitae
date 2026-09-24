@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Fedezd fel\nA gyakorlatokat</string>
     <string name="label_session_history_home">Edzés\nElőzmények</string>
     <string name="label_sessions_title">Edzések</string>
-    <string name="label_nothing_today">Semmi ma.</string>
     <string name="label_missed_day">Elfogtad a kihagyott napot?</string>
     <string name="label_plans_title">Programok</string>
     <string name="label_edit_plan">Szerkesztés</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Takarítás</string>
     <string name="label_clean_up_plans">Törölje a üres edzésterveket?</string>
     <string name="heading_select_plan_name">Válasszon egy terv nevet</string>
-    <string name="heading_select_plan_items">Válassza ki a gyakorlatokat</string>
     <string name="desc_select_plan_name">A tervek nevek könnyen emlékezetesek és nem túl hosszúak legyenek. Ideális esetben egyediek, és ne tartalmazzanak speciális szimbólumokat.\n
   például: Push Pull Leg, Strength Cycle, stb.</string>
     <string name="label_select_plan">Válassza ki a programot</string>
     <string name="label_select_plan_one">Válassza ki a programot</string>
     <string name="label_current_plan_FORMAT">Aktuális: %s</string>
     <string name="label_lifts">Lifting</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Nézd meg a gyakorlatokat</string>
     <string name="label_all_muscle_groups">Minden</string>
     <string name="label_create_exercise">Létrehozás</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">A gyakorlat már létezik</string>
     <string name="label_add_exercise_header">Add Exercise</string>
     <string name="label_search_exercise">Keresés gyakorlat</string>
-    <string name="label_no_exercise_today">Nincs edzés tervezve a mai napra</string>
     <string name="label_add_set_for">Add Set for</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Beállítások</string>
     <string name="label_name">Név</string>
     <string name="label_add">Hozzáadás</string>
     <string name="label_save">Mentés</string>
     <string name="label_yes">Igen</string>
     <string name="label_no">Nem</string>
-    <string name="label_session">Edzés</string>
     <string name="label_exercise">Edzés</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">időtartam</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Vállak</string>
     <string name="label_select_a_plan">Válasszon egy programot</string>
     <string name="label_selecting_a_plan">Kezdd el a program kiválasztásával</string>
-    <string name="label_start_first_session">Kezd el az első edzésedet</string>
-    <string name="label_start_session_heading">Kezdd el a mai edzést</string>
-    <string name="label_continue_session_heading">Folytasd a mai edzést</string>
     <string name="label_next">Következő</string>
     <string name="label_boarding_quote">A következő átalakulás itt kezdődik.</string>
     <string name="label_no_sessions">Nincs végrehajtott edzés.</string>

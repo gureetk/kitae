@@ -23,7 +23,6 @@
     <string name="label_session_history_home">Session
 Povijest</string>
     <string name="label_sessions_title">Sesije</string>
-    <string name="label_nothing_today">Ništa danas</string>
     <string name="label_missed_day">Jeste li propustili dan?</string>
     <string name="label_plans_title">Planovi</string>
     <string name="label_edit_plan">Uredi plan</string>
@@ -31,14 +30,12 @@ Povijest</string>
     <string name="label_clean_up">Učisti</string>
     <string name="label_clean_up_plans">Želite li obrisati prazne planove?</string>
     <string name="heading_select_plan_name">Odaberite naziv plana.</string>
-    <string name="heading_select_plan_items">Odaberite vježbe</string>
     <string name="desc_select_plan_name">Ime plana bi trebalo biti lako za pamćenje i ne predugačko. Idealno bi bilo da bude jedinstveno i bez posebnih znakova.
   e.g: Push Pull Leg, Strength Cycle, itd.</string>
     <string name="label_select_plan">Odaberite plan</string>
     <string name="label_select_plan_one">Odaberite program</string>
     <string name="label_current_plan_FORMAT">Trenutno: %s</string>
     <string name="label_lifts">Ponovi</string>
-    <string name="label_plan_description">Nema teksta za prevođenje.</string>
     <string name="label_browse_exercises">Pregled vježbi</string>
     <string name="label_all_muscle_groups">Sve</string>
     <string name="label_create_exercise">Kreiraj</string>
@@ -52,17 +49,13 @@ Povijest</string>
     <string name="label_exercise_exists">Vježba već postoji.</string>
     <string name="label_add_exercise_header">Dodaj vježbu</string>
     <string name="label_search_exercise">Pretraži vježbu</string>
-    <string name="label_no_exercise_today">Nema planiranih vježbi za danas.</string>
     <string name="label_add_set_for">Dodaj seriju za</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Postavke</string>
     <string name="label_name">Ime</string>
     <string name="label_add">Dodaj</string>
     <string name="label_save">Spremi</string>
     <string name="label_yes">Da</string>
     <string name="label_no">Nema</string>
-    <string name="label_session">Sesija</string>
     <string name="label_exercise">Vježba</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +114,6 @@ Povijest</string>
     <string name="label_muscle_shoulders">Ramena</string>
     <string name="label_select_a_plan">Odaberite plan</string>
     <string name="label_selecting_a_plan">Započnite odabirom plana.</string>
-    <string name="label_start_first_session">Započnite svoju prvu vježbu.</string>
-    <string name="label_start_session_heading">Započnite današnji trening.</string>
-    <string name="label_continue_session_heading">Nastavite današnji trening.</string>
     <string name="label_next">Sljedeće</string>
     <string name="label_boarding_quote">Vaša sljedeća transformacija počinje ovdje.</string>
     <string name="label_no_sessions">Nijedna vježba nije obavljena.</string>

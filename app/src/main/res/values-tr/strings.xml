@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Egzersizleri keşfedin</string>
     <string name="label_session_history_home">Oturum\nGeçmiş</string>
     <string name="label_sessions_title">Antrenmanlar</string>
-    <string name="label_nothing_today">Bugün hiçbir şey</string>
     <string name="label_missed_day">O gün kaçırdınız mı?</string>
     <string name="label_plans_title">Planlar</string>
     <string name="label_edit_plan">Planı Düzenle</string>
@@ -30,14 +29,12 @@
     <string name="label_clean_up">Temizle</string>
     <string name="label_clean_up_plans">Boş planları temizlemek ister misiniz?</string>
     <string name="heading_select_plan_name">Bir plan adı seçin</string>
-    <string name="heading_select_plan_items">Egzersizleri seçin</string>
     <string name="desc_select_plan_name">Plan adı kolay hatırlanabilir ve çok uzun olmamalı. İdeal olarak benzersiz ve özel semboller içermemeli.
   örneğin: Push Pull Leg, Strength Cycle, vb.</string>
     <string name="label_select_plan">Plan Seçin</string>
     <string name="label_select_plan_one">Plan Seçin</string>
     <string name="label_current_plan_FORMAT">Mevcut: %s</string>
     <string name="label_lifts">Kaldırışlar</string>
-    <string name="label_plan_description">Boş satır</string>
     <string name="label_browse_exercises">Egzersizleri Gözden Geçirin</string>
     <string name="label_all_muscle_groups">Herşey</string>
     <string name="label_create_exercise">Oluştur</string>
@@ -51,17 +48,13 @@
     <string name="label_exercise_exists">Egzersiz Zaten Mevcut</string>
     <string name="label_add_exercise_header">Egzersiz Ekle</string>
     <string name="label_search_exercise">Egzersizi Ara</string>
-    <string name="label_no_exercise_today">Bugün için herhangi bir egzersiz planlanmamış.</string>
     <string name="label_add_set_for">Set Ekle için</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Ayarlar</string>
     <string name="label_name">İsim</string>
     <string name="label_add">Ekle</string>
     <string name="label_save">Kaydet</string>
     <string name="label_yes">Evet</string>
     <string name="label_no">Hayır</string>
-    <string name="label_session">Oturum</string>
     <string name="label_exercise">Egzersiz</string>
     <string name="label_reps">tekrar</string>
     <string name="label_duration">.süre</string>
@@ -120,9 +113,6 @@
     <string name="label_muscle_shoulders">Omuzlar</string>
     <string name="label_select_a_plan">Bir Plan Seçin</string>
     <string name="label_selecting_a_plan">Bir plan seçerek başlayın</string>
-    <string name="label_start_first_session">İlk antrenmanınıza başlayın</string>
-    <string name="label_start_session_heading">Bugünün antrenmanını başlat</string>
-    <string name="label_continue_session_heading">Bugünün antrenmanına devam et</string>
     <string name="label_next">Sonraki</string>
     <string name="label_boarding_quote">Bir sonraki dönüşümünüz burada başlıyor.</string>
     <string name="label_no_sessions">Hiç egzersiz yapılmadı</string>

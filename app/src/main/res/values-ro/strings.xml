@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Explore\nExerciții</string>
     <string name="label_session_history_home">Istoric sesiuni</string>
     <string name="label_sessions_title">Sesiuni</string>
-    <string name="label_nothing_today">Nimic astăzi</string>
     <string name="label_missed_day">Ai ratat ziua?</string>
     <string name="label_plans_title">Planuri</string>
     <string name="label_edit_plan">Editează planul</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Curățare</string>
     <string name="label_clean_up_plans">Șterge planurile goale?</string>
     <string name="heading_select_plan_name">Selectați un nume pentru plan.</string>
-    <string name="heading_select_plan_items">Selectează exercițiile</string>
     <string name="desc_select_plan_name">Numele planului ar trebui să fie ușor de reținut și nu prea lung. Ideal, ar trebui să fie unic și să nu conțină simboluri speciale.
   e.g: Push Pull Leg, Strength Cycle, etc.</string>
     <string name="label_select_plan">Selectează planul</string>
     <string name="label_select_plan_one">Selectează planul</string>
     <string name="label_current_plan_FORMAT">Curent: %s</string>
     <string name="label_lifts">Repetări</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Explore exercițiile</string>
     <string name="label_all_muscle_groups">To Romanian:
 Toate</string>
@@ -53,17 +49,13 @@ Toate</string>
     <string name="label_exercise_exists">Exercițiul există deja.</string>
     <string name="label_add_exercise_header">Adaugă exercițiu</string>
     <string name="label_search_exercise">Caută exercițiu</string>
-    <string name="label_no_exercise_today">Nu sunt planificate exerciții pentru astăzi.</string>
     <string name="label_add_set_for">Adaugă serie</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Setări</string>
     <string name="label_name">Nume</string>
     <string name="label_add">Adaugă</string>
     <string name="label_save">Salvează</string>
     <string name="label_yes">Da</string>
     <string name="label_no">Nu</string>
-    <string name="label_session">Sesiune</string>
     <string name="label_exercise">Exercițiu</string>
     <string name="label_reps">reps</string>
     <string name="label_duration">durată</string>
@@ -122,9 +114,6 @@ Toate</string>
     <string name="label_muscle_shoulders">Umeri</string>
     <string name="label_select_a_plan">Selectează un plan</string>
     <string name="label_selecting_a_plan">Începeți prin a selecta un plan.</string>
-    <string name="label_start_first_session">Începe prima ta sesiune.</string>
-    <string name="label_start_session_heading">Începe sesiunea de astăzi.</string>
-    <string name="label_continue_session_heading">Continuă sesiunea de astăzi.</string>
     <string name="label_next">Următorul</string>
     <string name="label_boarding_quote">Transformarea ta următoare începe de aici.</string>
     <string name="label_no_sessions">Nicio sesiune efectuată.</string>

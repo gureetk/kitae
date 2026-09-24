@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in Kenko
+description: Report a bug in Kitae
 title: "[BUG]: "
 labels: ["bug", "triage"]
 assignees: []
@@ -12,8 +12,8 @@ body:
   - type: input
     id: app_version
     attributes:
-      label: Kenko Version
-      description: What version of Kenko are you running?
+      label: Kitae Version
+      description: What version of Kitae are you running?
       placeholder: "e.g., 1.3.3"
     validations:
       required: true

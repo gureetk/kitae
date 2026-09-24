@@ -32,9 +32,6 @@ data class Session(
 
     val performExercises: List<Exercise>
         get() = completedSets.map { it.exercise }.distinct()
-
-    val hasIncompleteSets: Boolean
-        get() = sets.any { !it.isCompleted }
 }
 
 enum class FinishMode {

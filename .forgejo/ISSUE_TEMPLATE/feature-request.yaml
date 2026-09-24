@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature for Kenko
+description: Suggest a new feature for Kitae
 title: "[FEATURE]: "
 labels: ["enhancement"]
 assignees: []
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a new feature for Kenko!
+        Thanks for suggesting a new feature for Kitae!
 
   - type: dropdown
     id: problem

@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Разгледайте\nУпражнения</string>
     <string name="label_session_history_home">История на тренировките</string>
     <string name="label_sessions_title">Сесии</string>
-    <string name="label_nothing_today">Нищо днес</string>
     <string name="label_missed_day">Пропуснахте ли тренировката за деня?</string>
     <string name="label_plans_title">Програми</string>
     <string name="label_edit_plan">Редактиране на програма</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Почистване</string>
     <string name="label_clean_up_plans">Изчистване на празните планове?</string>
     <string name="heading_select_plan_name">Изберете име на програма</string>
-    <string name="heading_select_plan_items">Изберете упражнения</string>
     <string name="desc_select_plan_name">Името на тренировката трябва да е лесно за запомняне и не трябва да е твърде дълго. Най-добре е да е уникално и без специални символи.
   например: Push Pull Leg, Strength Cycle и т.н.</string>
     <string name="label_select_plan">Изберете програма</string>
     <string name="label_select_plan_one">Изберете програма</string>
     <string name="label_current_plan_FORMAT">Текущо: %s</string>
     <string name="label_lifts">Повдигания</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Разгледай упражненията</string>
     <string name="label_all_muscle_groups">Всичко</string>
     <string name="label_create_exercise">Създай</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Упражнението вече съществува</string>
     <string name="label_add_exercise_header">Добавяне на упражнение</string>
     <string name="label_search_exercise">Търсене на упражнение</string>
-    <string name="label_no_exercise_today">Няма планирани упражнения за днес.</string>
     <string name="label_add_set_for">Добавяне на сет за</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Настройки</string>
     <string name="label_name">Име</string>
     <string name="label_add">Добави</string>
     <string name="label_save">Запази</string>
     <string name="label_yes">Да</string>
     <string name="label_no">Не</string>
-    <string name="label_session">Сесия</string>
     <string name="label_exercise">Упражнение</string>
     <string name="label_reps">повтаряния</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Рамене</string>
     <string name="label_select_a_plan">Изберете програма</string>
     <string name="label_selecting_a_plan">Започнете, като изберете план.</string>
-    <string name="label_start_first_session">Започнете първата си тренировка</string>
-    <string name="label_start_session_heading">Започнете днешната тренировка</string>
-    <string name="label_continue_session_heading">Продължете днешната тренировка</string>
     <string name="label_next">Следващо</string>
     <string name="label_boarding_quote">Вашата следваща трансформация започва тук.</string>
     <string name="label_no_sessions">Няма извършени тренировки</string>

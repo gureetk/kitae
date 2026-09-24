@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Explora\nExercicis</string>
     <string name="label_session_history_home">Sessió\nHistorial</string>
     <string name="label_sessions_title">Sessions</string>
-    <string name="label_nothing_today">Res no disponible avui</string>
     <string name="label_missed_day">Heuvas ets de la jornada?</string>
     <string name="label_plans_title">Plans</string>
     <string name="label_edit_plan">Edita el pla</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Netejar</string>
     <string name="label_clean_up_plans">Esborrar plans buits?</string>
     <string name="heading_select_plan_name">Seleccioneu un nom de pla.</string>
-    <string name="heading_select_plan_items">Seleccioneu exercicis</string>
     <string name="desc_select_plan_name">El nom del pla ha de ser fàcil de recordar i no massa llarg. Idealment, ha de ser únic i sense símbols especials.
   e.g.: Push Pull Leg, Strength Cycle, etc.</string>
     <string name="label_select_plan">Seleccioneu el pla</string>
     <string name="label_select_plan_one">Seleccioneu el pla</string>
     <string name="label_current_plan_FORMAT">Actual: %s</string>
     <string name="label_lifts">Repeticions</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Explorar exercicis</string>
     <string name="label_all_muscle_groups">Tot</string>
     <string name="label_create_exercise">Crea</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">L\&#39;exercici ja existeix</string>
     <string name="label_add_exercise_header">Afegir exercici</string>
     <string name="label_search_exercise">Cerca exercici</string>
-    <string name="label_no_exercise_today">No hi ha exercicis planificats per avui.</string>
     <string name="label_add_set_for">Afegeix sèrie per</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Configuració</string>
     <string name="label_name">Nom</string>
     <string name="label_add">Afegeix</string>
     <string name="label_save">Guarda</string>
     <string name="label_yes">Sí</string>
     <string name="label_no">No</string>
-    <string name="label_session">Sessió</string>
     <string name="label_exercise">Exercici</string>
     <string name="label_reps">reps</string>
     <string name="label_duration">durada</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Hombros</string>
     <string name="label_select_a_plan">Seleccioneu un pla</string>
     <string name="label_selecting_a_plan">Comença seleccionant un pla.</string>
-    <string name="label_start_first_session">Comença la teva primera sessió</string>
-    <string name="label_start_session_heading">Comença la sessió d\&#39;avui</string>
-    <string name="label_continue_session_heading">Continua la sessió d\&#39;avui</string>
     <string name="label_next">Següent</string>
     <string name="label_boarding_quote">La teva propera transformació comença aquí.</string>
     <string name="label_no_sessions">No s\&#39;han realitzat sessions.</string>

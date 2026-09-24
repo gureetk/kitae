@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Išnagrinėkite\nPratimų</string>
     <string name="label_session_history_home">Sesijos\nIstorija</string>
     <string name="label_sessions_title">Sesijos</string>
-    <string name="label_nothing_today">Nieko šiandien</string>
     <string name="label_missed_day">Ar praleidote dieną?</string>
     <string name="label_plans_title">Planai</string>
     <string name="label_edit_plan">Redaguoti planą</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Valykite</string>
     <string name="label_clean_up_plans">Ar išvalyti tuščius planus?</string>
     <string name="heading_select_plan_name">Pasirinkite plano pavadinimą</string>
-    <string name="heading_select_plan_items">Pasirinkite pratimų.</string>
     <string name="desc_select_plan_name">Planą reikėtų pavadinti lengvai įsimenama ir ne per ilga vardu. Idealiu atveju, vardas turėtų būti unikalus ir be specialių simbolių.\n
   pavyzdžiui: Push Pull Leg, Strength Cycle ir pan.</string>
     <string name="label_select_plan">Pasirinkite programą</string>
     <string name="label_select_plan_one">Pasirinkite programą</string>
     <string name="label_current_plan_FORMAT">Dabartinė: %s</string>
     <string name="label_lifts">Pakėlimai</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Peržiūrėti pratimų sąrašą</string>
     <string name="label_all_muscle_groups">Viskas</string>
     <string name="label_create_exercise">Sukurti</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Pratimis jau egzistuoja</string>
     <string name="label_add_exercise_header">Pridėti pratimą</string>
     <string name="label_search_exercise">Ieškokite pratimų</string>
-    <string name="label_no_exercise_today">Šiandien neplanuota jokių pratimų.</string>
     <string name="label_add_set_for">Pridėti seriją</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Nustatymai</string>
     <string name="label_name">Pavadinimas</string>
     <string name="label_add">Pridėti</string>
     <string name="label_save">Išsaugoti</string>
     <string name="label_yes">Taip</string>
     <string name="label_no">Ne</string>
-    <string name="label_session">Sesija</string>
     <string name="label_exercise">Pratimai</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Pečiai</string>
     <string name="label_select_a_plan">Pasirinkite programą</string>
     <string name="label_selecting_a_plan">Pradėkite pasirinkdami programą</string>
-    <string name="label_start_first_session">Pradėkite pirmąją treniruotę</string>
-    <string name="label_start_session_heading">Pradėkite šiandienos treniruotę</string>
-    <string name="label_continue_session_heading">Tęskinti šiandieninę treniruotę</string>
     <string name="label_next">Kitas</string>
     <string name="label_boarding_quote">Jūsų kitas pokytis prasideda čia.</string>
     <string name="label_no_sessions">Nėra atliktų treniruočių.</string>

@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Khám phá\nCác bài tập</string>
     <string name="label_session_history_home">Lịch sử tập luyện</string>
     <string name="label_sessions_title">Buổi tập</string>
-    <string name="label_nothing_today">Không có gì hôm nay</string>
     <string name="label_missed_day">Bạn đã bỏ lỡ ngày tập luyện?</string>
     <string name="label_plans_title">Kế hoạch</string>
     <string name="label_edit_plan">Chỉnh sửa kế hoạch</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Dọn dẹp</string>
     <string name="label_clean_up_plans">Xóa các kế hoạch trống?</string>
     <string name="heading_select_plan_name">Chọn tên gói.</string>
-    <string name="heading_select_plan_items">Chọn bài tập</string>
     <string name="desc_select_plan_name">Tên kế hoạch nên dễ nhớ và không quá dài. Tốt nhất là tên đó phải độc đáo và không có ký hiệu đặc biệt.
   ví dụ: Push Pull Leg, Strength Cycle, v.v.</string>
     <string name="label_select_plan">Chọn chương trình</string>
     <string name="label_select_plan_one">Chọn chương trình</string>
     <string name="label_current_plan_FORMAT">Hiện tại: %s</string>
     <string name="label_lifts">Lần tập</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Duyệt các bài tập</string>
     <string name="label_all_muscle_groups">Tất cả</string>
     <string name="label_create_exercise">Tạo</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Bài tập đã tồn tại.</string>
     <string name="label_add_exercise_header">Thêm bài tập</string>
     <string name="label_search_exercise">Tìm kiếm bài tập</string>
-    <string name="label_no_exercise_today">Không có bài tập nào được lên kế hoạch cho hôm nay.</string>
     <string name="label_add_set_for">Thêm hiệp</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Cài đặt</string>
     <string name="label_name">Tên</string>
     <string name="label_add">Thêm</string>
     <string name="label_save">Lưu</string>
     <string name="label_yes">Có</string>
     <string name="label_no">Không</string>
-    <string name="label_session">Buổi tập</string>
     <string name="label_exercise">Bài tập</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">thời lượng</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Vai</string>
     <string name="label_select_a_plan">Chọn một chương trình</string>
     <string name="label_selecting_a_plan">Bắt đầu bằng cách chọn một chương trình.</string>
-    <string name="label_start_first_session">Bắt đầu buổi tập đầu tiên của bạn</string>
-    <string name="label_start_session_heading">Bắt đầu buổi tập hôm nay</string>
-    <string name="label_continue_session_heading">Tiếp tục buổi tập hôm nay</string>
     <string name="label_next">Tiếp theo</string>
     <string name="label_boarding_quote">Sự thay đổi tiếp theo của bạn bắt đầu từ đây.</string>
     <string name="label_no_sessions">Không có buổi tập nào được thực hiện.</string>

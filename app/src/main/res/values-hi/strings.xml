@@ -22,7 +22,6 @@
     <string name="label_session_history_home">सेशन
 इतिहास</string>
     <string name="label_sessions_title">सेशन</string>
-    <string name="label_nothing_today">आज कुछ नहीं</string>
     <string name="label_missed_day">क्या आपने उस दिन की कसरत छोड़ दी?</string>
     <string name="label_plans_title">योजनाएं</string>
     <string name="label_edit_plan">योजना संपादित करें</string>
@@ -30,13 +29,11 @@
     <string name="label_clean_up">साफ़ करें</string>
     <string name="label_clean_up_plans">क्या आप खाली योजनाओं को हटाना चाहते हैं?</string>
     <string name="heading_select_plan_name">एक योजना का नाम चुनें</string>
-    <string name="heading_select_plan_items">अभ्यास चुनें</string>
     <string name="desc_select_plan_name">प्लान का नाम याद रखने में आसान और बहुत लंबा नहीं होना चाहिए। आदर्श रूप से, यह अद्वितीय होना चाहिए और इसमें कोई विशेष प्रतीक नहीं होना चाहिए।\nउदाहरण: पुश पुल लेग, स्ट्रेंथ साइकिल, आदि।</string>
     <string name="label_select_plan">योजना चुनें</string>
     <string name="label_select_plan_one">योजना चुनें</string>
     <string name="label_current_plan_FORMAT">वर्तमान: %s</string>
     <string name="label_lifts">लिफ्ट्स</string>
-    <string name="label_plan_description"><ul>%1$s कसरतें</ul>\n<ul>%2$s दिन</ul>\n<ul>%3$s विश्राम के दिन</ul></string>
     <string name="label_browse_exercises">अभ्यासों को ब्राउज़ करें</string>
     <string name="label_all_muscle_groups">सब</string>
     <string name="label_create_exercise">बनाएं</string>
@@ -50,17 +47,13 @@
     <string name="label_exercise_exists">यह व्यायाम पहले से मौजूद है</string>
     <string name="label_add_exercise_header">अभ्यास जोड़ें</string>
     <string name="label_search_exercise">व्यायाम खोजें</string>
-    <string name="label_no_exercise_today">आज के लिए कोई व्यायाम निर्धारित नहीं है</string>
     <string name="label_add_set_for">सेट जोड़ें</string>
-    <string name="label_plus_int">%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">सेटिंग्स</string>
     <string name="label_name">नाम</string>
     <string name="label_add">जोड़ें</string>
     <string name="label_save">सहेजें</string>
     <string name="label_yes">हाँ</string>
     <string name="label_no">नहीं</string>
-    <string name="label_session">सेशन</string>
     <string name="label_exercise">व्यायाम</string>
     <string name="label_reps">.दोहराव</string>
     <string name="label_duration">अवधि</string>
@@ -119,9 +112,6 @@
     <string name="label_muscle_shoulders">शोल्डर्स</string>
     <string name="label_select_a_plan">एक योजना चुनें</string>
     <string name="label_selecting_a_plan">योजना चुनकर शुरुआत करें</string>
-    <string name="label_start_first_session">अपने पहले सत्र को शुरू करें</string>
-    <string name="label_start_session_heading">आज की कसरत शुरू करें</string>
-    <string name="label_continue_session_heading">आज के सत्र को जारी रखें</string>
     <string name="label_next">अगला</string>
     <string name="label_boarding_quote">आपका अगला परिवर्तन यहीं से शुरू होता है.</string>
     <string name="label_no_sessions">कोई सत्र नहीं किया गया</string>

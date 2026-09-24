@@ -22,7 +22,6 @@
     <string name="label_explore_exercises">Utforsk\nØvelser</string>
     <string name="label_session_history_home">Sesjon\nHistorikk</string>
     <string name="label_sessions_title">Økter</string>
-    <string name="label_nothing_today">Ingenting i dag</string>
     <string name="label_missed_day">Gikk du glipp av dagen?</string>
     <string name="label_plans_title">Planer</string>
     <string name="label_edit_plan">Rediger plan</string>
@@ -30,15 +29,12 @@
     <string name="label_clean_up">Rydd opp</string>
     <string name="label_clean_up_plans">Fjerne tomme treningsprogrammer?</string>
     <string name="heading_select_plan_name">Velg et programnavn</string>
-    <string name="heading_select_plan_items">Velg øvelser</string>
     <string name="desc_select_plan_name">Planen bør være lett å huske og ikke for lang. Ideelt sett unik og uten spesielle symboler.
   e.g.: Push Pull Leg, Strength Cycle, etc.</string>
     <string name="label_select_plan">Velg program</string>
     <string name="label_select_plan_one">Velg program</string>
     <string name="label_current_plan_FORMAT">Nåværende: %s</string>
     <string name="label_lifts">Løft</string>
-    <string name="label_plan_description">\n
-        \n</string>
     <string name="label_browse_exercises">Bla gjennom øvelser</string>
     <string name="label_all_muscle_groups">Alt</string>
     <string name="label_create_exercise">Opprett</string>
@@ -52,17 +48,13 @@
     <string name="label_exercise_exists">Øvelsen finnes allerede</string>
     <string name="label_add_exercise_header">Legg til øvelse</string>
     <string name="label_search_exercise">Søk etter øvelse</string>
-    <string name="label_no_exercise_today">Ingen øvelser planlagt for i dag.</string>
     <string name="label_add_set_for">Legg til sett for</string>
-    <string name="label_plus_int">+%s</string>
-    <string name="label_minus_int">-%s</string>
     <string name="label_settings">Innstillinger</string>
     <string name="label_name">Navn</string>
     <string name="label_add">Legg til</string>
     <string name="label_save">Lagre</string>
     <string name="label_yes">Ja</string>
     <string name="label_no">Ingen</string>
-    <string name="label_session">økt</string>
     <string name="label_exercise">Trening</string>
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
@@ -121,9 +113,6 @@
     <string name="label_muscle_shoulders">Skuldre</string>
     <string name="label_select_a_plan">Velg en plan</string>
     <string name="label_selecting_a_plan">Start med å velge en plan</string>
-    <string name="label_start_first_session">Start din første økt</string>
-    <string name="label_start_session_heading">Start dagens økt</string>
-    <string name="label_continue_session_heading">Fortsett dagens økt</string>
     <string name="label_next">Neste</string>
     <string name="label_boarding_quote">Din neste forvandling starter her.</string>
     <string name="label_no_sessions">Ingen treningsøkter utført</string>
