@@ -48,14 +48,19 @@ class MainActivity : ComponentActivity() {
             val theme by viewModel.theme.collectAsStateWithLifecycle()
             val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
             val weightUnit by viewModel.weightUnit.collectAsStateWithLifecycle()
+            val isOnboardingDone by viewModel.isOnboardingDone.collectAsStateWithLifecycle()
             KenkoTheme(
                 theme = theme,
                 colorSchemes = colorScheme,
             ) {
-                val backStack = rememberNavBackStack(Routes.GetStarted(true))
-                CompositionLocalProvider(LocalWeightUnit provides weightUnit) {
-                    Kenko {
-                        KenkoNavHost(backStack = backStack)
+                // The first screen depends on this setting
+                val onboardingDone = isOnboardingDone
+                if (onboardingDone != null) {
+                    val backStack = rememberNavBackStack(Routes.GetStarted(onboardingDone))
+                    CompositionLocalProvider(LocalWeightUnit provides weightUnit) {
+                        Kenko {
+                            KenkoNavHost(backStack = backStack)
+                        }
                     }
                 }
             }

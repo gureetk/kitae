@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A workout stays in progress until it is finished. Starting a day again after finishing always begins fresh from the plan
 - A days card on the profile, counting the days you trained
 - The app can be reset to a clean slate from the bottom of the settings
+- Uses its own application id, so it installs next to the original Kenko with separate data
 
 ### Changed
 
@@ -34,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The welcome screen was skipped on the first start
 - Removing an exercise from a plan no longer removes it from every other plan
 - Past sessions are read-only, swiping a set away in them could crash the app
 

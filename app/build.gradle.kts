@@ -35,7 +35,7 @@ android {
     compileSdk { version = release(37) }
 
     defaultConfig {
-        applicationId = "com.looker.kenko"
+        applicationId = "com.kenkoroutines.app"
         minSdk = 26
         targetSdk = 37
         versionName = "1.3.3"

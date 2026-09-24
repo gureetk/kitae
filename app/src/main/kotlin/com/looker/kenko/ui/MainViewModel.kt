@@ -44,6 +44,10 @@ class MainViewModel @Inject constructor(
     val weightUnit: StateFlow<WeightUnit> = repo.get { weightUnit }
         .asStateFlow(WeightUnit.Kilograms)
 
+    // Null while loading
+    val isOnboardingDone: StateFlow<Boolean?> = repo.get<Boolean?> { isOnboardingDone }
+        .asStateFlow(null)
+
     val colorScheme: StateFlow<ColorSchemes> = repo.stream
         .map { it.colorPalette.scheme ?: dynamicColorSchemes(context) ?: zestfulColorSchemes }
         .asStateFlow(zestfulColorSchemes)
