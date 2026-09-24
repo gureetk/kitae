@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ sănătos</string>
-    <string name="label_kenko_meaning_ALT">○ puternic</string>
     <string name="label_lets_go">Începe acum</string>
     <string name="label_continue_session">Continuă</string>
     <string name="label_start_session">Începe</string>

@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ υγιής</string>
-    <string name="label_kenko_meaning_ALT">○ δυνατός</string>
     <string name="label_lets_go">Ξεκινήστε</string>
     <string name="label_continue_session">Συνέχεια</string>
     <string name="label_start_session">Ξεκινήστε</string>

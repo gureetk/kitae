@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ สุขภาพดี</string>
-    <string name="label_kenko_meaning_ALT">แข็งแรง</string>
     <string name="label_lets_go">เริ่มต้นใช้งาน</string>
     <string name="label_continue_session">ดำเนินการต่อ</string>
     <string name="label_start_session">เริ่มต้น</string>

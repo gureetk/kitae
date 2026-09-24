@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+Kitae is a fork of [Kenko](https://github.com/Iamlooker/Kenko). Everything under Unreleased is new in Kitae,
+the versions below it are Kenko's history.
+
 ## [Unreleased]
 
 ### Added
@@ -23,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Renamed to Kitae, with a new icon
 - Existing plans are converted: every weekday becomes a day named after it, with sets planned from the last time each exercise was performed. Past sessions are linked to these days
 - Statistics, history and suggestions only count sets that were done
 - Sessions show the name of their day, and more than one workout can be logged on the same date

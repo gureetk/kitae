@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ gesund</string>
-    <string name="label_kenko_meaning_ALT">○ stark</string>
     <string name="label_lets_go">Starten</string>
     <string name="label_continue_session">Fortsetzen</string>
     <string name="label_start_session">Start</string>

@@ -1,1 +1,1 @@
-A simple workout journal
+A workout journal built around your training days

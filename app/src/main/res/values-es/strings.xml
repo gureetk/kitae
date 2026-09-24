@@ -12,8 +12,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --><resources>
-    <string name="label_kenko_meaning">○ saludable</string>
-    <string name="label_kenko_meaning_ALT">○ fuerte</string>
     <string name="label_lets_go">Comienza</string>
     <string name="label_continue_session">Continuar</string>
     <string name="label_start_session">Comenzar</string>

@@ -469,7 +469,7 @@ private fun KenkoTopBar(
                     modifier = Modifier.clip(CircleShape)
                 )
                 Text(
-                    text = "KENKO",
+                    text = stringResource(R.string.label_kenko).uppercase(),
                     fontWeight = FontWeight.Bold,
                 )
             }

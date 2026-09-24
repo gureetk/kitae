@@ -13,13 +13,13 @@
   -->
 
 <resources>
-    <string name="app_name" translatable="false">Kenko</string>
+    <string name="app_name" translatable="false">Kitae</string>
 
     <!--Onboarding-->
-    <string name="label_kenko" translatable="false">Kenko</string>
-    <string name="label_kenko_jp" translatable="false">ケンコウ</string>
-    <string name="label_kenko_meaning">○ healthy</string>
-    <string name="label_kenko_meaning_ALT">○ strong</string>
+    <string name="label_kenko" translatable="false">Kitae</string>
+    <string name="label_kenko_jp" translatable="false">キタエ</string>
+    <string name="label_kenko_meaning">○ forged</string>
+    <string name="label_kenko_meaning_ALT">○ trained</string>
     <string name="label_lets_go">Get Started</string>
 
     <!--Home-->
@@ -272,8 +272,8 @@
     <string name="label_days">Days</string>
     <string name="label_reset_app">Reset app</string>
     <string name="label_reset_app_desc">Deletes all plans, workouts, exercises and settings, like a fresh install</string>
-    <string name="label_reset_app_title">Reset Kenko?</string>
-    <string name="label_reset_app_confirm">This permanently deletes all your plans, workouts, exercises and settings. Backups saved to your backup folder are kept.\n\nKenko will close, open it again to start fresh.</string>
+    <string name="label_reset_app_title">Reset Kitae?</string>
+    <string name="label_reset_app_confirm">This permanently deletes all your plans, workouts, exercises and settings. Backups saved to your backup folder are kept.\n\nKitae will close, open it again to start fresh.</string>
     <string name="label_reset">Reset</string>
     <string name="error_reset_failed">Couldn\'t reset the app</string>
     <string name="label_add_seconds">+%1$ds</string>

@@ -1,7 +1,13 @@
-Kenko is a workout journal which will provide you with appropriate progressive-overload and well thought-out plans
+Kitae is a workout journal built around your training days. Plan your split once, with days like Push, Pull and Legs, then pick a day and tick off your sets as you go.
 
-The app allows you to log your workouts with extraordinary simplicity
+• Named training days instead of weekdays: train whichever day you're up for
+• Sets planned ahead for every exercise, ready when you start
+• Tick off each set, and keep unfinished ones as skipped or remove them from the plan
+• A rest timer that starts when you finish a set and keeps counting with the screen off
+• Warm-up, standard, failure, drop and rest-pause sets
+• Kilograms or pounds
+• Progress, history and backups, with all your data kept on your device
 
-You can create completely personal workout plans, and none of your data will be sent to anybody
+鍛え (kitae) is Japanese for forging and training: what lifting does to you, one session at a time.
 
-Kenko allows customization of theme with really simple but brutal design
+Kitae is based on Kenko by LooKeR and is free software under the GPL-3.0 license.

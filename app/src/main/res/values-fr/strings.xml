@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ sain</string>
-    <string name="label_kenko_meaning_ALT">○ fort</string>
     <string name="label_lets_go">Commencer</string>
     <string name="label_continue_session">Continue</string>
     <string name="label_start_session">Commencer</string>

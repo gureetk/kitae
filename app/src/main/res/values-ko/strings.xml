@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ 건강</string>
-    <string name="label_kenko_meaning_ALT">○ strong</string>
     <string name="label_lets_go">시작하기</string>
     <string name="label_continue_session">계속</string>
     <string name="label_start_session">시작</string>

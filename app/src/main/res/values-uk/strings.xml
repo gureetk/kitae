@@ -12,8 +12,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --><resources>
-    <string name="label_kenko_meaning">○ здоровий</string>
-    <string name="label_kenko_meaning_ALT">○ сильний</string>
     <string name="label_lets_go">Початок</string>
     <string name="label_continue_session">Продовжити</string>
     <string name="label_start_session">Почати</string>

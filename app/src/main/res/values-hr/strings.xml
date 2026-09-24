@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ zdravo</string>
-    <string name="label_kenko_meaning_ALT">○ jak</string>
     <string name="label_lets_go">Započnite</string>
     <string name="label_continue_session">Nastavi</string>
     <string name="label_start_session">Start</string>

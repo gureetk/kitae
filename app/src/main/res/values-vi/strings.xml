@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ khỏe mạnh</string>
-    <string name="label_kenko_meaning_ALT">○ mạnh</string>
     <string name="label_lets_go">Bắt đầu</string>
     <string name="label_continue_session">Tiếp tục</string>
     <string name="label_start_session">Bắt đầu</string>

@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ terveellinen</string>
-    <string name="label_kenko_meaning_ALT">○ vahva</string>
     <string name="label_lets_go">Aloita</string>
     <string name="label_continue_session">Jatka</string>
     <string name="label_start_session">Aloita</string>

@@ -1,34 +1,42 @@
 <div align="center">
 
-<img width="" src="metadata/en-US/images/featureGraphic.png" alt="Kenko" align="center">
+<img src="metadata/en-US/images/featureGraphic.png" alt="Kitae">
 
-Kenko is a workout journal which will provide you with appropriate progressive-overload and well-thought-out plans
+Kitae is a workout journal built around your training days: plan your split once, then pick a day and tick off your sets.
 
 </div>
 
-<div align="left">
+## Features
 
-## Screenshots
+- **Named training days**: build plans from days like Push, Pull, Legs or Upper, and start whichever you're up for
+- **Sets planned ahead**: every exercise comes with its sets ready when you start a workout
+- **Tick off your sets**: unfinished ones can be kept as skipped or removed from the plan when you finish
+- **Rest timer**: starts when you finish a set, keeps counting with the screen off and tells you when to go again
+- **Set types**: warm-up, standard, failure, drop and rest-pause sets
+- **Kilograms or pounds**
+- **Private**: progress, history and backups, with all your data kept on your device
 
-<img src="metadata/en-US/images/phoneScreenshots/1.png" width="25%" /><img src="metadata/en-US/images/phoneScreenshots/2.png" width="25%" /><img src="metadata/en-US/images/phoneScreenshots/3.png" width="25%" /><img src="metadata/en-US/images/phoneScreenshots/4.png" width="25%" />
+## The name
 
-## CHANGELOGS
-- Full changelog: [here](https://github.com/Iamlooker/Kenko/blob/main/CHANGELOG.md)
-- Unreleased changes: [here](https://github.com/Iamlooker/Kenko/blob/main/CHANGELOG.md#unreleased)
+鍛え (*kitae*) comes from the Japanese *kitaeru*, "to forge, to train": what lifting does to you, one session at a time.
 
-## TODO
+## Changelog
 
-- [x] Add Rating System
-- [ ] Provide Targeted Overload
-- [x] Add Import/Export
-- [x] Add Support for Isometric exercises
+See [CHANGELOG.md](CHANGELOG.md).
 
-## LICENSE
+## Credits
+
+Kitae is a fork of [Kenko](https://github.com/Iamlooker/Kenko) by LooKeR. Thanks to LooKeR and Kenko's contributors, whose work it builds on.
+
+## License
 
 ```
-Kenko
+Kitae
+Copyright (C) 2026 Kitae contributors
 
+Based on Kenko
 Copyright (C) 2025 LooKeR & Contributors
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -40,5 +48,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
-
-</div>

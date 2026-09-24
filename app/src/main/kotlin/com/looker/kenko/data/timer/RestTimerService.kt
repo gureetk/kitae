@@ -100,7 +100,7 @@ class RestTimerService : Service() {
 
     private fun holdWakeLock(state: RestTimerState.Running) {
         val lock = wakeLock ?: getSystemService(PowerManager::class.java)
-            ?.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Kenko:RestTimer")
+            ?.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Kitae:RestTimer")
             ?.apply { setReferenceCounted(false) }
             ?.also { wakeLock = it }
             ?: return

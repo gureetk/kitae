@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ sveikas</string>
-    <string name="label_kenko_meaning_ALT">○ stipriai</string>
     <string name="label_lets_go">Pradėkite</string>
     <string name="label_continue_session">Tęsti</string>
     <string name="label_start_session">Pradėti</string>

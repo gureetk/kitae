@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2025. LooKeR & Contributors
+  ~ Copyright (C) 2026 LooKeR & Contributors
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -16,26 +16,24 @@
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="32dp"
     android:height="32dp"
-    android:viewportWidth="128"
-    android:viewportHeight="128">
+    android:viewportWidth="108"
+    android:viewportHeight="108">
     <path
-        android:pathData="M0,0L128,0L128,128L0,128L0,0Z"
-        android:fillColor="@android:color/black" />
+        android:fillColor="@android:color/black"
+        android:pathData="M0,0h108v108h-108z" />
     <group
-        android:scaleX="0.36666667"
-        android:scaleY="0.36666667"
-        android:translateX="40.533333"
-        android:translateY="29.017284">
-        <path
-            android:pathData="M128,128C128,92.1 99.35,63 64,63C28.65,63 0,92.1 0,128H128Z"
-            android:fillType="evenOdd">
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="1.15"
+        android:scaleY="1.15">
+        <path android:pathData="M37,56A17,17 0 0,1 71,56ZM26,56L82,56A2,2 0 0,1 82,60L26,60A2,2 0 0,1 26,56ZM28,48L32,48A2,2 0 0,1 34,50L34,66A2,2 0 0,1 32,68L28,68A2,2 0 0,1 26,66L26,50A2,2 0 0,1 28,48ZM76,48L80,48A2,2 0 0,1 82,50L82,66A2,2 0 0,1 80,68L76,68A2,2 0 0,1 74,66L74,50A2,2 0 0,1 76,48Z">
             <aapt:attr name="android:fillColor">
                 <gradient
-                    android:startX="17.6"
-                    android:startY="69.17"
-                    android:endX="45.5"
-                    android:endY="139.5"
-                    android:type="linear">
+                    android:type="linear"
+                    android:startX="30"
+                    android:startY="40"
+                    android:endX="78"
+                    android:endY="70">
                     <item
                         android:offset="0"
                         android:color="#FFFFD9A0" />

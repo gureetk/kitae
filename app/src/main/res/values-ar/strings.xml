@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ صحي</string>
-    <string name="label_kenko_meaning_ALT">○ قوي</string>
     <string name="label_lets_go">ابدأ الآن</string>
     <string name="label_continue_session">استمر</string>
     <string name="label_start_session">ابدأ</string>

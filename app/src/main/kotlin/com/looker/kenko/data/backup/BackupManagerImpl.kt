@@ -283,7 +283,7 @@ class BackupManagerImpl @Inject constructor(
     }
 
     fun backupFileName(date: LocalDate): String = buildString {
-        append("kenko_backup_")
+        append("kitae_backup_")
         append(DateFormat.BackupName.format(date))
     }
 

@@ -12,8 +12,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --><resources>
-    <string name="label_kenko_meaning">○ स्वस्थ</string>
-    <string name="label_kenko_meaning_ALT">○ मजबूत</string>
     <string name="label_lets_go">शुरू करें</string>
     <string name="label_continue_session">जारी रखें</string>
     <string name="label_start_session">शुरू करें</string>

@@ -14,8 +14,6 @@
   -->
 
 <resources>
-    <string name="label_kenko_meaning">○ sağlıklı</string>
-    <string name="label_kenko_meaning_ALT">○ güçlü</string>
     <string name="label_lets_go">Başlayın</string>
     <string name="label_continue_session">Devam et</string>
     <string name="label_start_session">Başla</string>
