@@ -59,6 +59,7 @@ fun Plan(
     viewModel: PlanViewModel,
     onBackPress: () -> Unit,
     onPlanClick: (Int) -> Unit,
+    onPlanSelected: () -> Unit,
 ) {
     var showHelpDialog by remember { mutableStateOf(false) }
     val plans: List<Plan> by viewModel.plans.collectAsStateWithLifecycle()
@@ -67,7 +68,7 @@ fun Plan(
         plans = plans,
         onBackPress = onBackPress,
         onInfoClick = { showHelpDialog = true },
-        onSelectPlan = viewModel::switchPlan,
+        onSelectPlan = { plan -> viewModel.switchPlan(plan, onPlanSelected) },
         onRemove = viewModel::removePlan,
         onPlanClick = onPlanClick,
     )

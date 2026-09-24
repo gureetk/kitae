@@ -107,13 +107,9 @@ class SessionDetailViewModel @AssistedInject constructor(
         isFinishing,
     ) { session, routine, previousSessionId, finishing ->
         this.routine = routine
-        if (session == null) {
-            return@combine if (finishing) {
-                lastSuccess ?: SessionDetailState.Loading
-            } else {
-                SessionDetailState.Error.InvalidSession
-            }
-        }
+        // It may be deleted while leaving
+        if (finishing) return@combine lastSuccess ?: SessionDetailState.Loading
+        if (session == null) return@combine SessionDetailState.Error.InvalidSession
         SessionDetailState.Success(session.toUiData(routine, previousSessionId))
             .also { lastSuccess = it }
     }.asStateFlow(SessionDetailState.Loading)
@@ -191,12 +187,12 @@ class SessionDetailViewModel @AssistedInject constructor(
         _sheet.value = null
     }
 
-    fun finish(onFinished: () -> Unit) {
+    fun finish(keepIncompleteSets: Boolean, onFinished: () -> Unit) {
         if (isFinishing.value) return
         isFinishing.value = true
         viewModelScope.launch {
             timer.skip()
-            repo.finishSession(sessionId)
+            repo.finishSession(sessionId, keepIncompleteSets)
             onFinished()
         }
     }
@@ -234,8 +230,10 @@ class SessionDetailViewModel @AssistedInject constructor(
         previousSessionId: Int?,
     ): SessionUiData {
         val today = today()
-        val isEditable = date == today ||
-            (hasIncompleteSets && date.toEpochDays() >= today.toEpochDays() - 1)
+        val isEditable = !isFinished && (
+            date == today ||
+                (hasIncompleteSets && date.toEpochDays() >= today.toEpochDays() - 1)
+            )
         return SessionUiData(
             sessionId = sessionId,
             date = date,

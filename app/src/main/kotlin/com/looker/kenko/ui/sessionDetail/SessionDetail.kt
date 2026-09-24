@@ -36,8 +36,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -49,7 +47,6 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
@@ -75,6 +72,7 @@ import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.timer.RestTimerState
 import com.looker.kenko.ui.addSet.AddSetSheet
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.FinishWorkoutDialog
 import com.looker.kenko.ui.components.SetGroupHeader
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
@@ -125,7 +123,7 @@ fun SessionDetails(
             if (incompleteSets > 0) {
                 showFinishDialog = true
             } else {
-                viewModel.finish(onBackPress)
+                viewModel.finish(keepIncompleteSets = false, onFinished = onBackPress)
             }
         },
         onStartRest = viewModel::startRest,
@@ -147,34 +145,17 @@ fun SessionDetails(
 
     if (showFinishDialog) {
         val incompleteSets = (state as? SessionDetailState.Success)?.data?.incompleteSets ?: 0
-        val resources = LocalContext.current.resources
-        AlertDialog(
-            onDismissRequest = { showFinishDialog = false },
-            title = { Text(text = stringResource(R.string.label_finish_workout)) },
-            text = {
-                Text(
-                    text = resources.getQuantityString(
-                        R.plurals.finish_incomplete_sets,
-                        incompleteSets,
-                        incompleteSets,
-                    ),
-                )
+        FinishWorkoutDialog(
+            incompleteSets = incompleteSets,
+            onKeep = {
+                showFinishDialog = false
+                viewModel.finish(keepIncompleteSets = true, onFinished = onBackPress)
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showFinishDialog = false
-                        viewModel.finish(onBackPress)
-                    },
-                ) {
-                    Text(text = stringResource(R.string.label_finish))
-                }
+            onRemove = {
+                showFinishDialog = false
+                viewModel.finish(keepIncompleteSets = false, onFinished = onBackPress)
             },
-            dismissButton = {
-                TextButton(onClick = { showFinishDialog = false }) {
-                    Text(text = stringResource(R.string.label_cancel))
-                }
-            },
+            onDismiss = { showFinishDialog = false },
         )
     }
 }
@@ -381,6 +362,7 @@ private fun SetsList(
                         isIsometric = exercise.isIsometric,
                         type = set.type,
                         isCompleted = if (data.isEditable) set.isCompleted else null,
+                        isSkipped = !data.isEditable && !set.isCompleted,
                         onCompletedChange = if (data.isEditable) {
                             { onToggleSet(set) }
                         } else {

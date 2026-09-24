@@ -32,7 +32,6 @@ internal fun groupSessionExercises(
         }
     }
     sets.forEach { set ->
-        if (!isEditable && !set.isCompleted) return@forEach
         val id = set.exercise.id ?: return@forEach
         val group = groups[id] ?: SessionExercise(set.exercise, emptyList())
         groups[id] = group.copy(sets = group.sets + set)

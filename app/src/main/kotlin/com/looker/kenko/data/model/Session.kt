@@ -24,6 +24,7 @@ data class Session(
     val planId: Int?,
     val routineId: Int? = null,
     val routineName: String? = null,
+    val isFinished: Boolean = true,
     val id: Int? = null,
 ) {
     val completedSets: List<Set>

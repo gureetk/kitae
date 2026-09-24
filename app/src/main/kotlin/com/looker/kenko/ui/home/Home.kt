@@ -41,7 +41,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +52,6 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -83,6 +81,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Routine
 import com.looker.kenko.ui.components.DaySelectorChip
+import com.looker.kenko.ui.components.FinishWorkoutDialog
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.LiftingQuotes
 import com.looker.kenko.ui.components.TertiaryKenkoButton
@@ -134,33 +133,23 @@ fun Home(
     val active = state.activeSession
     val target = switchTo
     if (active != null && target != null) {
-        AlertDialog(
-            onDismissRequest = { switchTo = null },
-            title = { Text(text = stringResource(R.string.label_unfinished_workout)) },
-            text = {
-                Text(
-                    text = stringResource(
-                        R.string.label_unfinished_workout_desc,
-                        active.routineName ?: stringResource(R.string.label_workout),
-                        target.name,
-                    ),
-                )
+        FinishWorkoutDialog(
+            title = stringResource(R.string.label_unfinished_workout),
+            message = stringResource(
+                R.string.label_unfinished_workout_desc,
+                active.routineName ?: stringResource(R.string.label_workout),
+                target.name,
+            ),
+            incompleteSets = active.totalSets - active.completedSets,
+            onKeep = {
+                switchTo = null
+                viewModel.finishAndStart(active.id, target.id, true, onOpenSession)
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        switchTo = null
-                        viewModel.finishAndStart(active.id, target.id, onOpenSession)
-                    },
-                ) {
-                    Text(text = stringResource(R.string.label_yes))
-                }
+            onRemove = {
+                switchTo = null
+                viewModel.finishAndStart(active.id, target.id, false, onOpenSession)
             },
-            dismissButton = {
-                TextButton(onClick = { switchTo = null }) {
-                    Text(text = stringResource(R.string.label_no))
-                }
-            },
+            onDismiss = { switchTo = null },
         )
     }
 }

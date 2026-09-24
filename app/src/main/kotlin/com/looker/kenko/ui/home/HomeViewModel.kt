@@ -83,10 +83,15 @@ class HomeViewModel @Inject constructor(
         start(onStarted) { sessionRepo.startSession(routineId) }
     }
 
-    fun finishAndStart(activeSessionId: Int, routineId: Int, onStarted: (sessionId: Int) -> Unit) {
+    fun finishAndStart(
+        activeSessionId: Int,
+        routineId: Int,
+        keepIncompleteSets: Boolean,
+        onStarted: (sessionId: Int) -> Unit,
+    ) {
         start(onStarted) {
             restTimer.skip()
-            sessionRepo.finishSession(activeSessionId)
+            sessionRepo.finishSession(activeSessionId, keepIncompleteSets)
             sessionRepo.startSession(routineId)
         }
     }

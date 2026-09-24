@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sets are planned ahead for every exercise of a day. Starting a day loads its sets into the workout, where each set is ticked off with a button once done
 - Rest timer between sets: starts when a set is ticked off, keeps counting with the screen off, shows a countdown notification with +15s and Skip, and alerts when the rest is over. Its length can be changed (or turned off) in settings
 - Weights can be shown and entered in kilograms or pounds
-- Workouts can be finished, dropping the sets that were not done
+- Workouts can be finished, keeping the sets that were not done as skipped (shown dimmed in the history, never counted as done) or removing them. The plan itself is never changed
+- A check mark in the plan editor to finish editing a plan
 
 ### Changed
 
@@ -21,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Statistics, history and suggestions only count sets that were done
 - Sessions show the name of their day, and more than one workout can be logged on the same date
 - Sets of an ongoing workout can be edited by tapping them
+- Picking a plan to follow brings you back to the home screen
+
+### Removed
+
+- Plan templates without any exercises, only Push Pull Leg is included. Unused ones are removed when updating
 
 ### Fixed
 

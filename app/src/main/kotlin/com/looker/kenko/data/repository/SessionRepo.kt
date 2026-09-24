@@ -47,7 +47,7 @@ interface SessionRepo {
         isCompleted: Boolean,
     ): Int
 
-    suspend fun finishSession(id: Int)
+    suspend fun finishSession(id: Int, keepIncompleteSets: Boolean)
 
     suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean = false)
 

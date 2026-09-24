@@ -134,6 +134,7 @@ fun PlanEdit(
                 }
             }
         },
+        onDoneClick = { viewModel.done(onBackPress) },
         onDebugMockClick = viewModel::debugFillMockData,
     ) { stage ->
         when (stage) {
@@ -222,6 +223,7 @@ private fun FullEdit(
     fab: @Composable () -> Unit,
     onBackPress: () -> Unit,
     actions: @Composable RowScope.() -> Unit = {},
+    onDoneClick: (() -> Unit)? = null,
     onDebugMockClick: (() -> Unit)? = null,
     ui: @Composable (stage: PlanEditStage) -> Unit,
 ) {
@@ -239,9 +241,18 @@ private fun FullEdit(
                 navigationIcon = { BackButton(onBackPress) },
                 actions = {
                     actions()
+                    // Debug only: adds random past workouts
                     if (BuildConfig.DEBUG && stage == PlanEditStage.PlanEdit) {
                         IconButton(onClick = { onDebugMockClick?.invoke() }) {
                             Icon(painter = KenkoIcons.Add, contentDescription = "Mock data")
+                        }
+                    }
+                    if (onDoneClick != null && stage == PlanEditStage.PlanEdit) {
+                        FilledTonalIconButton(onClick = onDoneClick) {
+                            Icon(
+                                painter = KenkoIcons.Done,
+                                contentDescription = stringResource(R.string.label_save),
+                            )
                         }
                     }
                 },

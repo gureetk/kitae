@@ -38,6 +38,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -65,9 +66,11 @@ fun SetItem(
     isCompleted: Boolean? = null,
     onCompletedChange: ((Boolean) -> Unit)? = null,
     onClick: (() -> Unit)? = null,
+    isSkipped: Boolean = false,
     title: @Composable () -> Unit,
 ) {
     val unit = LocalWeightUnit.current
+    val dim = if (isSkipped) Modifier.alpha(0.45F) else Modifier
     val isDone = isCompleted == true
     val showToggle = isCompleted != null && onCompletedChange != null
     val containerColor by animateColorAsState(
@@ -102,7 +105,7 @@ fun SetItem(
             LocalContentColor provides indexColor,
             LocalTextStyle provides MaterialTheme.typography.displayMedium.numbers(),
         ) {
-            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Box(modifier = dim.padding(horizontal = 16.dp)) {
                 title()
             }
         }
@@ -111,6 +114,7 @@ fun SetItem(
             Row(
                 modifier = Modifier
                     .weight(1F)
+                    .then(dim)
                     .clip(MaterialTheme.shapes.large)
                     .background(containerColor)
                     .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
@@ -131,6 +135,14 @@ fun SetItem(
                     performance = unit.format(weight),
                 )
             }
+        }
+        if (isSkipped) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = stringResource(R.string.label_skipped),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.outline,
+            )
         }
         if (showToggle) {
             Spacer(modifier = Modifier.width(8.dp))

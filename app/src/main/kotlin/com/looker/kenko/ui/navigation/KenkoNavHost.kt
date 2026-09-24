@@ -110,6 +110,15 @@ fun KenkoNavHost(
 
                     is Routes.Plan -> Plan(
                         onPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
+                        onPlanSelected = {
+                            val home = backStack.indexOfLast { it is Routes.Home }
+                            if (home == -1) {
+                                backStack.add(Routes.Home)
+                                while (backStack.size > 1) backStack.removeAt(0)
+                            } else {
+                                while (backStack.lastIndex > home) backStack.removeAt(backStack.lastIndex)
+                            }
+                        },
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         viewModel = hiltViewModel(),
                     )

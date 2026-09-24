@@ -279,6 +279,16 @@ class PlanEditViewModel @AssistedInject constructor(
         }
     }
 
+    fun done(onDone: () -> Unit) {
+        viewModelScope.launch {
+            if (repo.hasExercises(planIdStream.value)) {
+                onDone()
+            } else {
+                snackbarState.showSnackbar(stringHandler.getString(R.string.error_plan_needs_exercise))
+            }
+        }
+    }
+
     private suspend fun suggestedSets(exerciseId: Int): List<SetDraft> {
         val lastTime = sessionRepo.getLastSessionSets(exerciseId)
         if (lastTime.isNotEmpty()) return lastTime
@@ -295,7 +305,10 @@ class PlanEditViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val planId = planIdStream.value
             val routines = repo.routines(planId).first().filter { it.exerciseCount > 0 }
-            if (routines.isEmpty()) return@launch
+            if (routines.isEmpty()) {
+                snackbarState.showSnackbar("Add exercises to a day to generate mock workouts")
+                return@launch
+            }
             val today = today().toEpochDays().toInt()
             var added = 0
             repeat(sessions) {

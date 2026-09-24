@@ -93,6 +93,7 @@ interface SessionDao {
         FROM sessions
         LEFT JOIN routines ON routines.id = sessions.routineId
         WHERE sessions.date >= :minDate
+        AND sessions.isFinished = 0
         AND EXISTS
         (SELECT 1
         FROM sets
@@ -136,6 +137,7 @@ interface SessionDao {
         FROM sessions
         WHERE date = :date
         AND routineId = :routineId
+        AND isFinished = 0
         ORDER BY id DESC
         LIMIT 1
         """,
@@ -184,9 +186,13 @@ interface SessionDao {
     )
     suspend fun deleteIfEmpty(sessionId: Int)
 
+    @Query("UPDATE sessions SET isFinished = 1 WHERE id = :sessionId")
+    suspend fun markFinished(sessionId: Int)
+
     @Transaction
-    suspend fun finish(sessionId: Int) {
-        deleteIncompleteSets(sessionId)
+    suspend fun finish(sessionId: Int, keepIncompleteSets: Boolean) {
+        if (!keepIncompleteSets) deleteIncompleteSets(sessionId)
+        markFinished(sessionId)
         deleteIfEmpty(sessionId)
     }
 }

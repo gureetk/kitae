@@ -39,7 +39,7 @@ class PlanViewModel @Inject constructor(
         }
     }
 
-    fun switchPlan(plan: Plan) {
+    fun switchPlan(plan: Plan, onSelected: () -> Unit) {
         viewModelScope.launch {
             if (!plan.isActive) {
                 repo.setCurrent(plan.id!!)
@@ -48,6 +48,7 @@ class PlanViewModel @Inject constructor(
             }
             if (repo.current.first() != null) {
                 settingsRepo.setOnboardingDone()
+                if (!plan.isActive) onSelected()
             }
         }
     }

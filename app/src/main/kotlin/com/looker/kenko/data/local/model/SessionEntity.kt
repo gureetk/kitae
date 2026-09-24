@@ -59,6 +59,8 @@ data class SessionDataEntity(
     val planId: Int?,
     @ColumnInfo(index = true)
     val routineId: Int? = null,
+    @ColumnInfo(defaultValue = "1")
+    val isFinished: Boolean = true,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -84,6 +86,7 @@ fun Session.data(): SessionDataEntity = SessionDataEntity(
     date = EpochDays(date.toEpochDays().toInt()),
     planId = planId,
     routineId = routineId,
+    isFinished = isFinished,
     id = id ?: 0,
 )
 
@@ -98,5 +101,6 @@ fun SessionEntity.toExternal(
     routineName = routineName,
     date = LocalDate.fromEpochDays(data.date.value),
     sets = sets,
+    isFinished = data.isFinished,
     id = data.id,
 )

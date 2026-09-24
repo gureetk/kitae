@@ -37,7 +37,9 @@ class SessionsViewModel @Inject constructor(
         repo.activeSession,
     ) { sessions, activeSession ->
         SessionsUiData(
-            sessions = sessions.filter { session -> session.sets.any { it.isCompleted } },
+            sessions = sessions.filter { session ->
+                session.sets.any { it.isCompleted } || (session.isFinished && session.sets.isNotEmpty())
+            },
             activeSessionId = activeSession?.id,
         )
     }.asStateFlow(SessionsUiData(emptyList(), null))

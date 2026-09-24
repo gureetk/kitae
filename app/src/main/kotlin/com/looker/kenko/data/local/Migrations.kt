@@ -427,3 +427,28 @@ fun migration3To4(dayNames: List<String>) = object : Migration(3, 4) {
         )
     }
 }
+
+// Finished flag for sessions, removes unused templates
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE `sessions` ADD COLUMN `isFinished` INTEGER NOT NULL DEFAULT 1")
+        db.execSQL(
+            """
+            UPDATE `sessions` SET `isFinished` = 0
+            WHERE EXISTS
+            (SELECT 1 FROM `sets`
+            WHERE `sets`.`sessionId` = `sessions`.`id`
+            AND `sets`.`isCompleted` = 0)
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            DELETE FROM `plans`
+            WHERE `description` IS NOT NULL
+            AND `id` NOT IN (SELECT `planId` FROM `routines`)
+            AND `id` NOT IN (SELECT `planId` FROM `plan_history` WHERE `planId` IS NOT NULL)
+            AND `id` NOT IN (SELECT `planId` FROM `sessions` WHERE `planId` IS NOT NULL)
+            """.trimIndent(),
+        )
+    }
+}

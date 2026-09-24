@@ -111,6 +111,7 @@ class LocalSessionRepo @Inject constructor(
             date = EpochDays(date.epochDay),
             planId = planId,
             routineId = routineId,
+            isFinished = isCompleted,
         ),
         sets = sets.map { (exerciseId, set) ->
             set.toSetEntity(
@@ -122,8 +123,8 @@ class LocalSessionRepo @Inject constructor(
         },
     )
 
-    override suspend fun finishSession(id: Int) {
-        dao.finish(id)
+    override suspend fun finishSession(id: Int, keepIncompleteSets: Boolean) {
+        dao.finish(id, keepIncompleteSets)
     }
 
     override suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean) {
