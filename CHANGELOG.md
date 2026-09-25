@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Kitae is a fork of [Kenko](https://github.com/Iamlooker/Kenko). Everything under Unreleased is new in Kitae,
 the versions below it are Kenko's history.
 
+## [Unreleased]
+
+### Changed
+
+- Warm-up and failure sets are numbered on their own, as W1, W2 and F1, F2
+
 ## [1.0.0] - 2026-09-24
 
 ### Added

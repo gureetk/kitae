@@ -16,12 +16,15 @@ package com.looker.kenko.ui.components
 
 import com.looker.kenko.data.local.model.SetType
 
-// Warm-ups are marked W and don't take a number
 fun setLabels(types: List<SetType>): List<String> {
     var number = 0
+    var warmups = 0
+    var failures = 0
     return types.map { type ->
-        if (type == SetType.Warmup) WARMUP_LABEL else (++number).toString().padStart(2, '0')
+        when (type) {
+            SetType.Warmup -> "W${++warmups}"
+            SetType.Failure -> "F${++failures}"
+            else -> (++number).toString().padStart(2, '0')
+        }
     }
 }
-
-private const val WARMUP_LABEL = "W"

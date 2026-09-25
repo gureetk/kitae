@@ -123,10 +123,10 @@ fun SetItem(
             ) {
                 PerformedItem(
                     title = stringResource(if (isIsometric) R.string.label_duration else R.string.label_reps),
-                    titleColor = if (type == SetType.Standard) {
-                        MaterialTheme.colorScheme.outline
-                    } else {
+                    titleColor = if (type == SetType.Drop || type == SetType.RestPause) {
                         setTypeColor(type)
+                    } else {
+                        MaterialTheme.colorScheme.outline
                     },
                     performance = "$repsOrDuration",
                 )
