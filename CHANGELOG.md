@@ -10,10 +10,18 @@ the versions below it are Kenko's history.
 
 ## [Unreleased]
 
+### Added
+
+- 40 more exercises, including timed ones like planks and wall sits
+
 ### Changed
 
 - Warm-up and failure sets are numbered on their own, as W1, W2 and F1, F2
 - Buttons instead of a slider to change the weight of a set, in steps of 2.5 and 5
+
+### Fixed
+
+- The names of the Tricep Push Down and Calf Raises exercises
 
 ## [1.0.0] - 2026-09-24
 

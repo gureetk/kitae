@@ -499,3 +499,68 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         )
     }
 }
+
+// Fixes two exercise names and adds new exercises, skipping existing names
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        renameExercise(db, from = "Tircep Push Down", to = "Tricep Push Down")
+        renameExercise(db, from = "Calve Raises", to = "Calf Raises")
+        db.execSQL(
+            """
+            WITH `added`(`name`, `target`, `isIsometric`) AS (VALUES
+            ('Dumbbell Bench Press', 'Chest', 0),
+            ('Incline Dumbbell Press', 'Chest', 0),
+            ('Decline Bench Press', 'Chest', 0),
+            ('Cable Crossovers', 'Chest', 0),
+            ('Push-ups', 'Chest', 0),
+            ('Machine Chest Press', 'Chest', 0),
+            ('Chin-ups', 'Lats', 0),
+            ('Straight-Arm Pulldowns', 'Lats', 0),
+            ('Seated Cable Rows', 'UpperBack', 0),
+            ('Single-Arm Dumbbell Rows', 'UpperBack', 0),
+            ('T-Bar Rows', 'UpperBack', 0),
+            ('Deadlift', 'UpperBack', 0),
+            ('Overhead Press', 'Shoulders', 0),
+            ('Arnold Press', 'Shoulders', 0),
+            ('Front Raises', 'Shoulders', 0),
+            ('Rear Delt Flyes', 'Shoulders', 0),
+            ('Hammer Curls', 'Biceps', 0),
+            ('Cable Curls', 'Biceps', 0),
+            ('Concentration Curls', 'Biceps', 0),
+            ('Dips', 'Triceps', 0),
+            ('Close-Grip Bench Press', 'Triceps', 0),
+            ('Tricep Kickbacks', 'Triceps', 0),
+            ('Front Squats', 'Quads', 0),
+            ('Bulgarian Split Squats', 'Quads', 0),
+            ('Goblet Squats', 'Quads', 0),
+            ('Wall Sit', 'Quads', 1),
+            ('Romanian Deadlift', 'Hamstrings', 0),
+            ('Seated Leg Curls', 'Hamstrings', 0),
+            ('Good Mornings', 'Hamstrings', 0),
+            ('Glute Bridges', 'Glutes', 0),
+            ('Cable Kickbacks', 'Glutes', 0),
+            ('Hip Abductions', 'Glutes', 0),
+            ('Seated Calf Raises', 'Calves', 0),
+            ('Plank', 'Core', 1),
+            ('Side Plank', 'Core', 1),
+            ('Crunches', 'Core', 0),
+            ('Cable Crunches', 'Core', 0),
+            ('Russian Twists', 'Core', 0),
+            ('Hanging Leg Raises', 'Core', 0),
+            ('Ab Wheel Rollouts', 'Core', 0)
+            )
+            INSERT INTO `exercises` (`name`, `target`, `reference`, `isIsometric`)
+            SELECT `name`, `target`, NULL, `isIsometric` FROM `added`
+            WHERE NOT EXISTS
+            (SELECT 1 FROM `exercises` WHERE `exercises`.`name` = `added`.`name` COLLATE NOCASE)
+            """.trimIndent(),
+        )
+    }
+
+    private fun renameExercise(db: SupportSQLiteDatabase, from: String, to: String) {
+        db.execSQL(
+            "UPDATE `exercises` SET `name` = ? WHERE `name` = ? AND NOT EXISTS (SELECT 1 FROM `exercises` WHERE `name` = ?)",
+            arrayOf<Any?>(to, from, to),
+        )
+    }
+}
