@@ -17,6 +17,7 @@ the versions below it are Kenko's history.
 ### Changed
 
 - Warm-up and failure sets are numbered on their own, as W1, W2 and F1, F2
+- Warm-up sets stay together at the start of an exercise
 - Buttons instead of a slider to change the weight of a set, in steps of 2.5 and 5
 
 ### Fixed

@@ -17,7 +17,10 @@ package com.looker.kenko.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import com.looker.kenko.data.local.model.SetEntity
+import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.model.warmupsFirstSlots
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -151,4 +154,39 @@ interface SetsDao {
         """,
     )
     suspend fun delete(setId: Int)
+
+    @Query("SELECT * FROM sets WHERE id = :setId")
+    suspend fun getSet(setId: Int): SetEntity?
+
+    @Query(
+        """
+        SELECT *
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND exerciseId = :exerciseId
+        ORDER BY `order` ASC, id ASC
+        """,
+    )
+    suspend fun getExerciseSets(sessionId: Int, exerciseId: Int): List<SetEntity>
+
+    @Query("UPDATE sets SET `order` = :order WHERE id = :setId")
+    suspend fun updateOrder(setId: Int, order: Int)
+
+    suspend fun groupWarmups(sessionId: Int, exerciseId: Int) {
+        warmupsFirstSlots(getExerciseSets(sessionId, exerciseId), { it.order }, { it.type == SetType.Warmup })
+            .forEach { (set, order) -> updateOrder(set.id, order) }
+    }
+
+    @Transaction
+    suspend fun insertGrouped(set: SetEntity) {
+        insert(set)
+        groupWarmups(set.sessionId, set.exerciseId)
+    }
+
+    @Transaction
+    suspend fun updateGrouped(setId: Int, reps: Int, weight: Float, type: String) {
+        updateValues(setId, reps, weight, type)
+        val set = getSet(setId) ?: return
+        groupWarmups(set.sessionId, set.exerciseId)
+    }
 }

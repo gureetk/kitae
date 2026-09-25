@@ -143,7 +143,7 @@ class LocalPlanRepo @Inject constructor(
     }
 
     override suspend fun addPlannedSet(routineExerciseId: Int, set: SetDraft) {
-        routineDao.insertRoutineSet(
+        routineDao.insertGrouped(
             set.toRoutineSet(
                 routineExerciseId = routineExerciseId,
                 position = routineDao.nextSetPosition(routineExerciseId),
@@ -152,7 +152,7 @@ class LocalPlanRepo @Inject constructor(
     }
 
     override suspend fun updatePlannedSet(id: Int, set: SetDraft) {
-        routineDao.updateRoutineSet(
+        routineDao.updateGrouped(
             id = id,
             reps = set.repsOrDuration,
             weight = set.weight,

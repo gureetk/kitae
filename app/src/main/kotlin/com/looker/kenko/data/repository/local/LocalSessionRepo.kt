@@ -143,7 +143,7 @@ class LocalSessionRepo @Inject constructor(
     }
 
     override suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean) {
-        setsDao.insert(
+        setsDao.insertGrouped(
             set.toSetEntity(
                 sessionId = sessionId,
                 exerciseId = exerciseId,
@@ -154,7 +154,7 @@ class LocalSessionRepo @Inject constructor(
     }
 
     override suspend fun updateSet(setId: Int, set: SetDraft) {
-        setsDao.updateValues(
+        setsDao.updateGrouped(
             setId = setId,
             reps = set.repsOrDuration,
             weight = set.weight,

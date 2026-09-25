@@ -23,6 +23,8 @@ import com.looker.kenko.data.local.model.RoutineExerciseEntity
 import com.looker.kenko.data.local.model.RoutineExerciseRow
 import com.looker.kenko.data.local.model.RoutineSetEntity
 import com.looker.kenko.data.local.model.RoutineWithStats
+import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.model.warmupsFirstSlots
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -213,5 +215,39 @@ interface RoutineDao {
             },
         )
         return routineExerciseId
+    }
+
+    @Query("SELECT * FROM routine_sets WHERE id = :id")
+    suspend fun getRoutineSet(id: Int): RoutineSetEntity?
+
+    @Query(
+        """
+        SELECT *
+        FROM routine_sets
+        WHERE routineExerciseId = :routineExerciseId
+        ORDER BY position ASC, id ASC
+        """,
+    )
+    suspend fun getPlannedSets(routineExerciseId: Int): List<RoutineSetEntity>
+
+    @Query("UPDATE routine_sets SET position = :position WHERE id = :id")
+    suspend fun updateSetPosition(id: Int, position: Int)
+
+    suspend fun groupWarmups(routineExerciseId: Int) {
+        warmupsFirstSlots(getPlannedSets(routineExerciseId), { it.position }, { it.type == SetType.Warmup })
+            .forEach { (set, position) -> updateSetPosition(set.id, position) }
+    }
+
+    @Transaction
+    suspend fun insertGrouped(set: RoutineSetEntity) {
+        insertRoutineSet(set)
+        groupWarmups(set.routineExerciseId)
+    }
+
+    @Transaction
+    suspend fun updateGrouped(id: Int, reps: Int, weight: Float, type: String) {
+        updateRoutineSet(id, reps, weight, type)
+        val set = getRoutineSet(id) ?: return
+        groupWarmups(set.routineExerciseId)
     }
 }
