@@ -88,7 +88,7 @@ import com.looker.kenko.data.model.settings.parseToKg
 import com.looker.kenko.ui.addSet.components.ITEMS
 import com.looker.kenko.ui.addSet.components.ItemSize
 import com.looker.kenko.ui.addSet.components.VerticalSelector
-import com.looker.kenko.ui.addSet.components.WeightStepper
+import com.looker.kenko.ui.addSet.components.WeightButtons
 import com.looker.kenko.ui.addSet.components.WeightTextField
 import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -215,7 +215,7 @@ private fun AddSetContent(
                         .weight(3F)
                         .fillMaxWidth(),
                 )
-                WeightStepper(
+                WeightButtons(
                     onStep = { step ->
                         onAddWeight(step)
                         haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)

@@ -42,16 +42,10 @@ enum class WeightUnit(val symbol: String) {
         }
 
     val smallStep: Float
-        get() = when (this) {
-            Kilograms -> 1F
-            Pounds -> 2.5F
-        }
+        get() = 2.5F
 
     val largeStep: Float
-        get() = when (this) {
-            Kilograms -> 2.5F
-            Pounds -> 5F
-        }
+        get() = 5F
 }
 
 // Two decimals at most, hides kg/lb conversion noise
