@@ -32,7 +32,7 @@ Kitae is a fork of [Kenko](https://github.com/Iamlooker/Kenko) by LooKeR. Thanks
 
 ```
 Kitae
-Copyright (C) 2026 Kitae contributors
+Copyright (C) 2026 Kitae Contributors
 
 Based on Kenko
 Copyright (C) 2025 LooKeR & Contributors
