@@ -362,7 +362,6 @@ private fun SetsList(
                         repsOrDuration = set.repsOrDuration,
                         weight = set.weight,
                         isIsometric = exercise.isIsometric,
-                        type = set.type,
                         isCompleted = if (data.isEditable) set.isCompleted else null,
                         isSkipped = !data.isEditable && !set.isCompleted,
                         onCompletedChange = if (data.isEditable) {

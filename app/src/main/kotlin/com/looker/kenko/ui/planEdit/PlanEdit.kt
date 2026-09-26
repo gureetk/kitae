@@ -483,7 +483,6 @@ private fun RoutineEditor(
                                 repsOrDuration = set.repsOrDuration,
                                 weight = set.weight,
                                 isIsometric = exercise.isIsometric,
-                                type = set.type,
                                 onClick = { onEditSet(routineExercise, set) },
                                 title = { Text(labels[index]) },
                             )

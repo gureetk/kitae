@@ -17,14 +17,16 @@ package com.looker.kenko.ui.components
 import com.looker.kenko.data.local.model.SetType
 
 fun setLabels(types: List<SetType>): List<String> {
-    var number = 0
-    var warmups = 0
-    var failures = 0
+    val counts = mutableMapOf<SetType, Int>()
     return types.map { type ->
+        val number = (counts[type] ?: 0) + 1
+        counts[type] = number
         when (type) {
-            SetType.Warmup -> "W${++warmups}"
-            SetType.Failure -> "F${++failures}"
-            else -> (++number).toString().padStart(2, '0')
+            SetType.Standard -> number.toString().padStart(2, '0')
+            SetType.Warmup -> "W$number"
+            SetType.Failure -> "F$number"
+            SetType.Drop -> "D$number"
+            SetType.RestPause -> "R$number"
         }
     }
 }

@@ -46,9 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
-import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.settings.format
-import com.looker.kenko.ui.addSet.setTypeColor
 import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
@@ -62,7 +60,6 @@ fun SetItem(
     weight: Float,
     isIsometric: Boolean,
     modifier: Modifier = Modifier,
-    type: SetType = SetType.Standard,
     isCompleted: Boolean? = null,
     onCompletedChange: ((Boolean) -> Unit)? = null,
     onClick: (() -> Unit)? = null,
@@ -123,11 +120,6 @@ fun SetItem(
             ) {
                 PerformedItem(
                     title = stringResource(if (isIsometric) R.string.label_duration else R.string.label_reps),
-                    titleColor = if (type == SetType.Drop || type == SetType.RestPause) {
-                        setTypeColor(type)
-                    } else {
-                        MaterialTheme.colorScheme.outline
-                    },
                     performance = "$repsOrDuration",
                 )
                 PerformedItem(
@@ -191,7 +183,6 @@ private fun SetItemPreview(
                     repsOrDuration = 12,
                     weight = 40F,
                     isIsometric = false,
-                    type = SetType.Drop,
                     isCompleted = true,
                     onCompletedChange = {},
                 ) {

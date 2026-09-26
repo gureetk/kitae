@@ -17,7 +17,7 @@ the versions below it are Kenko's history.
 
 ### Changed
 
-- Warm-up and failure sets are numbered on their own, as W1, W2 and F1, F2
+- Warm-up, failure, drop and rest-pause sets are numbered on their own, as W1, F1, D1 and R1
 - Warm-up sets stay together at the start of an exercise
 - Buttons instead of a slider to change the weight of a set, in steps of 2.5 and 5
 - Finishing a workout saves the reps, weights and set types you used to the plan
