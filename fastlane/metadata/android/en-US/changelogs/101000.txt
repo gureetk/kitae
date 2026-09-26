@@ -1,0 +1,6 @@
+• Warm-up, failure, drop and rest-pause sets are numbered on their own: W1, F1, D1, R1
+• Warm-up sets stay together at the start of an exercise
+• Buttons to change weights, in steps of 2.5 and 5
+• Finishing a workout saves your reps, weights and set types to the plan, and asks about sets you added
+• 40 more exercises, including timed ones like planks
+• Fixed the names of Tricep Push Down and Calf Raises

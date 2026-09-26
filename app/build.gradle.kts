@@ -39,9 +39,9 @@ android {
         applicationId = "page.codeberg.wingback.kitae"
         minSdk = 26
         targetSdk = 37
-        versionName = "1.0.0"
+        versionName = "1.1.0"
         // 1.2.3 -> 102030
-        versionCode = 100000
+        versionCode = 101000
     }
 
     dependenciesInfo.includeInApk = false
