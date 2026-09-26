@@ -257,10 +257,6 @@
         <item quantity="one">You added %1$d set. Add it to %2$s for next time?</item>
         <item quantity="other">You added %1$d sets. Add them to %2$s for next time?</item>
     </plurals>
-    <plurals name="also_add_new_sets">
-        <item quantity="one">Also add the new set to %2$s</item>
-        <item quantity="other">Also add the %1$d new sets to %2$s</item>
-    </plurals>
     <string name="label_add_to_day">Add to %1$s</string>
     <string name="label_only_this_workout">Only this workout</string>
     <string name="label_skipped">.skipped</string>

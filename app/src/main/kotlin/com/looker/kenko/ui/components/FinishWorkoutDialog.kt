@@ -16,15 +16,10 @@ package com.looker.kenko.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -34,16 +29,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.data.model.FinishMode
 
-// With nothing done, removing from the plan would empty the day
 @Composable
 fun FinishWorkoutDialog(
     incompleteSets: Int,
@@ -57,54 +49,37 @@ fun FinishWorkoutDialog(
 ) {
     val resources = LocalContext.current.resources
     val day = dayName.takeIf { newSets > 0 }
-    var addNewSets by rememberSaveable { mutableStateOf(false) }
-    val setsMessage = when {
-        incompleteSets == 0 && day != null -> resources.getQuantityString(
-            R.plurals.new_sets_question,
-            newSets,
-            newSets,
-            day,
+    var chosenMode by rememberSaveable {
+        mutableStateOf(if (incompleteSets == 0) FinishMode.KeepSkipped else null)
+    }
+    val mode = chosenMode
+    val text = when {
+        mode == null -> listOfNotNull(
+            message,
+            if (completedSets == 0) {
+                stringResource(R.string.label_nothing_done)
+            } else {
+                resources.getQuantityString(R.plurals.finish_incomplete_sets, incompleteSets, incompleteSets)
+            },
         )
 
-        incompleteSets == 0 -> null
-        completedSets == 0 -> stringResource(R.string.label_nothing_done)
-        else -> resources.getQuantityString(
-            R.plurals.finish_incomplete_sets,
-            incompleteSets,
-            incompleteSets,
+        day != null -> listOfNotNull(
+            message.takeIf { incompleteSets == 0 },
+            resources.getQuantityString(R.plurals.new_sets_question, newSets, newSets, day),
         )
+
+        else -> listOfNotNull(message)
+    }.joinToString("\n\n")
+
+    fun choose(choice: FinishMode) {
+        if (day != null && choice != FinishMode.Discard) chosenMode = choice else onFinish(choice, false)
     }
-    val text = listOfNotNull(message, setsMessage).joinToString("\n\n")
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = title) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (text.isNotEmpty()) Text(text = text)
-                if (incompleteSets > 0 && day != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .toggleable(
-                                value = addNewSets,
-                                onValueChange = { addNewSets = it },
-                                role = Role.Checkbox,
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = addNewSets, onCheckedChange = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = resources.getQuantityString(
-                                R.plurals.also_add_new_sets,
-                                newSets,
-                                newSets,
-                                day,
-                            ),
-                        )
-                    }
-                }
-            }
+            if (text.isNotEmpty()) Text(text = text)
         },
         confirmButton = {
             Column(
@@ -112,38 +87,17 @@ fun FinishWorkoutDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 when {
-                    incompleteSets == 0 && day != null -> {
+                    mode == null -> {
                         Button(
-                            onClick = { onFinish(FinishMode.KeepSkipped, true) },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(text = stringResource(R.string.label_add_to_day, day))
-                        }
-                        OutlinedButton(
-                            onClick = { onFinish(FinishMode.KeepSkipped, false) },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(text = stringResource(R.string.label_only_this_workout))
-                        }
-                    }
-
-                    incompleteSets == 0 -> Button(
-                        onClick = { onFinish(FinishMode.KeepSkipped, false) },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(text = stringResource(R.string.label_finish))
-                    }
-
-                    else -> {
-                        Button(
-                            onClick = { onFinish(FinishMode.KeepSkipped, addNewSets) },
+                            onClick = { choose(FinishMode.KeepSkipped) },
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Text(text = stringResource(R.string.label_keep_skipped))
                         }
+                        // With nothing done, removing from the plan would empty the day
                         val removeMode = if (completedSets == 0) FinishMode.Discard else FinishMode.RemoveFromPlan
                         OutlinedButton(
-                            onClick = { onFinish(removeMode, addNewSets) },
+                            onClick = { choose(removeMode) },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = MaterialTheme.colorScheme.error,
@@ -159,6 +113,28 @@ fun FinishWorkoutDialog(
                                 ),
                             )
                         }
+                    }
+
+                    day != null -> {
+                        Button(
+                            onClick = { onFinish(mode, true) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(text = stringResource(R.string.label_add_to_day, day))
+                        }
+                        OutlinedButton(
+                            onClick = { onFinish(mode, false) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(text = stringResource(R.string.label_only_this_workout))
+                        }
+                    }
+
+                    else -> Button(
+                        onClick = { onFinish(mode, false) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(R.string.label_finish))
                     }
                 }
                 TextButton(
