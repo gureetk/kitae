@@ -27,6 +27,7 @@ data class Set(
     val exercise: Exercise,
     val rir: RepsInReserve,
     val isCompleted: Boolean = true,
+    val isFromPlan: Boolean = false,
     val id: Int? = null,
 )
 

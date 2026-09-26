@@ -75,6 +75,7 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     exercise = exercise,
     rir = RepsInReserve(rir),
     isCompleted = isCompleted,
+    isFromPlan = routineSetId != null,
     id = id,
 )
 

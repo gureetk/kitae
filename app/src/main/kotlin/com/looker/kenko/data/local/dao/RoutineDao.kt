@@ -23,6 +23,7 @@ import com.looker.kenko.data.local.model.RoutineExerciseEntity
 import com.looker.kenko.data.local.model.RoutineExerciseRow
 import com.looker.kenko.data.local.model.RoutineSetEntity
 import com.looker.kenko.data.local.model.RoutineWithStats
+import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.warmupsFirstSlots
 import kotlinx.coroutines.flow.Flow
@@ -249,5 +250,108 @@ interface RoutineDao {
         updateRoutineSet(id, reps, weight, type)
         val set = getRoutineSet(id) ?: return
         groupWarmups(set.routineExerciseId)
+    }
+
+    @Query(
+        """
+        UPDATE routine_sets SET
+        reps =
+        (SELECT sets.reps
+        FROM sets
+        WHERE sets.routineSetId = routine_sets.id
+        AND sets.sessionId = :sessionId
+        AND sets.isCompleted = 1),
+        weight =
+        (SELECT sets.weight
+        FROM sets
+        WHERE sets.routineSetId = routine_sets.id
+        AND sets.sessionId = :sessionId
+        AND sets.isCompleted = 1),
+        type =
+        (SELECT sets.type
+        FROM sets
+        WHERE sets.routineSetId = routine_sets.id
+        AND sets.sessionId = :sessionId
+        AND sets.isCompleted = 1)
+        WHERE id IN
+        (SELECT routineSetId
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND isCompleted = 1
+        AND routineSetId IS NOT NULL)
+        """,
+    )
+    suspend fun updateFromWorkout(sessionId: Int)
+
+    @Query(
+        """
+        SELECT DISTINCT routine_sets.routineExerciseId
+        FROM routine_sets
+        INNER JOIN sets ON sets.routineSetId = routine_sets.id
+        WHERE sets.sessionId = :sessionId
+        AND sets.isCompleted = 1
+        """,
+    )
+    suspend fun routineExercisesOfWorkout(sessionId: Int): List<Int>
+
+    @Query("SELECT routineId FROM sessions WHERE id = :sessionId")
+    suspend fun routineIdOfSession(sessionId: Int): Int?
+
+    @Query(
+        """
+        SELECT *
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND isCompleted = 1
+        AND routineSetId IS NULL
+        ORDER BY `order` ASC, id ASC
+        """,
+    )
+    suspend fun newSetsOfWorkout(sessionId: Int): List<SetEntity>
+
+    @Query(
+        """
+        SELECT id
+        FROM routine_exercises
+        WHERE routineId = :routineId
+        AND exerciseId = :exerciseId
+        ORDER BY position ASC, id ASC
+        LIMIT 1
+        """,
+    )
+    suspend fun routineExerciseId(routineId: Int, exerciseId: Int): Int?
+
+    @Query("UPDATE sets SET routineSetId = :routineSetId WHERE id = :setId")
+    suspend fun linkSet(setId: Int, routineSetId: Int)
+
+    @Transaction
+    suspend fun applyWorkout(sessionId: Int, addNewSets: Boolean) {
+        updateFromWorkout(sessionId)
+        routineExercisesOfWorkout(sessionId).forEach { groupWarmups(it) }
+        if (!addNewSets) return
+        val routineId = routineIdOfSession(sessionId) ?: return
+        newSetsOfWorkout(sessionId).groupBy { it.exerciseId }.forEach { (exerciseId, sets) ->
+            val routineExerciseId = routineExerciseId(routineId, exerciseId)
+                ?: insertRoutineExercise(
+                    RoutineExerciseEntity(
+                        routineId = routineId,
+                        exerciseId = exerciseId,
+                        position = nextExercisePosition(routineId),
+                    ),
+                ).toInt()
+            sets.forEach { set ->
+                val plannedId = insertRoutineSet(
+                    RoutineSetEntity(
+                        routineExerciseId = routineExerciseId,
+                        repsOrDuration = set.repsOrDuration,
+                        weight = set.weight,
+                        type = set.type,
+                        position = nextSetPosition(routineExerciseId),
+                    ),
+                ).toInt()
+                linkSet(set.id, plannedId)
+            }
+            groupWarmups(routineExerciseId)
+        }
     }
 }

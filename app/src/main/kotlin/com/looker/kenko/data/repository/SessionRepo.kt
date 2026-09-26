@@ -50,7 +50,7 @@ interface SessionRepo {
         isCompleted: Boolean,
     ): Int
 
-    suspend fun finishSession(id: Int, mode: FinishMode)
+    suspend fun finishSession(id: Int, mode: FinishMode, addNewSets: Boolean)
 
     suspend fun addSet(sessionId: Int, exerciseId: Int, set: SetDraft, isCompleted: Boolean = false)
 

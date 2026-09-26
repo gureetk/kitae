@@ -13,12 +13,14 @@ the versions below it are Kenko's history.
 ### Added
 
 - 40 more exercises, including timed ones like planks and wall sits
+- Finishing a workout asks whether sets you added should join the day
 
 ### Changed
 
 - Warm-up and failure sets are numbered on their own, as W1, W2 and F1, F2
 - Warm-up sets stay together at the start of an exercise
 - Buttons instead of a slider to change the weight of a set, in steps of 2.5 and 5
+- Finishing a workout saves the reps, weights and set types you used to the plan
 
 ### Fixed
 

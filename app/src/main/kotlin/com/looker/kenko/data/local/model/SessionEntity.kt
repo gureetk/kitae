@@ -71,6 +71,7 @@ data class SessionSummaryRow(
     val routineName: String?,
     val totalSets: Int,
     val completedSets: Int,
+    val newSets: Int,
 )
 
 fun SessionSummaryRow.toActiveSession(): ActiveSession = ActiveSession(
@@ -80,6 +81,7 @@ fun SessionSummaryRow.toActiveSession(): ActiveSession = ActiveSession(
     routineName = routineName,
     completedSets = completedSets,
     totalSets = totalSets,
+    newSets = newSets,
 )
 
 fun Session.data(): SessionDataEntity = SessionDataEntity(

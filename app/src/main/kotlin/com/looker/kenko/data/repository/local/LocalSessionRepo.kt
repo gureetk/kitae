@@ -134,7 +134,8 @@ class LocalSessionRepo @Inject constructor(
         },
     )
 
-    override suspend fun finishSession(id: Int, mode: FinishMode) {
+    override suspend fun finishSession(id: Int, mode: FinishMode, addNewSets: Boolean) {
+        routineDao.applyWorkout(sessionId = id, addNewSets = addNewSets)
         dao.finish(
             sessionId = id,
             keepIncompleteSets = mode == FinishMode.KeepSkipped,

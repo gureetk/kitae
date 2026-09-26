@@ -52,6 +52,7 @@ data class ActiveSession(
     val routineName: String?,
     val completedSets: Int,
     val totalSets: Int,
+    val newSets: Int = 0,
 )
 
 fun Session(planId: Int, sets: List<Set>) = Session(planId = planId, date = localDate, sets = sets)

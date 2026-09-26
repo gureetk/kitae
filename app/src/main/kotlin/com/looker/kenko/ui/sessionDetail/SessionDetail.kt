@@ -121,10 +121,11 @@ fun SessionDetails(
         onAddSet = viewModel::openAddSet,
         onReferenceClick = viewModel::openReference,
         onFinishClick = { incompleteSets ->
-            if (incompleteSets > 0) {
+            val newSets = (state as? SessionDetailState.Success)?.data?.newSets ?: 0
+            if (incompleteSets > 0 || newSets > 0) {
                 showFinishDialog = true
             } else {
-                viewModel.finish(FinishMode.KeepSkipped, onBackPress)
+                viewModel.finish(FinishMode.KeepSkipped, addNewSets = false, onFinished = onBackPress)
             }
         },
         onStartRest = viewModel::startRest,
@@ -149,9 +150,11 @@ fun SessionDetails(
         FinishWorkoutDialog(
             incompleteSets = data?.incompleteSets ?: 0,
             completedSets = data?.completedSets ?: 0,
-            onFinish = { mode ->
+            newSets = data?.newSets ?: 0,
+            dayName = data?.title,
+            onFinish = { mode, addNewSets ->
                 showFinishDialog = false
-                viewModel.finish(mode, onBackPress)
+                viewModel.finish(mode, addNewSets, onBackPress)
             },
             onDismiss = { showFinishDialog = false },
         )

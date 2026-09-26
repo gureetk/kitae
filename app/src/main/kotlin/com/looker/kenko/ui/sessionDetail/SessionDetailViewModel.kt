@@ -188,12 +188,12 @@ class SessionDetailViewModel @AssistedInject constructor(
         _sheet.value = null
     }
 
-    fun finish(mode: FinishMode, onFinished: () -> Unit) {
+    fun finish(mode: FinishMode, addNewSets: Boolean, onFinished: () -> Unit) {
         if (isFinishing.value) return
         isFinishing.value = true
         viewModelScope.launch {
             timer.skip()
-            repo.finishSession(sessionId, mode)
+            repo.finishSession(sessionId, mode, addNewSets)
             onFinished()
         }
     }
@@ -247,6 +247,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             previousSessionId = previousSessionId,
             completedSets = completedSets.size,
             totalSets = sets.size,
+            newSets = if (routineId != null) sets.count { it.isCompleted && !it.isFromPlan } else 0,
         )
     }
 }
@@ -277,6 +278,7 @@ data class SessionUiData(
     val previousSessionId: Int? = null,
     val completedSets: Int = 0,
     val totalSets: Int = 0,
+    val newSets: Int = 0,
 ) {
     val incompleteSets: Int
         get() = totalSets - completedSets

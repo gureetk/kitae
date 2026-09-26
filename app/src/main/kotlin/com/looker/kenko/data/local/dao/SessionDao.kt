@@ -102,7 +102,12 @@ interface SessionDao {
         (SELECT COUNT(*)
         FROM sets
         WHERE sets.sessionId = sessions.id
-        AND sets.isCompleted = 1) AS completedSets
+        AND sets.isCompleted = 1) AS completedSets,
+        (SELECT COUNT(*)
+        FROM sets
+        WHERE sets.sessionId = sessions.id
+        AND sets.isCompleted = 1
+        AND sets.routineSetId IS NULL) AS newSets
         FROM sessions
         LEFT JOIN routines ON routines.id = sessions.routineId
         WHERE sessions.date >= :minDate

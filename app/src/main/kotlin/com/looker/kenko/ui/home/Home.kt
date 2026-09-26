@@ -142,9 +142,11 @@ fun Home(
             ),
             incompleteSets = active.totalSets - active.completedSets,
             completedSets = active.completedSets,
-            onFinish = { mode ->
+            newSets = active.newSets,
+            dayName = active.routineName,
+            onFinish = { mode, addNewSets ->
                 switchTo = null
-                viewModel.finishAndStart(active.id, target.id, mode, onOpenSession)
+                viewModel.finishAndStart(active.id, target.id, mode, addNewSets, onOpenSession)
             },
             onDismiss = { switchTo = null },
         )

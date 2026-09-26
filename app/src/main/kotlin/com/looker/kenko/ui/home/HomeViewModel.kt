@@ -88,11 +88,12 @@ class HomeViewModel @Inject constructor(
         activeSessionId: Int,
         routineId: Int,
         mode: FinishMode,
+        addNewSets: Boolean,
         onStarted: (sessionId: Int) -> Unit,
     ) {
         start(onStarted) {
             restTimer.skip()
-            sessionRepo.finishSession(activeSessionId, mode)
+            sessionRepo.finishSession(activeSessionId, mode, addNewSets)
             sessionRepo.startSession(routineId)
         }
     }
