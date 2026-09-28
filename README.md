@@ -26,7 +26,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Credits
 
-Kitae is a fork of [Kenko](https://github.com/Iamlooker/Kenko) by LooKeR. Thanks to LooKeR and Kenko's contributors, whose work it builds on.
+Kitae is a fork of [Kenko](https://codeberg.org/Iamlooker/Kenko) by LooKeR. Thanks to LooKeR and Kenko's contributors, whose work it builds on.
 
 ## License
 
