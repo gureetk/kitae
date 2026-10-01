@@ -1,3 +1,14 @@
+> [!Warning]
+> **Free and Open-Source Android is under threat.**
+>
+> From 2027*, Google’s proposed changes could make it impossible to install Android apps from developers who have not registered with Google, signed its contract, paid up, and submitted government ID.
+>
+> Don’t let Android become a locked-down platform. Protect your freedom to install the apps you choose.
+>
+> [**Keep Android Open**](https://keepandroidopen.org/)
+>
+> \*The proposed changes and timeline are subject to change.
+
 <div align="center">
 
 <img src="fastlane/metadata/android/en-US/images/featureGraphic.png" alt="Kitae">
