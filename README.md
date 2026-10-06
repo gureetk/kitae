@@ -15,17 +15,49 @@
 
 Kitae is a workout journal built around your training days: plan your split once, then pick a day and tick off your sets.
 
+**[Download the latest APK](https://codeberg.org/gureetk/kitae/releases/latest)**
+
 </div>
+
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="24%" alt="">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="24%" alt="">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="24%" alt="">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="24%" alt="">
+</p>
+
+## Download
+
+APKs for every version are on the [releases page](https://codeberg.org/gureetk/kitae/releases). Kitae runs on Android 8.0 or newer.
+
+Kitae is developed on [Codeberg](https://codeberg.org/gureetk/kitae). Its GitHub repository is a read-only mirror, without releases or issues.
 
 ## Features
 
 - **Named training days**: build plans from days like Push, Pull, Legs or Upper, and start whichever you're up for
 - **Sets planned ahead**: every exercise comes with its sets ready when you start a workout
 - **Tick off your sets**: unfinished ones can be kept as skipped or removed from the plan when you finish
-- **Rest timer**: starts when you finish a set, keeps counting with the screen off and tells you when to go again
-- **Set types**: warm-up, standard, failure, drop and rest-pause sets
+- **Plans that keep up with you**: the reps and weights you use are saved back to the plan, and sets you add can join it
+- **Rest timer**: starts when you finish a set, keeps counting with the screen off, and can be shortened, extended or skipped from its notification. Exercises and single sets can have their own rest time
+- **Exercise pages**: how to do each exercise, and your progress on it from one workout to the next
+- **Set types**: warm-up, standard, failure, drop and rest-pause sets, numbered W1, F1, D1 and R1
+- **History and stats**: every workout is saved with how long it took, and the You tab counts your lifts and the days you've trained
 - **Kilograms or pounds**
-- **Private**: progress, history and backups, with all your data kept on your device
+- **Private**: no internet access at all. Your data stays on your phone, and backups go to a folder you pick
+
+## Building
+
+Open the project in Android Studio, or build from a terminal with the Android SDK and Java 17 or newer:
+
+```
+./gradlew assembleDebug
+```
+
+Release builds are signed when a `keystore.properties` file is present (see `keystore.example.properties`), and unsigned otherwise.
+
+## Bugs and ideas
+
+Open an [issue](https://codeberg.org/gureetk/kitae/issues).
 
 ## The name
 
@@ -38,6 +70,8 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## Credits
 
 Kitae is a fork of [Kenko](https://codeberg.org/Iamlooker/Kenko) by LooKeR. Thanks to LooKeR and Kenko's contributors, whose work it builds on.
+
+Most of the code Kitae adds to Kenko was written with Claude, an AI assistant, and tested on a phone before each release.
 
 ## License
 
