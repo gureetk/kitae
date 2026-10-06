@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Kitae is a fork of [Kenko](https://github.com/Iamlooker/Kenko). Everything under Unreleased is new in Kitae,
 the versions below it are Kenko's history.
 
+## [Unreleased]
+
+### Added
+
+- A −15s button in the rest timer notification, next to +15s and Skip
+
 ## [1.1.0] - 2026-09-26
 
 ### Added

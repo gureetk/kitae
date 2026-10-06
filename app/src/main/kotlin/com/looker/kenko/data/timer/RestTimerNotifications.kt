@@ -62,6 +62,11 @@ object RestTimerNotifications {
                 .setUsesChronometer(true)
                 .setChronometerCountDown(true)
                 .addAction(
+                    R.drawable.ic_remove,
+                    context.getString(R.string.label_remove_seconds, REST_ADJUST_SECONDS),
+                    serviceIntent(context, RestTimerService.ACTION_REMOVE_TIME),
+                )
+                .addAction(
                     R.drawable.ic_add,
                     context.getString(R.string.label_add_seconds, REST_ADJUST_SECONDS),
                     serviceIntent(context, RestTimerService.ACTION_ADD_TIME),

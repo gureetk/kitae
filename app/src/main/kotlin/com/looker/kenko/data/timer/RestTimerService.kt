@@ -52,6 +52,7 @@ class RestTimerService : Service() {
         when (intent?.action) {
             ACTION_SKIP -> restTimer.skip()
             ACTION_ADD_TIME -> restTimer.adjust(REST_ADJUST_SECONDS.seconds)
+            ACTION_REMOVE_TIME -> restTimer.adjust(-REST_ADJUST_SECONDS.seconds)
             // Required after startForegroundService()
             else -> if (!promote(restTimer.state.value as? RestTimerState.Running)) {
                 stopSelf(startId)
@@ -131,6 +132,7 @@ class RestTimerService : Service() {
     companion object {
         const val ACTION_SKIP = "com.looker.kenko.rest_timer.SKIP"
         const val ACTION_ADD_TIME = "com.looker.kenko.rest_timer.ADD_TIME"
+        const val ACTION_REMOVE_TIME = "com.looker.kenko.rest_timer.REMOVE_TIME"
 
         private const val TAG = "RestTimerService"
         private const val WAKE_LOCK_MARGIN_MILLIS = 10_000L
