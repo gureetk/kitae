@@ -106,6 +106,7 @@ class LocalSessionRepo @Inject constructor(
                 planId = routine.planId,
                 routineId = routineId,
                 isFinished = false,
+                startedAt = System.currentTimeMillis(),
             ),
             sets = sets,
         )
@@ -140,6 +141,7 @@ class LocalSessionRepo @Inject constructor(
             sessionId = id,
             keepIncompleteSets = mode == FinishMode.KeepSkipped,
             removeFromPlan = mode == FinishMode.RemoveFromPlan,
+            finishedAt = System.currentTimeMillis(),
         )
     }
 

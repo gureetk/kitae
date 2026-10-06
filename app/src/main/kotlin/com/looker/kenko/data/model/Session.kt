@@ -26,9 +26,14 @@ data class Session(
     val routineName: String? = null,
     val isFinished: Boolean = true,
     val id: Int? = null,
+    val startedAt: Long? = null,
+    val finishedAt: Long? = null,
 ) {
     val completedSets: List<Set>
         get() = sets.filter { it.isCompleted }
+
+    val durationMillis: Long?
+        get() = if (startedAt != null && finishedAt != null) (finishedAt - startedAt).coerceAtLeast(0L) else null
 
     val performExercises: List<Exercise>
         get() = completedSets.map { it.exercise }.distinct()

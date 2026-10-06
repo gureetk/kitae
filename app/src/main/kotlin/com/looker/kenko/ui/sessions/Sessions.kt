@@ -51,6 +51,7 @@ import com.looker.kenko.data.model.Session
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
 import com.looker.kenko.ui.components.TertiaryKenkoButton
+import com.looker.kenko.ui.components.workoutLength
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -169,7 +170,8 @@ fun SessionCard(
             val titleStyle = MaterialTheme.typography.titleLarge
             val secondaryEmphasis = MaterialTheme.colorScheme.outline
             val dayName = session.routineName ?: dayName(session.date.dayOfWeek)
-            val string = remember(session.date, dayName) {
+            val length = session.durationMillis?.let { workoutLength(it) }
+            val string = remember(session.date, dayName, length) {
                 buildAnnotatedString {
                     withStyle(titleStyle.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
                         append(formatDate(session.date, dateTimeFormat = DateFormat.SessionLabel))
@@ -177,6 +179,12 @@ fun SessionCard(
                     append(" ${Typography.bullet} ")
                     withStyle(titleStyle.toSpanStyle().copy(color = secondaryEmphasis)) {
                         append(dayName)
+                    }
+                    if (length != null) {
+                        append(" ${Typography.bullet} ")
+                        withStyle(titleStyle.toSpanStyle().copy(color = secondaryEmphasis)) {
+                            append(length)
+                        }
                     }
                 }
             }

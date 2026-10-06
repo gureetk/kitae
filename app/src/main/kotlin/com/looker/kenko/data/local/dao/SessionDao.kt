@@ -199,8 +199,14 @@ interface SessionDao {
     )
     suspend fun deleteIfEmpty(sessionId: Int)
 
-    @Query("UPDATE sessions SET isFinished = 1 WHERE id = :sessionId")
-    suspend fun markFinished(sessionId: Int)
+    @Query(
+        """
+        UPDATE sessions
+        SET isFinished = 1, finishedAt = COALESCE(finishedAt, :finishedAt)
+        WHERE id = :sessionId
+        """,
+    )
+    suspend fun markFinished(sessionId: Int, finishedAt: Long)
 
     @Query(
         """
@@ -241,7 +247,12 @@ interface SessionDao {
     suspend fun deleteEmptyRoutineExercises(routineExerciseIds: List<Int>)
 
     @Transaction
-    suspend fun finish(sessionId: Int, keepIncompleteSets: Boolean, removeFromPlan: Boolean) {
+    suspend fun finish(
+        sessionId: Int,
+        keepIncompleteSets: Boolean,
+        removeFromPlan: Boolean,
+        finishedAt: Long,
+    ) {
         if (!keepIncompleteSets) {
             if (removeFromPlan) {
                 val routineExerciseIds = routineExercisesOfIncompleteSets(sessionId)
@@ -250,7 +261,7 @@ interface SessionDao {
             }
             deleteIncompleteSets(sessionId)
         }
-        markFinished(sessionId)
+        markFinished(sessionId, finishedAt)
         deleteIfEmpty(sessionId)
     }
 }

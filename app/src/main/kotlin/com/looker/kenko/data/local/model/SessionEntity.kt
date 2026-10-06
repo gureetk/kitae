@@ -61,6 +61,9 @@ data class SessionDataEntity(
     val routineId: Int? = null,
     @ColumnInfo(defaultValue = "1")
     val isFinished: Boolean = true,
+    // Epoch milliseconds, null for workouts from before they were recorded
+    val startedAt: Long? = null,
+    val finishedAt: Long? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -89,6 +92,8 @@ fun Session.data(): SessionDataEntity = SessionDataEntity(
     planId = planId,
     routineId = routineId,
     isFinished = isFinished,
+    startedAt = startedAt,
+    finishedAt = finishedAt,
     id = id ?: 0,
 )
 
@@ -105,4 +110,6 @@ fun SessionEntity.toExternal(
     sets = sets,
     isFinished = data.isFinished,
     id = data.id,
+    startedAt = data.startedAt,
+    finishedAt = data.finishedAt,
 )

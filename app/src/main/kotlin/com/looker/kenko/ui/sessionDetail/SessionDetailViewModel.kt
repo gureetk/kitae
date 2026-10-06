@@ -257,6 +257,8 @@ class SessionDetailViewModel @AssistedInject constructor(
             completedSets = completedSets.size,
             totalSets = sets.size,
             newSets = if (routineId != null) sets.count { it.isCompleted && !it.isFromPlan } else 0,
+            startedAt = startedAt,
+            durationMillis = durationMillis,
         )
     }
 }
@@ -288,6 +290,8 @@ data class SessionUiData(
     val completedSets: Int = 0,
     val totalSets: Int = 0,
     val newSets: Int = 0,
+    val startedAt: Long? = null,
+    val durationMillis: Long? = null,
 ) {
     val incompleteSets: Int
         get() = totalSets - completedSets

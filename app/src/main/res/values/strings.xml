@@ -284,4 +284,6 @@
     <string name="error_reset_failed">Couldn\'t reset the app</string>
     <string name="label_add_seconds">+%1$ds</string>
     <string name="label_remove_seconds">−%1$ds</string>
+    <string name="label_minutes">%1$d min</string>
+    <string name="label_hours_minutes">%1$d h %2$d min</string>
 </resources>

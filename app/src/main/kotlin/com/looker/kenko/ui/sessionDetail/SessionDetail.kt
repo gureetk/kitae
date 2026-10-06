@@ -77,7 +77,9 @@ import com.looker.kenko.ui.components.FinishWorkoutDialog
 import com.looker.kenko.ui.components.SetGroupHeader
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
+import com.looker.kenko.ui.components.WorkoutClock
 import com.looker.kenko.ui.components.setLabels
+import com.looker.kenko.ui.components.workoutLength
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.sessionDetail.components.RestTimerBar
@@ -292,8 +294,15 @@ private fun SetsList(
             Header(
                 title = data.title,
                 performedOn = data.date,
+                duration = data.durationMillis?.let { workoutLength(it) },
                 onBackPress = onBackPress,
                 actions = {
+                    if (data.isEditable && data.startedAt != null) {
+                        WorkoutClock(
+                            startedAt = data.startedAt,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                        )
+                    }
                     val previousSessionId = data.previousSessionId
                     if (previousSessionId != null) {
                         IconButton(onClick = { onHistoryClick(previousSessionId) }) {
@@ -401,6 +410,7 @@ private fun SetsList(
 private fun Header(
     title: String?,
     performedOn: LocalDate,
+    duration: String?,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable (RowScope.() -> Unit),
@@ -410,7 +420,7 @@ private fun Header(
     val date = remember(performedOn) {
         formatDate(performedOn, DateFormat.SessionLabel)
     }
-    val subtitle = if (heading != dayName) "$dayName · $date" else date
+    val subtitle = listOfNotNull(dayName.takeIf { heading != dayName }, date, duration).joinToString(" · ")
     TopAppBar(
         modifier = modifier,
         actions = actions,

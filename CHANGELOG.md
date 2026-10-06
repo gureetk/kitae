@@ -13,6 +13,7 @@ the versions below it are Kenko's history.
 ### Added
 
 - A −15s button in the rest timer notification, next to +15s and Skip
+- A clock showing how long the workout in progress has been going, and the length of each workout in the history
 
 ### Changed
 
