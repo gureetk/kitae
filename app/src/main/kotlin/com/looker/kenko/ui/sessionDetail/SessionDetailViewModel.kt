@@ -147,6 +147,7 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     fun openAddSet(exercise: Exercise) {
         val exerciseId = exercise.id ?: return
+        if (isOpen(exerciseId, setId = null)) return
         viewModelScope.launch {
             val data = (state.value as? SessionDetailState.Success)?.data
             val initial = data?.exercises
@@ -156,12 +157,14 @@ class SessionDetailViewModel @AssistedInject constructor(
                     ?.sets?.lastOrNull()?.toDraft()
                 ?: repo.getLastSetByExerciseId(exerciseId)?.toDraft()
                 ?: defaultSet()
+            if (isOpen(exerciseId, setId = null)) return@launch
             _sheet.value = SetSheet(id = ++sheetCount, exercise = exercise, initial = initial)
         }
     }
 
     fun openEditSet(set: Set) {
         val setId = set.id ?: return
+        if (isOpen(set.exercise.id, setId)) return
         _sheet.value = SetSheet(
             id = ++sheetCount,
             exercise = set.exercise,
@@ -170,9 +173,15 @@ class SessionDetailViewModel @AssistedInject constructor(
         )
     }
 
+    private fun isOpen(exerciseId: Int?, setId: Int?): Boolean {
+        val sheet = _sheet.value ?: return false
+        return !sheet.isSaved && sheet.setId == setId && sheet.exercise.id == exerciseId
+    }
+
     fun saveSheet(set: SetDraft) {
         val sheet = _sheet.value ?: return
-        if (sheet.isSaved) return
+        // Saving a new set twice would add it twice
+        if (sheet.isSaved && sheet.setId == null) return
         _sheet.value = sheet.copy(isSaved = true)
         viewModelScope.launch {
             if (sheet.setId != null) {

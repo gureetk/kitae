@@ -18,6 +18,10 @@ the versions below it are Kenko's history.
 
 - New app ID (`ca.gureet.kitae`) and signing key, so Kitae 1.x can't update to this version. To keep your data, use Backup Now under Backup & Restore in the old app's settings, then Restore in the new one. The old app can be uninstalled after that
 
+### Fixed
+
+- Reps changed just before tapping done weren't always saved, and a quick second tap could open the same set twice
+
 ## [1.1.0] - 2026-09-26
 
 ### Added

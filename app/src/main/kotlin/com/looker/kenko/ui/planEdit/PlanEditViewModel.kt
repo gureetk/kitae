@@ -218,8 +218,10 @@ class PlanEditViewModel @AssistedInject constructor(
     }
 
     fun openAddSet(routineExercise: RoutineExercise) {
+        if (isOpen(routineExercise.id, setId = null)) return
         viewModelScope.launch {
             val initial = routineExercise.sets.lastOrNull()?.toDraft() ?: defaultSet()
+            if (isOpen(routineExercise.id, setId = null)) return@launch
             sheetStream.value = PlanEditSheet.EditSet(
                 id = ++sheetCount,
                 routineExerciseId = routineExercise.id,
@@ -230,6 +232,7 @@ class PlanEditViewModel @AssistedInject constructor(
     }
 
     fun openEditSet(routineExercise: RoutineExercise, set: PlannedSet) {
+        if (isOpen(routineExercise.id, set.id)) return
         sheetStream.value = PlanEditSheet.EditSet(
             id = ++sheetCount,
             routineExerciseId = routineExercise.id,
@@ -239,9 +242,15 @@ class PlanEditViewModel @AssistedInject constructor(
         )
     }
 
+    private fun isOpen(routineExerciseId: Int, setId: Int?): Boolean {
+        val sheet = sheetStream.value as? PlanEditSheet.EditSet ?: return false
+        return !sheet.isSaved && sheet.setId == setId && sheet.routineExerciseId == routineExerciseId
+    }
+
     fun saveSet(set: SetDraft) {
         val sheet = sheetStream.value as? PlanEditSheet.EditSet ?: return
-        if (sheet.isSaved) return
+        // Saving a new set twice would add it twice
+        if (sheet.isSaved && sheet.setId == null) return
         sheetStream.value = sheet.copy(isSaved = true)
         viewModelScope.launch {
             if (sheet.setId == null) {

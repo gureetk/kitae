@@ -229,7 +229,11 @@ private fun AddSetContent(
                 label = repsLabel,
                 value = reps,
                 onChanged = onRepsChanged,
-                onChange = { haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick) },
+                // Done can be tapped before the dial settles
+                onChange = {
+                    onRepsChanged(it)
+                    haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                },
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
