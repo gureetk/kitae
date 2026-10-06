@@ -87,7 +87,7 @@ fun AddEditExercise(
         onNameChange = viewModel::setName,
         onReferenceChange = viewModel::addReference,
         onRestChange = viewModel::setRest,
-        onInstructionsChange = viewModel::setInstructions,
+        onInstructionsChange = viewModel::updateInstructions,
         onBackPress = onBackPress,
         onDone = { viewModel.addNewExercise(onDone) },
     )

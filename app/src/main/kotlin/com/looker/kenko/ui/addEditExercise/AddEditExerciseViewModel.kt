@@ -132,7 +132,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
         restSeconds = value
     }
 
-    fun setInstructions(value: String) {
+    fun updateInstructions(value: String) {
         instructions = value
     }
 
@@ -183,7 +183,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     setIsometric(it.isIsometric)
                     setTargetMuscle(it.target)
                     setRest(it.restSeconds)
-                    setInstructions(it.instructions.orEmpty())
+                    updateInstructions(it.instructions.orEmpty())
                 }
             } else {
                 if (routeData.name != null) setName(routeData.name)
