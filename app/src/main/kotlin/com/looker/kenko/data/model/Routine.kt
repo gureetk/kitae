@@ -41,12 +41,14 @@ data class PlannedSet(
     val repsOrDuration: Int,
     val weight: Float,
     val type: SetType,
+    val restSeconds: Int? = null,
 )
 
 fun PlannedSet.toDraft(): SetDraft = SetDraft(
     repsOrDuration = repsOrDuration,
     weight = weight,
     type = type,
+    restSeconds = restSeconds,
 )
 
 fun List<Routine>.nextAfter(lastRoutineId: Int?): Routine? {

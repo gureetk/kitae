@@ -26,7 +26,9 @@ import com.looker.kenko.R
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.data.model.settings.DEFAULT_REST_TIMER_SECONDS
 import com.looker.kenko.data.repository.ExerciseRepo
+import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.isValidUrl
@@ -38,6 +40,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOf
@@ -49,6 +52,7 @@ import kotlinx.coroutines.launch
 class AddEditExerciseViewModel @AssistedInject constructor(
     private val repo: ExerciseRepo,
     private val stringHandler: StringHandler,
+    settingsRepo: SettingsRepo,
     @Assisted private val routeData: Routes.AddEditExercise,
 ) : ViewModel() {
 
@@ -74,6 +78,12 @@ class AddEditExerciseViewModel @AssistedInject constructor(
 
     var reference: String by mutableStateOf("")
         private set
+
+    var restSeconds: Int? by mutableStateOf(null)
+        private set
+
+    val defaultRestSeconds: StateFlow<Int> = settingsRepo.get { restTimerSeconds }
+        .asStateFlow(DEFAULT_REST_TIMER_SECONDS)
 
     private val isReferenceInvalid = snapshotFlow { reference }
         .debounce(200.milliseconds)
@@ -115,6 +125,10 @@ class AddEditExerciseViewModel @AssistedInject constructor(
         reference = value
     }
 
+    fun setRest(value: Int?) {
+        restSeconds = value
+    }
+
     fun setTargetMuscle(value: MuscleGroups) {
         viewModelScope.launch {
             targetMuscle.emit(value)
@@ -144,6 +158,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     reference = reference.ifBlank { null },
                     isIsometric = isIsometric.value,
                     id = exerciseId,
+                    restSeconds = restSeconds,
                 ),
             )
             onDone()
@@ -159,6 +174,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     addReference(it.reference ?: "")
                     setIsometric(it.isIsometric)
                     setTargetMuscle(it.target)
+                    setRest(it.restSeconds)
                 }
             } else {
                 if (routeData.name != null) setName(routeData.name)

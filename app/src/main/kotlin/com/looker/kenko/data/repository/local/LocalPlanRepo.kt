@@ -157,6 +157,7 @@ class LocalPlanRepo @Inject constructor(
             reps = set.repsOrDuration,
             weight = set.weight,
             type = set.type.name,
+            restSeconds = set.restSeconds,
         )
     }
 

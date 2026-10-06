@@ -103,6 +103,7 @@ fun SessionDetails(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val restTimer by viewModel.restTimer.collectAsStateWithLifecycle()
     val restSeconds by viewModel.restSeconds.collectAsStateWithLifecycle()
+    val nextRestSeconds by viewModel.nextRestSeconds.collectAsStateWithLifecycle()
     val sheet by viewModel.sheet.collectAsStateWithLifecycle()
     val requestNotifications = rememberNotificationPermissionRequest()
     var showFinishDialog by rememberSaveable { mutableStateOf(false) }
@@ -110,13 +111,14 @@ fun SessionDetails(
     SessionDetail(
         state = state,
         restTimer = restTimer,
-        restSeconds = restSeconds,
+        restSeconds = nextRestSeconds,
         onBackPress = onBackPress,
         onEditPlanClick = onEditPlanClick,
         onHistoryClick = onHistoryClick,
         onRemoveSet = viewModel::removeSet,
         onToggleSet = { set ->
-            if (!set.isCompleted && restSeconds > 0) requestNotifications()
+            val rest = set.restSeconds ?: set.exercise.restSeconds ?: restSeconds
+            if (!set.isCompleted && rest > 0) requestNotifications()
             viewModel.toggleSet(set)
         },
         onEditSet = viewModel::openEditSet,
@@ -140,6 +142,7 @@ fun SessionDetails(
             AddSetSheet(
                 exercise = current.exercise,
                 initial = current.initial,
+                defaultRestSeconds = current.exercise.restSeconds ?: restSeconds,
                 isEdit = current.setId != null,
                 onDismiss = viewModel::dismissSheet,
                 onDone = viewModel::saveSheet,
@@ -373,6 +376,7 @@ private fun SetsList(
                         isIsometric = exercise.isIsometric,
                         isCompleted = if (data.isEditable) set.isCompleted else null,
                         isSkipped = !data.isEditable && !set.isCompleted,
+                        restSeconds = set.restSeconds,
                         onCompletedChange = if (data.isEditable) {
                             { onToggleSet(set) }
                         } else {

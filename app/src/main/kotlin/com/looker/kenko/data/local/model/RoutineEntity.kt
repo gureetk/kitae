@@ -99,6 +99,7 @@ data class RoutineSetEntity(
     val position: Int,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val restSeconds: Int? = null,
 )
 
 data class RoutineWithStats(
@@ -137,6 +138,7 @@ fun RoutineSetEntity.toExternal(): PlannedSet = PlannedSet(
     repsOrDuration = repsOrDuration,
     weight = weight,
     type = type,
+    restSeconds = restSeconds,
 )
 
 fun SetDraft.toRoutineSet(routineExerciseId: Int, position: Int): RoutineSetEntity =
@@ -146,6 +148,7 @@ fun SetDraft.toRoutineSet(routineExerciseId: Int, position: Int): RoutineSetEnti
         weight = weight,
         type = type,
         position = position,
+        restSeconds = restSeconds,
     )
 
 fun List<RoutineExerciseRow>.withSets(sets: List<RoutineSetEntity>): List<RoutineExercise> {

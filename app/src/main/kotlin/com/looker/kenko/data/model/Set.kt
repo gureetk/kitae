@@ -29,6 +29,7 @@ data class Set(
     val isCompleted: Boolean = true,
     val isFromPlan: Boolean = false,
     val id: Int? = null,
+    val restSeconds: Int? = null,
 )
 
 val Set.rating: Rating

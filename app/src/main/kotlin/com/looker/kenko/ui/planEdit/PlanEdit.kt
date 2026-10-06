@@ -98,6 +98,7 @@ fun PlanEdit(
 ) {
     val pageStage by viewModel.pageState.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val restSeconds by viewModel.restSeconds.collectAsStateWithLifecycle()
     val suggestions = stringArrayResource(R.array.routine_name_suggestions)
     BackHandler {
         viewModel.onBackPress(pageStage, onBackPress)
@@ -174,6 +175,7 @@ fun PlanEdit(
             AddSetSheet(
                 exercise = sheet.exercise,
                 initial = sheet.initial,
+                defaultRestSeconds = sheet.exercise.restSeconds ?: restSeconds,
                 isEdit = sheet.setId != null,
                 onDismiss = viewModel::closeSheet,
                 onDone = viewModel::saveSet,
@@ -483,6 +485,7 @@ private fun RoutineEditor(
                                 repsOrDuration = set.repsOrDuration,
                                 weight = set.weight,
                                 isIsometric = exercise.isIsometric,
+                                restSeconds = set.restSeconds,
                                 onClick = { onEditSet(routineExercise, set) },
                                 title = { Text(labels[index]) },
                             )

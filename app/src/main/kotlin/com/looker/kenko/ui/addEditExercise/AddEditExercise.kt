@@ -55,6 +55,7 @@ import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.ErrorSnackbar
 import com.looker.kenko.ui.components.FlowTargets
 import com.looker.kenko.ui.components.KenkoButton
+import com.looker.kenko.ui.components.RestPicker
 import com.looker.kenko.ui.components.TargetChip
 import com.looker.kenko.ui.components.kenkoTextFieldColor
 import com.looker.kenko.ui.exercises.string
@@ -71,16 +72,20 @@ fun AddEditExercise(
     viewModel: AddEditExerciseViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val defaultRestSeconds by viewModel.defaultRestSeconds.collectAsStateWithLifecycle()
 
     AddEditExercise(
         exerciseName = viewModel.exerciseName,
         exerciseReference = viewModel.reference,
+        restSeconds = viewModel.restSeconds,
+        defaultRestSeconds = defaultRestSeconds,
         state = state,
         snackbarState = viewModel.snackbarState,
         onSelectTarget = viewModel::setTargetMuscle,
         onSelectIsometric = viewModel::setIsometric,
         onNameChange = viewModel::setName,
         onReferenceChange = viewModel::addReference,
+        onRestChange = viewModel::setRest,
         onBackPress = onBackPress,
         onDone = { viewModel.addNewExercise(onDone) },
     )
@@ -91,12 +96,15 @@ fun AddEditExercise(
 private fun AddEditExercise(
     exerciseName: String,
     exerciseReference: String,
+    restSeconds: Int?,
+    defaultRestSeconds: Int,
     state: AddEditExerciseUiState,
     snackbarState: SnackbarHostState,
     onSelectTarget: (MuscleGroups) -> Unit,
     onSelectIsometric: (Boolean) -> Unit,
     onNameChange: (String) -> Unit,
     onReferenceChange: (String) -> Unit,
+    onRestChange: (Int?) -> Unit,
     onDone: () -> Unit,
     onBackPress: () -> Unit,
 ) {
@@ -156,6 +164,18 @@ private fun AddEditExercise(
                 onReferenceChange = onReferenceChange,
                 isError = state.isReferenceInvalid,
                 modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            RestPicker(
+                restSeconds = restSeconds,
+                defaultSeconds = defaultRestSeconds,
+                onChange = onRestChange,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Text(
+                text = stringResource(R.string.label_rest_exercise_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline,
             )
             Spacer(modifier = Modifier.height(18.dp))
             KenkoButton(
@@ -329,12 +349,15 @@ private fun AddEditPreview(
         AddEditExercise(
             exerciseName = "BenchPress",
             exerciseReference = "yt.be",
+            restSeconds = null,
+            defaultRestSeconds = 90,
             state = AddEditExerciseUiState(MuscleGroups.Chest, false, false, false, false),
             snackbarState = SnackbarHostState(),
             onSelectTarget = {},
             onSelectIsometric = {},
             onNameChange = {},
             onReferenceChange = {},
+            onRestChange = {},
             onDone = {},
             onBackPress = {}
         )

@@ -31,6 +31,7 @@ import com.looker.kenko.data.model.PlannedSet
 import com.looker.kenko.data.model.Routine
 import com.looker.kenko.data.model.RoutineExercise
 import com.looker.kenko.data.model.SetDraft
+import com.looker.kenko.data.model.settings.DEFAULT_REST_TIMER_SECONDS
 import com.looker.kenko.data.model.toDraft
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
@@ -112,6 +113,9 @@ class PlanEditViewModel @AssistedInject constructor(
 
     private val sheetStream = MutableStateFlow<PlanEditSheet?>(null)
     private val dialogStream = MutableStateFlow<RoutineDialog?>(null)
+
+    val restSeconds: StateFlow<Int> = settingsRepo.get { restTimerSeconds }
+        .asStateFlow(DEFAULT_REST_TIMER_SECONDS)
     private var sheetCount = 0L
 
     val state: StateFlow<PlanEditState> = combine(

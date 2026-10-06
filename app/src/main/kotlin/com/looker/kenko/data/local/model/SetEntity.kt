@@ -66,6 +66,7 @@ data class SetEntity(
     val routineSetId: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val restSeconds: Int? = null,
 )
 
 fun SetEntity.toExternal(exercise: Exercise): Set = Set(
@@ -77,6 +78,7 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     isCompleted = isCompleted,
     isFromPlan = routineSetId != null,
     id = id,
+    restSeconds = restSeconds,
 )
 
 fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
@@ -89,6 +91,7 @@ fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
     exerciseId = requireNotNull(exercise.id),
     rir = rir.value,
     isCompleted = isCompleted,
+    restSeconds = restSeconds,
 )
 
 fun SetDraft.toSetEntity(
@@ -106,4 +109,5 @@ fun SetDraft.toSetEntity(
     exerciseId = exerciseId,
     isCompleted = isCompleted,
     routineSetId = routineSetId,
+    restSeconds = restSeconds,
 )

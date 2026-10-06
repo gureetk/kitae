@@ -140,11 +140,11 @@ interface SetsDao {
     @Query(
         """
         UPDATE sets
-        SET reps = :reps, weight = :weight, type = :type
+        SET reps = :reps, weight = :weight, type = :type, restSeconds = :restSeconds
         WHERE id = :setId
         """,
     )
-    suspend fun updateValues(setId: Int, reps: Int, weight: Float, type: String)
+    suspend fun updateValues(setId: Int, reps: Int, weight: Float, type: String, restSeconds: Int?)
 
     @Query(
         """
@@ -184,8 +184,8 @@ interface SetsDao {
     }
 
     @Transaction
-    suspend fun updateGrouped(setId: Int, reps: Int, weight: Float, type: String) {
-        updateValues(setId, reps, weight, type)
+    suspend fun updateGrouped(setId: Int, reps: Int, weight: Float, type: String, restSeconds: Int?) {
+        updateValues(setId, reps, weight, type, restSeconds)
         val set = getSet(setId) ?: return
         groupWarmups(set.sessionId, set.exerciseId)
     }

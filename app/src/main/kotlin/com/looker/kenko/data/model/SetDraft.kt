@@ -22,6 +22,8 @@ data class SetDraft(
     val repsOrDuration: Int,
     val weight: Float,
     val type: SetType = SetType.Standard,
+    // Overrides the exercise's rest time
+    val restSeconds: Int? = null,
 )
 
 const val DEFAULT_SET_COUNT = 3
@@ -32,4 +34,5 @@ fun Set.toDraft(): SetDraft = SetDraft(
     repsOrDuration = repsOrDuration,
     weight = weight,
     type = type,
+    restSeconds = restSeconds,
 )

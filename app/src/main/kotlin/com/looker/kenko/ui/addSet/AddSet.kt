@@ -91,6 +91,7 @@ import com.looker.kenko.ui.addSet.components.VerticalSelector
 import com.looker.kenko.ui.addSet.components.WeightButtons
 import com.looker.kenko.ui.addSet.components.WeightTextField
 import com.looker.kenko.ui.components.LocalWeightUnit
+import com.looker.kenko.ui.components.RestPicker
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -103,6 +104,7 @@ import kotlinx.coroutines.launch
 fun AddSetSheet(
     exercise: Exercise,
     initial: SetDraft,
+    defaultRestSeconds: Int,
     onDismiss: () -> Unit,
     onDone: (SetDraft) -> Unit,
     isEdit: Boolean = false,
@@ -117,6 +119,7 @@ fun AddSetSheet(
         AddSet(
             exercise = exercise,
             initial = initial,
+            defaultRestSeconds = defaultRestSeconds,
             isEdit = isEdit,
             onDone = { set ->
                 onDone(set)
@@ -132,6 +135,7 @@ fun AddSetSheet(
 fun AddSet(
     exercise: Exercise,
     initial: SetDraft,
+    defaultRestSeconds: Int,
     onDone: (SetDraft) -> Unit,
     isEdit: Boolean = false,
 ) {
@@ -140,6 +144,7 @@ fun AddSet(
     val weights = rememberTextFieldState(unit.formatInput(initial.weight))
     var reps by remember { mutableIntStateOf(initial.repsOrDuration) }
     var setType by remember { mutableStateOf(initial.type) }
+    var restSeconds by remember { mutableStateOf(initial.restSeconds) }
     AddSetContent(
         title = stringResource(if (isEdit) R.string.label_edit_set_for else R.string.label_add_set_for),
         exerciseName = exercise.name,
@@ -153,12 +158,16 @@ fun AddSet(
             weights.setTextAndPlaceCursorAtEnd(formatWeightValue(current + step))
         },
         onRepsChanged = { reps = it },
+        restSeconds = restSeconds,
+        defaultRestSeconds = defaultRestSeconds,
+        onRestChange = { restSeconds = it },
         onDoneClick = {
             onDone(
                 SetDraft(
                     repsOrDuration = reps,
                     weight = unit.parseToKg(weights.text) ?: initial.weight,
                     type = setType,
+                    restSeconds = restSeconds,
                 ),
             )
         },
@@ -176,6 +185,9 @@ private fun AddSetContent(
     onSelectSetType: (SetType) -> Unit,
     onAddWeight: (Float) -> Unit,
     onRepsChanged: (Int) -> Unit,
+    restSeconds: Int?,
+    defaultRestSeconds: Int,
+    onRestChange: (Int?) -> Unit,
     onDoneClick: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -236,6 +248,13 @@ private fun AddSetContent(
                 },
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        RestPicker(
+            restSeconds = restSeconds,
+            defaultSeconds = defaultRestSeconds,
+            onChange = onRestChange,
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
@@ -429,6 +448,9 @@ private fun AddSetPreview(
                 onSelectSetType = {},
                 onAddWeight = {},
                 onRepsChanged = {},
+                restSeconds = null,
+                defaultRestSeconds = 90,
+                onRestChange = {},
                 onDoneClick = {},
             )
         }

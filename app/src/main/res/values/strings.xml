@@ -286,4 +286,8 @@
     <string name="label_remove_seconds">−%1$ds</string>
     <string name="label_minutes">%1$d min</string>
     <string name="label_hours_minutes">%1$d h %2$d min</string>
+    <string name="label_rest">Rest</string>
+    <string name="label_rest_default">Default</string>
+    <string name="label_rest_use_default">Use the default rest time</string>
+    <string name="label_rest_exercise_desc">Used after each set of this exercise, unless the set has its own rest time</string>
 </resources>

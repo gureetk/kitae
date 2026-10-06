@@ -120,6 +120,14 @@ class SessionDetailViewModel @AssistedInject constructor(
     val restSeconds: StateFlow<Int> = settingsRepo.get { restTimerSeconds }
         .asStateFlow(DEFAULT_REST_TIMER_SECONDS)
 
+    // Rest time of the last set ticked off, null when it uses the default
+    private val lastSetRest = MutableStateFlow<Int?>(null)
+
+    // What starting the rest timer by hand uses
+    val nextRestSeconds: StateFlow<Int> = combine(restSeconds, lastSetRest) { default, last ->
+        last ?: default
+    }.asStateFlow(DEFAULT_REST_TIMER_SECONDS)
+
     private val _sheet = MutableStateFlow<SetSheet?>(null)
     val sheet: StateFlow<SetSheet?> = _sheet.asStateFlow()
     private var sheetCount = 0L
@@ -131,9 +139,11 @@ class SessionDetailViewModel @AssistedInject constructor(
         val isLastSet = data != null && data.incompleteSets <= 1
         viewModelScope.launch {
             repo.setCompleted(setId, completing)
-            if (completing && !isLastSet) {
-                val seconds = settingsRepo.get { restTimerSeconds }.first()
-                if (seconds > 0) timer.start(seconds.seconds)
+            if (completing) {
+                val override = set.restSeconds ?: set.exercise.restSeconds
+                lastSetRest.value = override
+                val seconds = override ?: settingsRepo.get { restTimerSeconds }.first()
+                if (!isLastSet && seconds > 0) timer.start(seconds.seconds)
             }
         }
     }
@@ -208,7 +218,7 @@ class SessionDetailViewModel @AssistedInject constructor(
     }
 
     fun startRest() {
-        val seconds = restSeconds.value
+        val seconds = nextRestSeconds.value
         if (seconds > 0) timer.start(seconds.seconds)
     }
 

@@ -187,11 +187,11 @@ interface RoutineDao {
     @Query(
         """
         UPDATE routine_sets
-        SET reps = :reps, weight = :weight, type = :type
+        SET reps = :reps, weight = :weight, type = :type, restSeconds = :restSeconds
         WHERE id = :id
         """,
     )
-    suspend fun updateRoutineSet(id: Int, reps: Int, weight: Float, type: String)
+    suspend fun updateRoutineSet(id: Int, reps: Int, weight: Float, type: String, restSeconds: Int?)
 
     @Query("DELETE FROM routine_sets WHERE id = :id")
     suspend fun deleteRoutineSet(id: Int)
@@ -246,8 +246,8 @@ interface RoutineDao {
     }
 
     @Transaction
-    suspend fun updateGrouped(id: Int, reps: Int, weight: Float, type: String) {
-        updateRoutineSet(id, reps, weight, type)
+    suspend fun updateGrouped(id: Int, reps: Int, weight: Float, type: String, restSeconds: Int?) {
+        updateRoutineSet(id, reps, weight, type, restSeconds)
         val set = getRoutineSet(id) ?: return
         groupWarmups(set.routineExerciseId)
     }
@@ -269,6 +269,12 @@ interface RoutineDao {
         AND sets.isCompleted = 1),
         type =
         (SELECT sets.type
+        FROM sets
+        WHERE sets.routineSetId = routine_sets.id
+        AND sets.sessionId = :sessionId
+        AND sets.isCompleted = 1),
+        restSeconds =
+        (SELECT sets.restSeconds
         FROM sets
         WHERE sets.routineSetId = routine_sets.id
         AND sets.sessionId = :sessionId
@@ -347,6 +353,7 @@ interface RoutineDao {
                         weight = set.weight,
                         type = set.type,
                         position = nextSetPosition(routineExerciseId),
+                        restSeconds = set.restSeconds,
                     ),
                 ).toInt()
                 linkSet(set.id, plannedId)

@@ -43,6 +43,7 @@ data class Exercise(
     val reference: String? = null,
     val isIsometric: Boolean = false,
     val id: Int? = null,
+    val restSeconds: Int? = null,
 )
 
 @Stable

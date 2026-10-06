@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.data.model.settings.format
 import com.looker.kenko.ui.components.LocalWeightUnit
+import com.looker.kenko.ui.components.formatRest
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -64,6 +65,7 @@ fun SetItem(
     onCompletedChange: ((Boolean) -> Unit)? = null,
     onClick: (() -> Unit)? = null,
     isSkipped: Boolean = false,
+    restSeconds: Int? = null,
     title: @Composable () -> Unit,
 ) {
     val unit = LocalWeightUnit.current
@@ -126,6 +128,12 @@ fun SetItem(
                     title = stringResource(R.string.label_weight),
                     performance = unit.format(weight),
                 )
+                if (restSeconds != null) {
+                    PerformedItem(
+                        title = stringResource(R.string.label_rest),
+                        performance = formatRest(restSeconds),
+                    )
+                }
             }
         }
         if (isSkipped) {

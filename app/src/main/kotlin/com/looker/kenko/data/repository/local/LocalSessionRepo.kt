@@ -92,6 +92,7 @@ class LocalSessionRepo @Inject constructor(
                 repsOrDuration = planned.repsOrDuration,
                 weight = planned.weight,
                 type = planned.type,
+                restSeconds = planned.restSeconds,
             ).toSetEntity(
                 sessionId = 0,
                 exerciseId = exerciseId,
@@ -162,6 +163,7 @@ class LocalSessionRepo @Inject constructor(
             reps = set.repsOrDuration,
             weight = set.weight,
             type = set.type.name,
+            restSeconds = set.restSeconds,
         )
     }
 
