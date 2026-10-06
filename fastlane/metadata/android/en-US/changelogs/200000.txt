@@ -1,0 +1,6 @@
+• New app ID and signing key, so 1.x can't update to this version. Back up in the old app's settings, then restore here
+• A page for each exercise with how to do it, its rest time and your progress
+• Rest times for each exercise and each set
+• A clock for the workout in progress, and the length of past workouts
+• −15s in the rest timer notification
+• Fixed reps not saving when done was tapped quickly

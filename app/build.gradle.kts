@@ -39,9 +39,9 @@ android {
         applicationId = "ca.gureet.kitae"
         minSdk = 26
         targetSdk = 37
-        versionName = "1.1.0"
+        versionName = "2.0.0"
         // 1.2.3 -> 102030
-        versionCode = 101000
+        versionCode = 200000
     }
 
     dependenciesInfo.includeInApk = false

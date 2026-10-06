@@ -3,7 +3,9 @@ Kitae is a workout journal built around your training days. Plan your split once
 • Named training days instead of weekdays: train whichever day you're up for
 • Sets planned ahead for every exercise, ready when you start
 • Tick off each set, and keep unfinished ones as skipped or remove them from the plan
-• A rest timer that starts when you finish a set and keeps counting with the screen off
+• A rest timer that starts when you finish a set and keeps counting with the screen off. Any exercise or set can have its own rest time
+• How to do each exercise, and your progress on it over time
+• A clock for the workout in progress, and the length of every past workout
 • Warm-up, standard, failure, drop and rest-pause sets
 • Kilograms or pounds
 • Progress, history and backups, with all your data kept on your device
