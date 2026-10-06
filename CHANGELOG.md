@@ -14,6 +14,10 @@ the versions below it are Kenko's history.
 
 - A −15s button in the rest timer notification, next to +15s and Skip
 
+### Changed
+
+- New app ID (`ca.gureet.kitae`) and signing key, so Kitae 1.x can't update to this version. To keep your data, use Backup Now under Backup & Restore in the old app's settings, then Restore in the new one. The old app can be uninstalled after that
+
 ## [1.1.0] - 2026-09-26
 
 ### Added

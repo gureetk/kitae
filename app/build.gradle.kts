@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         // Never change once published
-        applicationId = "page.codeberg.wingback.kitae"
+        applicationId = "ca.gureet.kitae"
         minSdk = 26
         targetSdk = 37
         versionName = "1.1.0"
