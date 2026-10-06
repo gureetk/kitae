@@ -290,4 +290,19 @@
     <string name="label_rest_default">Default</string>
     <string name="label_rest_use_default">Use the default rest time</string>
     <string name="label_rest_exercise_desc">Used after each set of this exercise, unless the set has its own rest time</string>
+    <string name="label_how_to">How to do it</string>
+    <string name="label_how_to_hint">One step per line</string>
+    <string name="label_no_instructions">No instructions yet. You can write your own with the edit button.</string>
+    <string name="label_progress">Progress</string>
+    <string name="label_no_progress">Sets you complete of this exercise will show up here.</string>
+    <string name="label_heaviest_set">Heaviest set</string>
+    <string name="label_most_reps">Most reps</string>
+    <string name="label_longest_hold">Longest hold</string>
+    <plurals name="count_reps">
+        <item quantity="one">%d rep</item>
+        <item quantity="other">%d reps</item>
+    </plurals>
+    <string name="label_value_seconds">%1$d s</string>
+    <string name="label_exercise_not_found">This exercise no longer exists</string>
+    <string name="label_about_exercise">About this exercise</string>
 </resources>

@@ -18,6 +18,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import com.looker.kenko.data.local.model.ExerciseHistoryRow
 import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.warmupsFirstSlots
@@ -130,6 +131,24 @@ interface SetsDao {
         """,
     )
     fun totalSetCount(): Flow<Int>
+
+    @Query(
+        """
+        SELECT sets.sessionId AS sessionId,
+        sessions.date AS date,
+        routines.name AS routineName,
+        sets.reps AS reps,
+        sets.weight AS weight,
+        sets.type AS type
+        FROM sets
+        INNER JOIN sessions ON sessions.id = sets.sessionId
+        LEFT JOIN routines ON routines.id = sessions.routineId
+        WHERE sets.exerciseId = :exerciseId
+        AND sets.isCompleted = 1
+        ORDER BY sessions.date DESC, sessions.id DESC, sets.`order` ASC, sets.id ASC
+        """,
+    )
+    fun exerciseHistory(exerciseId: Int): Flow<List<ExerciseHistoryRow>>
 
     @Insert
     suspend fun insert(set: SetEntity)

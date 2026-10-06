@@ -44,6 +44,7 @@ data class Exercise(
     val isIsometric: Boolean = false,
     val id: Int? = null,
     val restSeconds: Int? = null,
+    val instructions: String? = null,
 )
 
 @Stable

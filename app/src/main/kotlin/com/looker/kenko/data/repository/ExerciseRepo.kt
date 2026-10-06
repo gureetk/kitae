@@ -15,6 +15,7 @@
 package com.looker.kenko.data.repository
 
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.ExerciseSession
 import kotlinx.coroutines.flow.Flow
 
 interface ExerciseRepo {
@@ -24,6 +25,11 @@ interface ExerciseRepo {
     val numberOfExercise: Flow<Int>
 
     suspend fun get(id: Int): Exercise?
+
+    fun observe(id: Int): Flow<Exercise?>
+
+    // Newest first
+    fun history(id: Int): Flow<List<ExerciseSession>>
 
     suspend fun upsert(exercise: Exercise)
 

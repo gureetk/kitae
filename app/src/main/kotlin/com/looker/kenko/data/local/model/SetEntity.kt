@@ -111,3 +111,14 @@ fun SetDraft.toSetEntity(
     routineSetId = routineSetId,
     restSeconds = restSeconds,
 )
+
+data class ExerciseHistoryRow(
+    val sessionId: Int,
+    // Epoch days
+    val date: Int,
+    val routineName: String?,
+    @ColumnInfo("reps")
+    val repsOrDuration: Int,
+    val weight: Float,
+    val type: SetType,
+)

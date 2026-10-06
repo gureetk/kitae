@@ -33,6 +33,7 @@ data class ExerciseEntity(
     val id: Int = 0,
     // Overrides the rest timer in settings
     val restSeconds: Int? = null,
+    val instructions: String? = null,
 )
 fun ExerciseEntity.toExternal(): Exercise = Exercise(
     id = id,
@@ -41,6 +42,7 @@ fun ExerciseEntity.toExternal(): Exercise = Exercise(
     reference = reference,
     isIsometric = isIsometric,
     restSeconds = restSeconds,
+    instructions = instructions,
 )
 
 fun Exercise.toEntity(): ExerciseEntity = ExerciseEntity(
@@ -50,4 +52,5 @@ fun Exercise.toEntity(): ExerciseEntity = ExerciseEntity(
     reference = reference,
     isIsometric = isIsometric,
     restSeconds = restSeconds,
+    instructions = instructions,
 )

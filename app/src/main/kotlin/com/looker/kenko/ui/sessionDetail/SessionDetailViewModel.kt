@@ -17,7 +17,6 @@ package com.looker.kenko.ui.sessionDetail
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
@@ -66,7 +65,6 @@ class SessionDetailViewModel @AssistedInject constructor(
     private val planRepo: PlanRepo,
     private val settingsRepo: SettingsRepo,
     private val timer: RestTimer,
-    private val uriHandler: UriHandler,
     @Assisted private val routeData: Routes.SessionDetail,
 ) : ViewModel() {
 
@@ -228,16 +226,6 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     fun skipRest() {
         timer.skip()
-    }
-
-    fun openReference(reference: String) {
-        viewModelScope.launch {
-            try {
-                uriHandler.openUri(reference)
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
-            }
-        }
     }
 
     private suspend fun defaultSet(): SetDraft {

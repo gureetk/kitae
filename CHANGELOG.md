@@ -15,10 +15,13 @@ the versions below it are Kenko's history.
 - A −15s button in the rest timer notification, next to +15s and Skip
 - A clock showing how long the workout in progress has been going, and the length of each workout in the history
 - Rest times for each exercise and for each set, used instead of the one in settings
+- A page for each exercise, opened from the exercise list or the info button next to it in a workout. It shows how to do the exercise, its rest time, a chart of your best sets and every workout it was done in
+- Instructions for the 75 included exercises. They can be edited, and written for your own exercises
 
 ### Changed
 
 - New app ID (`ca.gureet.kitae`) and signing key, so Kitae 1.x can't update to this version. To keep your data, use Backup Now under Backup & Restore in the old app's settings, then Restore in the new one. The old app can be uninstalled after that
+- An exercise's reference link moved from the workout to its page, and tapping an exercise in the list opens its page instead of editing it
 
 ### Fixed
 

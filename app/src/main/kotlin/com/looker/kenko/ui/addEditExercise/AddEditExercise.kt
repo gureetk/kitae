@@ -79,6 +79,7 @@ fun AddEditExercise(
         exerciseReference = viewModel.reference,
         restSeconds = viewModel.restSeconds,
         defaultRestSeconds = defaultRestSeconds,
+        instructions = viewModel.instructions,
         state = state,
         snackbarState = viewModel.snackbarState,
         onSelectTarget = viewModel::setTargetMuscle,
@@ -86,6 +87,7 @@ fun AddEditExercise(
         onNameChange = viewModel::setName,
         onReferenceChange = viewModel::addReference,
         onRestChange = viewModel::setRest,
+        onInstructionsChange = viewModel::setInstructions,
         onBackPress = onBackPress,
         onDone = { viewModel.addNewExercise(onDone) },
     )
@@ -98,6 +100,7 @@ private fun AddEditExercise(
     exerciseReference: String,
     restSeconds: Int?,
     defaultRestSeconds: Int,
+    instructions: String,
     state: AddEditExerciseUiState,
     snackbarState: SnackbarHostState,
     onSelectTarget: (MuscleGroups) -> Unit,
@@ -105,6 +108,7 @@ private fun AddEditExercise(
     onNameChange: (String) -> Unit,
     onReferenceChange: (String) -> Unit,
     onRestChange: (Int?) -> Unit,
+    onInstructionsChange: (String) -> Unit,
     onDone: () -> Unit,
     onBackPress: () -> Unit,
 ) {
@@ -159,6 +163,24 @@ private fun AddEditExercise(
             Spacer(modifier = Modifier.height(12.dp))
             IsIsometricButton(isIsometric = state.isIsometric, onChange = onSelectIsometric)
             Spacer(modifier = Modifier.height(18.dp))
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = instructions,
+                onValueChange = onInstructionsChange,
+                colors = kenkoTextFieldColor(),
+                shape = MaterialTheme.shapes.large,
+                minLines = 3,
+                label = {
+                    Text(text = stringResource(R.string.label_how_to))
+                },
+                placeholder = {
+                    Text(text = stringResource(R.string.label_how_to_hint))
+                },
+                supportingText = {
+                    Text(text = stringResource(R.string.label_reference_optional))
+                },
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             ReferenceTextField(
                 reference = exerciseReference,
                 onReferenceChange = onReferenceChange,
@@ -351,6 +373,7 @@ private fun AddEditPreview(
             exerciseReference = "yt.be",
             restSeconds = null,
             defaultRestSeconds = 90,
+            instructions = "",
             state = AddEditExerciseUiState(MuscleGroups.Chest, false, false, false, false),
             snackbarState = SnackbarHostState(),
             onSelectTarget = {},
@@ -358,6 +381,7 @@ private fun AddEditPreview(
             onNameChange = {},
             onReferenceChange = {},
             onRestChange = {},
+            onInstructionsChange = {},
             onDone = {},
             onBackPress = {}
         )

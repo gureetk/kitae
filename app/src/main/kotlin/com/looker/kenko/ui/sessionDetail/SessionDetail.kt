@@ -99,6 +99,7 @@ fun SessionDetails(
     onBackPress: () -> Unit,
     onHistoryClick: (sessionId: Int) -> Unit,
     onEditPlanClick: (planId: Int, routineId: Int?) -> Unit,
+    onExerciseClick: (exerciseId: Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val restTimer by viewModel.restTimer.collectAsStateWithLifecycle()
@@ -123,7 +124,7 @@ fun SessionDetails(
         },
         onEditSet = viewModel::openEditSet,
         onAddSet = viewModel::openAddSet,
-        onReferenceClick = viewModel::openReference,
+        onExerciseClick = onExerciseClick,
         onFinishClick = { incompleteSets ->
             val newSets = (state as? SessionDetailState.Success)?.data?.newSets ?: 0
             if (incompleteSets > 0 || newSets > 0) {
@@ -198,7 +199,7 @@ private fun SessionDetail(
     onToggleSet: (Set) -> Unit = {},
     onEditSet: (Set) -> Unit = {},
     onAddSet: (Exercise) -> Unit = {},
-    onReferenceClick: (String) -> Unit = {},
+    onExerciseClick: (Int) -> Unit = {},
     onFinishClick: (incompleteSets: Int) -> Unit = {},
     onStartRest: () -> Unit = {},
     onAdjustRest: (Int) -> Unit = {},
@@ -250,7 +251,7 @@ private fun SessionDetail(
                     onToggleSet = onToggleSet,
                     onEditSet = onEditSet,
                     onAddSet = onAddSet,
-                    onReferenceClick = onReferenceClick,
+                    onExerciseClick = onExerciseClick,
                 )
                 if (data.isEditable) {
                     RestTimerBar(
@@ -283,7 +284,7 @@ private fun SetsList(
     onToggleSet: (Set) -> Unit,
     onEditSet: (Set) -> Unit,
     onAddSet: (Exercise) -> Unit,
-    onReferenceClick: (String) -> Unit,
+    onExerciseClick: (Int) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(360.dp),
@@ -345,9 +346,13 @@ private fun SetsList(
                 span = { GridItemSpan(maxLineSpan) },
             ) {
                 SetGroupHeader(name = exercise.name) {
-                    if (!exercise.reference.isNullOrBlank()) {
-                        FilledTonalIconButton(onClick = { onReferenceClick(exercise.reference) }) {
-                            Icon(painter = KenkoIcons.Lightbulb, contentDescription = null)
+                    val exerciseId = exercise.id
+                    if (exerciseId != null) {
+                        IconButton(onClick = { onExerciseClick(exerciseId) }) {
+                            Icon(
+                                painter = KenkoIcons.Info,
+                                contentDescription = stringResource(R.string.label_about_exercise),
+                            )
                         }
                     }
                     if (data.isEditable) {

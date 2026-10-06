@@ -41,6 +41,8 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEvent
 import com.looker.kenko.ui.addEditExercise.AddEditExercise
 import com.looker.kenko.ui.addEditExercise.AddEditExerciseViewModel
+import com.looker.kenko.ui.exerciseDetail.ExerciseDetail
+import com.looker.kenko.ui.exerciseDetail.ExerciseDetailViewModel
 import com.looker.kenko.ui.exercises.Exercises
 import com.looker.kenko.ui.getStarted.GetStartedOld
 import com.looker.kenko.ui.home.Home
@@ -139,7 +141,9 @@ fun KenkoNavHost(
                     )
 
                     is Routes.Exercises -> Exercises(
-                        onExerciseClick = { id -> backStack.add(Routes.AddEditExercise(id = id)) },
+                        onExerciseClick = { id ->
+                            if (id != null) backStack.add(Routes.ExerciseDetail(id))
+                        },
                         onCreateClick = { target ->
                             backStack.add(Routes.AddEditExercise(target = target?.name))
                         },
@@ -168,7 +172,17 @@ fun KenkoNavHost(
                         onEditPlanClick = { planId, routineId ->
                             backStack.add(Routes.PlanEdit(planId, routineId))
                         },
+                        onExerciseClick = { id -> backStack.add(Routes.ExerciseDetail(id)) },
                         viewModel = hiltViewModel<SessionDetailViewModel, SessionDetailViewModel.Factory> {
+                            it.create(key)
+                        },
+                    )
+
+                    is Routes.ExerciseDetail -> ExerciseDetail(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onEditClick = { id -> backStack.add(Routes.AddEditExercise(id = id)) },
+                        onSessionClick = { id -> backStack.add(Routes.SessionDetail(id)) },
+                        viewModel = hiltViewModel<ExerciseDetailViewModel, ExerciseDetailViewModel.Factory> {
                             it.create(key)
                         },
                     )

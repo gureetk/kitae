@@ -572,5 +572,12 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
         db.execSQL("ALTER TABLE `exercises` ADD COLUMN `restSeconds` INTEGER")
         db.execSQL("ALTER TABLE `routine_sets` ADD COLUMN `restSeconds` INTEGER")
         db.execSQL("ALTER TABLE `sets` ADD COLUMN `restSeconds` INTEGER")
+        db.execSQL("ALTER TABLE `exercises` ADD COLUMN `instructions` TEXT")
+        ExerciseGuides.forEach { (name, steps) ->
+            db.execSQL(
+                "UPDATE `exercises` SET `instructions` = ? WHERE `name` = ? COLLATE NOCASE AND `instructions` IS NULL",
+                arrayOf<Any?>(steps.joinToString("\n"), name),
+            )
+        }
     }
 }

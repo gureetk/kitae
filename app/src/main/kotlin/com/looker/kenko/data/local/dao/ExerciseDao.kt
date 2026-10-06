@@ -54,6 +54,15 @@ interface ExerciseDao {
 
     @Query(
         """
+        SELECT *
+        FROM exercises
+        WHERE id = :id
+        """,
+    )
+    fun observe(id: Int): Flow<ExerciseEntity?>
+
+    @Query(
+        """
         SELECT COUNT(*)
         FROM exercises
         """,

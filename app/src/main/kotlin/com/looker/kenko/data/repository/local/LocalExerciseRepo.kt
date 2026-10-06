@@ -15,17 +15,22 @@
 package com.looker.kenko.data.repository.local
 
 import com.looker.kenko.data.local.dao.ExerciseDao
+import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.model.ExerciseEntity
 import com.looker.kenko.data.local.model.toEntity
 import com.looker.kenko.data.local.model.toExternal
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.ExerciseSession
+import com.looker.kenko.data.model.SetDraft
 import com.looker.kenko.data.repository.ExerciseRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 class LocalExerciseRepo @Inject constructor(
     private val dao: ExerciseDao,
+    private val setsDao: SetsDao,
 ) : ExerciseRepo {
 
     override val stream: Flow<List<Exercise>> =
@@ -35,6 +40,23 @@ class LocalExerciseRepo @Inject constructor(
 
     override suspend fun get(id: Int): Exercise? =
         dao.get(id)?.toExternal()
+
+    override fun observe(id: Int): Flow<Exercise?> =
+        dao.observe(id).map { it?.toExternal() }
+
+    override fun history(id: Int): Flow<List<ExerciseSession>> =
+        setsDao.exerciseHistory(id).map { rows ->
+            rows.groupBy { it.sessionId }.map { (sessionId, sets) ->
+                ExerciseSession(
+                    sessionId = sessionId,
+                    date = LocalDate.fromEpochDays(sets.first().date),
+                    routineName = sets.first().routineName,
+                    sets = sets.map {
+                        SetDraft(repsOrDuration = it.repsOrDuration, weight = it.weight, type = it.type)
+                    },
+                )
+            }
+        }
 
     override suspend fun upsert(exercise: Exercise) {
         dao.upsert(exercise.toEntity())

@@ -46,6 +46,9 @@ sealed interface Routes : NavKey {
     data class SessionDetail(val sessionId: Int) : Routes
 
     @Serializable
+    data class ExerciseDetail(val id: Int) : Routes
+
+    @Serializable
     data class AddEditExercise(
         val id: Int? = null,
         val name: String? = null,

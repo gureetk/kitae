@@ -82,6 +82,9 @@ class AddEditExerciseViewModel @AssistedInject constructor(
     var restSeconds: Int? by mutableStateOf(null)
         private set
 
+    var instructions: String by mutableStateOf("")
+        private set
+
     val defaultRestSeconds: StateFlow<Int> = settingsRepo.get { restTimerSeconds }
         .asStateFlow(DEFAULT_REST_TIMER_SECONDS)
 
@@ -129,6 +132,10 @@ class AddEditExerciseViewModel @AssistedInject constructor(
         restSeconds = value
     }
 
+    fun setInstructions(value: String) {
+        instructions = value
+    }
+
     fun setTargetMuscle(value: MuscleGroups) {
         viewModelScope.launch {
             targetMuscle.emit(value)
@@ -159,6 +166,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     isIsometric = isIsometric.value,
                     id = exerciseId,
                     restSeconds = restSeconds,
+                    instructions = instructions.trim().ifBlank { null },
                 ),
             )
             onDone()
@@ -175,6 +183,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     setIsometric(it.isIsometric)
                     setTargetMuscle(it.target)
                     setRest(it.restSeconds)
+                    setInstructions(it.instructions.orEmpty())
                 }
             } else {
                 if (routeData.name != null) setName(routeData.name)
