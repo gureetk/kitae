@@ -32,7 +32,7 @@ APKs for every version are on the [releases page](https://codeberg.org/gureetk/k
 
 Kitae is developed on [Codeberg](https://codeberg.org/gureetk/kitae). Its GitHub repository is a read-only mirror, without releases or issues.
 
-Development of Kitae for IOS is being done at [kitae-ios](https://codeberg.org/gureetk/kitae-ios). Kitae for IOS and Kitae for Android will allow for cross backup and restores.
+Development of Kitae for iOS is being done at [kitae-ios](https://codeberg.org/gureetk/kitae-ios). Kitae for IOS and Kitae for Android will allow for cross backup and restores.
 
 ## Features
 
